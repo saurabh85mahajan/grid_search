@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SalutationSeeder::class,
             CitySeeder::class,
+            RegionSeeder::class,
         ]);
     }
 }
