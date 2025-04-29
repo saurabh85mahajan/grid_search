@@ -2,20 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductCategoryResource\Pages;
-use App\Models\ProductCategory;
+use App\Filament\Resources\MakeResource\Pages;
+use App\Filament\Resources\MakeResource\RelationManagers;
+use App\Models\Make;
 use App\Traits\HasStatusColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ProductCategoryResource extends Resource
+class MakeResource extends Resource
 {
     use HasStatusColumn;
 
-    protected static ?string $model = ProductCategory::class;
+    protected static ?string $model = Make::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Config';
 
@@ -82,9 +85,9 @@ class ProductCategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProductCategories::route('/'),
-            'create' => Pages\CreateProductCategory::route('/create'),
-            'edit' => Pages\EditProductCategory::route('/{record}/edit'),
+            'index' => Pages\ListMakes::route('/'),
+            'create' => Pages\CreateMake::route('/create'),
+            'edit' => Pages\EditMake::route('/{record}/edit'),
         ];
     }
 }

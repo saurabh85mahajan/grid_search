@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             NcbSeeder::class,
             FuelType::class,
             Bank::class,
+            MakeSeeder::class,
         ]);
     }
 }
