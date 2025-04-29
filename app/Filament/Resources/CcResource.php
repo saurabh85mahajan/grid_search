@@ -24,7 +24,7 @@ class CcResource extends Resource
         return $form
             ->schema([
                 // Client Details Card
-                Forms\Components\Section::make('Client Details')
+                Forms\Components\Section::make('CC Entry')
                     ->schema([
                         // Proposal Information
                         Forms\Components\Section::make('Proposal Information')
@@ -47,7 +47,7 @@ class CcResource extends Resource
                                             ])
                                             ->placeholder('Select POSP'),
                                     ]),
-                            ]),
+                            ])->collapsible(),
                         
                         // Basic Information
                         Forms\Components\Section::make('Basic Information')
@@ -80,7 +80,7 @@ class CcResource extends Resource
                                             ->email()
                                             ->placeholder('Enter Email Address'),
                                     ]),
-                            ]),
+                            ])->collapsible(),
                             
                         // Address
                         Forms\Components\Section::make('Address')
@@ -102,9 +102,8 @@ class CcResource extends Resource
                                             ->columnSpan(1),
                                     ])
                                     ->columns(3),
-                            ]),
+                            ])->collapsible(),
                     ])
-                    ->collapsible(),
             ]);
     }
 
