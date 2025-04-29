@@ -14,8 +14,6 @@ class MakeSeeder extends Seeder
     {
         //
         $makes = [
-
-
             ['product_id' => 1, 'name' => " HARVESTER"],
             ['product_id' => 1, 'name' => "3 S INDUSTRIES"],
             ['product_id' => 1, 'name' => "3EV INDUSTRIES PVT LTD"],
