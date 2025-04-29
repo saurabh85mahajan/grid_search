@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CcResource\Pages;
-use App\Filament\Resources\CcResource\RelationManagers;
 use App\Models\Cc;
 use App\Traits\HasStatusColumn;
 use Filament\Forms;
@@ -11,8 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CcResource extends Resource
 {
@@ -26,79 +23,88 @@ class CcResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Tabs::make('Tabs')
-                    ->tabs([
-                        // Client Details Tab
-                        Forms\Components\Tabs\Tab::make('Client Details')
+                // Client Details Card
+                Forms\Components\Section::make('Client Details')
+                    ->schema([
+                        // Proposal Information
+                        Forms\Components\Section::make('Proposal Information')
                             ->schema([
-                                Forms\Components\Section::make('Proposal Information')
+                                Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\Select::make('proposal_type')
+                                            ->label('Proposal type')
                                             ->options([
                                                 'Fresh' => 'Fresh',
                                                 'Renewal' => 'Renewal',
                                             ])
-                                            ->placeholder('Select Proposal Type')
-                                            ->columnSpan(1),
+                                            ->placeholder('Select Proposal Type'),
+                                            
                                         Forms\Components\Select::make('posp')
+                                            ->label('Posp')
                                             ->options([
                                                 'POSP' => 'POSP',
                                                 'Non POSP' => 'Non POSP',
                                             ])
-                                            ->placeholder('Select Policy Type')
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(3),
-
-                                Forms\Components\Section::make('Basic Information')
+                                            ->placeholder('Select POSP'),
+                                    ]),
+                            ]),
+                        
+                        // Basic Information
+                        Forms\Components\Section::make('Basic Information')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
                                     ->schema([
                                         Forms\Components\TextInput::make('first_name')
                                             ->label('First Name')
                                             ->required()
-                                            ->placeholder('Enter First Name')
-                                            ->columnSpan(1),
+                                            ->placeholder('Enter First Name'),
+                                            
                                         Forms\Components\TextInput::make('middle_name')
                                             ->label('Middle Name')
-                                            ->placeholder('Enter Middle Name')
-                                            ->columnSpan(1),
+                                            ->placeholder('Enter Middle Name'),
+                                            
                                         Forms\Components\TextInput::make('last_name')
                                             ->label('Last Name')
-                                            ->placeholder('Enter Last Name')
-                                            ->columnSpan(1),
+                                            ->placeholder('Enter Last Name'),
+                                    ]),
+                                    
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
                                         Forms\Components\TextInput::make('phone')
                                             ->label('Phone')
                                             ->tel()
-                                            ->placeholder('Enter Phone Number')
-                                            ->columnSpan(1),
+                                            ->placeholder('Enter Phone Number'),
+                                            
                                         Forms\Components\TextInput::make('email')
                                             ->label('Email')
                                             ->email()
-                                            ->placeholder('Enter Email Address')
-                                            ->columnSpan(1),
-                                    ])
-                                    ->columns(3),
-
-                                Forms\Components\Section::make('Address')
+                                            ->placeholder('Enter Email Address'),
+                                    ]),
+                            ]),
+                            
+                        // Address
+                        Forms\Components\Section::make('Address')
+                            ->schema([
+                                Forms\Components\Grid::make()
                                     ->schema([
                                         Forms\Components\Textarea::make('address_1')
                                             ->label('Address')
                                             ->placeholder('Address 1')
                                             ->rows(3)
                                             ->columnSpan(2),
-                                        Forms\Components\Grid::make()
-                                            ->schema([
-                                                Forms\Components\Select::make('city_id')
-                                                    ->relationship('city', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->placeholder('Select City'),
-                                            ])
+                                            
+                                        Forms\Components\Select::make('city_id')
+                                            ->label('City')
+                                            ->relationship('city', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Select City')
                                             ->columnSpan(1),
                                     ])
                                     ->columns(3),
                             ]),
                     ])
-                    ->columnSpanFull(),
+                    ->collapsible(),
             ]);
     }
 
