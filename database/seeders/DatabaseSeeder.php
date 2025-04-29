@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             FuelType::class,
             Bank::class,
             MakeSeeder::class,
+            RtoSeeder::class,
         ]);
     }
 }
