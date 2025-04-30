@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\MakeResource\Pages;
-use App\Filament\Resources\MakeResource\RelationManagers;
-use App\Models\Make;
+use App\Filament\Resources\GeneralInsuranceTypeResource\Pages;
+use App\Filament\Resources\GeneralInsuranceTypeResource\RelationManagers;
+use App\Models\GeneralInsuranceType;
 use App\Traits\HasStatusColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,36 +14,30 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class MakeResource extends Resource
+class GeneralInsuranceTypeResource extends Resource
 {
     use HasStatusColumn;
 
-    protected static ?string $model = Make::class;
+    protected static ?string $model = GeneralInsuranceType::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Config Common';
+    protected static ?string $navigationGroup = 'Config 1';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('product_id')
-                ->relationship('product', 'name')
-                ->preload()
-                ->required(),
-            Forms\Components\TextInput::make('name')
-                ->required()
-                ->maxLength(255),
-        ]);
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
-                    ->label('Product')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
@@ -58,11 +52,7 @@ class MakeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('product_id')
-                    ->relationship('product', 'name')
-                    ->label('Product')
-                    ->preload()
-                    ->searchable(),
+                //
                 (new static)->getStatusFilter(),
             ])
             ->actions([
@@ -85,9 +75,9 @@ class MakeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMakes::route('/'),
-            'create' => Pages\CreateMake::route('/create'),
-            'edit' => Pages\EditMake::route('/{record}/edit'),
+            'index' => Pages\ListGeneralInsuranceTypes::route('/'),
+            'create' => Pages\CreateGeneralInsuranceType::route('/create'),
+            'edit' => Pages\EditGeneralInsuranceType::route('/{record}/edit'),
         ];
     }
 }
