@@ -42,7 +42,7 @@ class Cc extends Model
 
     public function ncb()
     {
-        return $this->belongsTo(NCB::class, 'previous_ncb');
+        return $this->belongsTo(NCB::class);
     }
 
     // Add scopes
@@ -50,4 +50,30 @@ class Cc extends Model
     {
         return $query->where('is_active', true);
     }
+	
+	public function salutation()
+    {
+        return $this->belongsTo(Salutation::class);
+    }
+	
+	public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
+	
+	public function businessLock()
+    {
+        return $this->belongsTo(BusinessLock::class);
+    }
+	
+	public function productCategory()
+    {
+        return $this->belongsTo(ProductCategory::class);
+    }
+	
+	public function rto()
+    {
+        return $this->belongsTo(Rto::class);
+    }
+	
 }
