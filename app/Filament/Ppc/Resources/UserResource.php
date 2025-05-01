@@ -23,6 +23,15 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'Manage Employees';
     protected static ?int $navigationSort = 10;
 
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && in_array($user->email, [
+            'admin@admin.com',
+            'nikhil@gmail.com',
+        ]);
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('organisation_id', 2)
