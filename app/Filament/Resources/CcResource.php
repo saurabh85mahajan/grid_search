@@ -4,13 +4,19 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CcResource\Pages;
 use App\Models\Cc;
+use App\Models\ProductCategory;
 use App\Traits\HasStatusColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Checkbox;
+
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Illuminate\Database\Eloquent\Builder;
 
 
 class CcResource extends Resource
@@ -39,7 +45,9 @@ class CcResource extends Resource
                                                 'Fresh' => 'Fresh',
                                                 'Renewal' => 'Renewal',
                                             ])
-                                            ->placeholder('Select Proposal Type'),
+                                            ->placeholder('Select Proposal Type')
+											->required()
+											->disabledOn('edit') ,
                                             
                                         Forms\Components\Select::make('posp')
                                             ->label('Product Posp')
@@ -47,7 +55,9 @@ class CcResource extends Resource
                                                 'POSP' => 'POSP',
                                                 'Non POSP' => 'Non POSP',
                                             ])
-                                            ->placeholder('Select POSP'),
+                                            ->placeholder('Select POSP')
+											->required()
+											->disabledOn('edit') ,
                                     ]),
                             ])->collapsible(),
                         
@@ -59,9 +69,7 @@ class CcResource extends Resource
 									
 										Forms\Components\Select::make('salutation_id')
                                             ->label('Salutation')
-                                            ->relationship('salutation', 'name', function ($query) {
-                                                return $query->active()->orderBy('id', 'asc');
-                                            })
+                                            ->relationship('salutation', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true) )
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Salutation'),
@@ -86,6 +94,7 @@ class CcResource extends Resource
 										Forms\Components\TextInput::make('address_1')
                                             ->label('Address')
                                             ->placeholder('Enter Address 1')
+											->required()
                                     ]),
 									
 								Forms\Components\Grid::make(2)
@@ -109,10 +118,11 @@ class CcResource extends Resource
 										
 										Forms\Components\Select::make('city_id')
                                             ->label('City')
-                                            ->relationship('city', 'name')
+                                            ->relationship('city', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select City')
+											->required()
                                     ]),
 								Forms\Components\Grid::make(2)
                                     ->schema([
@@ -125,7 +135,8 @@ class CcResource extends Resource
 										Forms\Components\TextInput::make('phone')
                                             ->label('Mobile')
                                             ->tel()
-                                            ->placeholder('Enter Mobile Number'),
+                                            ->placeholder('Enter Mobile Number')
+											->required(),
                                             
                                         
                                     ]),
@@ -161,17 +172,19 @@ class CcResource extends Resource
                                         
 										Forms\Components\Select::make('region_id')
                                             ->label('Region')
-                                            ->relationship('region', 'name')
+                                            ->relationship('region', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Region'),
+                                            ->placeholder('Select Region')
+											->required(),
 										
 										Forms\Components\Select::make('business_lock_id')
                                             ->label('Business Lock')
-                                            ->relationship('businessLock', 'name')
+                                            ->relationship('businessLock', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Bussiness Lock'),
+                                            ->placeholder('Select Bussiness Lock')
+											->required(),
 											
 									]),
 									
@@ -180,14 +193,16 @@ class CcResource extends Resource
                                         
 										Forms\Components\Select::make('insurance_company_id')
                                             ->label('Insurance Company')
-                                            ->relationship('insuranceCompany', 'name')
+                                            ->relationship('insuranceCompany', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Insurance Company'),
+                                            ->placeholder('Select Insurance Company')
+											->required(),
 										
 										Forms\Components\TextInput::make('policy_number')
                                             ->label('Policy No.')
-                                            ->placeholder('Enter Policy No.'),
+                                            ->placeholder('Enter Policy No.')
+											->required(),
 											
 										
 											
@@ -199,11 +214,13 @@ class CcResource extends Resource
 										Forms\Components\DatePicker::make('policy_issue_date')
                                             ->label('Policy Issue Date')
 											->placeholder('Select Policy Issue Date')
-											->format('Y-m-d'),
+											->format('Y-m-d')
+											->required(),
 										
 										Forms\Components\TextInput::make('code')
                                             ->label('Code')
-                                            ->placeholder('Enter Code'),
+                                            ->placeholder('Enter Code')
+											->required(),
 											
 											
 									]),
@@ -213,17 +230,20 @@ class CcResource extends Resource
                                         
 										Forms\Components\Select::make('product_id')
                                             ->label('Product')
-                                            ->relationship('product', 'name')
+                                            ->relationship('product', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Product'),
 										
 										Forms\Components\Select::make('product_category_id')
                                             ->label('Product Category')
-                                            ->relationship('productCategory', 'name')
+                                            ->relationship('productCategory', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Product Category'),
+                                            ->placeholder(fn (Forms\Get $get): string => empty($get('product_id')) ? 'First Select Product' : 'Select an option')
+											->options(function (Forms\Get $get) {
+												return ProductCategory::where('product_id', $get('product_id'))->pluck('name', 'id');
+											}),
 											
 										Forms\Components\TextInput::make('risk_category')
                                             ->label('Risk Category')
@@ -236,15 +256,17 @@ class CcResource extends Resource
                                         
 										Forms\Components\DatePicker::make('inception_date')
                                             ->label('Inception Date')
-											->format('Y-m-d'),
+											->format('Y-m-d')
+											->required(),
 											
 										Forms\Components\DatePicker::make('expiry_date')
                                             ->label('Expiry Date')
-											->format('Y-m-d'),
+											->format('Y-m-d')
+											->required(),
 											
 										Forms\Components\Select::make('ncb_id')
                                             ->label('NCB')
-                                            ->relationship('ncb', 'name')
+                                            ->relationship('ncb', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select NCB'),
@@ -273,7 +295,7 @@ class CcResource extends Resource
                                         
 										Forms\Components\Select::make('py_insurance_company_id')
                                             ->label('PY Ins. Comp.')
-                                            ->relationship('insuranceCompany', 'name')
+                                            ->relationship('insuranceCompany', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select PY Insurance Company'),
@@ -306,14 +328,16 @@ class CcResource extends Resource
                                         
 										Forms\Components\Select::make('make_id')
                                             ->label('Make')
-                                            ->relationship('make', 'name')
+                                            ->relationship('make', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Make'),
+                                            ->placeholder('Select Make')
+											->required(),
 										
 										Forms\Components\TextInput::make('vehicle_model')
                                             ->label('Vehicle Model')
-                                            ->placeholder('Enter Vehicle Model'),
+                                            ->placeholder('Enter Vehicle Model')
+											->required(),
 										
 										Forms\Components\TextInput::make('vehicle_sub_model')
                                             ->label('Vehicle Sub Model')
@@ -330,14 +354,16 @@ class CcResource extends Resource
 										
 										Forms\Components\TextInput::make('yom')
                                             ->label('YOM')
-                                            ->placeholder('Enter YOM'),
+                                            ->placeholder('Enter YOM')
+											->required(),
 											
 										Forms\Components\Select::make('fuel_type_id')
                                             ->label('Fuel Type')
-                                            ->relationship('fuelType', 'name')
+                                            ->relationship('fuelType', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Fuel Type'),
+                                            ->placeholder('Select Fuel Type')
+											->required(),
 											
 										Forms\Components\Select::make('seating_capacity')
                                             ->label('Seating Capacity')
@@ -357,11 +383,13 @@ class CcResource extends Resource
 									->schema([
 										Forms\Components\TextInput::make('registration_number_1')
                                             ->hiddenLabel() 
-                                            ->placeholder('GJ'),
+                                            ->placeholder('GJ')
+											->required(),
 										
 										Forms\Components\TextInput::make('registration_number_2')
                                             ->hiddenLabel()
-                                            ->placeholder('01'),
+                                            ->placeholder('01')
+											->required(),
 											
 										Forms\Components\TextInput::make('registration_number_3')
                                             ->hiddenLabel()
@@ -369,7 +397,8 @@ class CcResource extends Resource
 										
 										Forms\Components\TextInput::make('registration_number_4')
                                             ->hiddenLabel()
-                                            ->placeholder('1234'),
+                                            ->placeholder('1234')
+											->required(),
 									])
 									->columns(4),
 									
@@ -386,7 +415,7 @@ class CcResource extends Resource
 											
 										Forms\Components\Select::make('rto_id')
                                             ->label('RTO')
-                                            ->relationship('rto', 'name')
+                                            ->relationship('rto', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true))
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select RTO'),
@@ -396,6 +425,146 @@ class CcResource extends Resource
 									
 								
                             ])->collapsible(),
+							
+							// Premium Details
+							Forms\Components\Section::make('Premium Details')
+							->schema([
+							Forms\Components\Grid::make(3)
+								->schema([
+									
+									Forms\Components\TextInput::make('od')
+										->label('OD')
+										->placeholder('Enter OD'),
+									
+									Forms\Components\TextInput::make('add_on')
+										->label('Add On')
+										->placeholder('Enter Add On'),
+										
+									Forms\Components\TextInput::make('other')
+										->label('Other')
+										->placeholder('Enter Other'),
+										
+								]),
+								Forms\Components\Grid::make(3)
+								->schema([
+									
+									Forms\Components\TextInput::make('tp_premium')
+										->label('TP Premium')
+										->placeholder('Enter OD'),
+									
+									Forms\Components\Select::make('tp_tax')
+										->label('TP Tax')
+										->placeholder('Enter TP Tax')
+										->options([
+												1 => 1,
+												2 => 2,
+												3 => 3,
+												4 => 4,
+												5 => 5
+										]),
+										
+									Forms\Components\TextInput::make('tppd')
+										->label('TPPD')
+										->placeholder('Enter Other'),
+										
+								]),
+								Forms\Components\Grid::make(3)
+								->schema([
+									
+									Forms\Components\TextInput::make('liab_cng')
+										->label('Liab CNG')
+										->placeholder('Enter Liab CNG'),
+									
+									Forms\Components\TextInput::make('liab_passenger')
+										->label('Liab Passenger')
+										->placeholder('Enter Liab Passenger'),
+										
+									Forms\Components\TextInput::make('liab_owner_driver')
+										->label('Liab Owner Driver')
+										->placeholder('Enter Liab Owner Driver'),
+										
+								]),
+								Forms\Components\Grid::make(3)
+								->schema([
+									
+									Forms\Components\Select::make('tax')
+										->label('Tax')
+										->placeholder('Select Tax')
+										->options([
+												1 => 1,
+												2 => 2,
+												3 => 3,
+												4 => 4,
+												5 => 5
+										]),
+									
+									Forms\Components\TextInput::make('tax_amount')
+										->label('Tax Amount')
+										->placeholder('Enter tax_amount'),
+										
+									Forms\Components\TextInput::make('total_premium')
+										->label('Total Premium')
+										->placeholder('Enter Total Premium'),
+										
+								]),
+								
+								Fieldset::make('Add On Coverages')
+									->schema([
+										Checkbox::make('add_on_coverages')->inline()->label('Nil Dep.'),
+										Checkbox::make('add_on_coverages')->inline()->label('Consumable'),
+										Checkbox::make('add_on_coverages')->inline()->label('Engine Protector'),
+										Checkbox::make('add_on_coverages')->inline()->label('Tyre Cover'),
+										Checkbox::make('add_on_coverages')->inline()->label('Ncb Protector'),
+										Checkbox::make('add_on_coverages')->inline()->label('R21'),	
+										Checkbox::make('add_on_coverages')->inline()->label('Keycover'),	
+										Checkbox::make('add_on_coverages')->inline()->label('RSA'),	
+										Checkbox::make('add_on_coverages')->inline()->label('Lose of Personal Belongings'),	
+										Checkbox::make('add_on_coverages')->inline()->label('Spare Car'),
+									])
+									->columns(4),
+								
+							])->collapsible(),
+							
+							// Payment Details
+							Forms\Components\Section::make('Payment Details')
+							->schema([
+							Forms\Components\Grid::make(3)
+								->schema([
+									
+									Forms\Components\TextInput::make('payment_mode')
+										->label('Payment Mode')
+										->placeholder('Enter Payment Mode'),
+										
+									Forms\Components\DatePicker::make('payment_date')
+                                            ->label('Payment Date')
+											->format('Y-m-d'),
+										
+									Forms\Components\TextInput::make('cheque_trans_number')
+										->label('Other')
+										->placeholder('Enter Cheque/Trans Number'),
+										
+								]),
+							
+							Forms\Components\Grid::make(2)
+								->schema([
+								Forms\Components\Select::make('bank_id')
+									->label('Bank')
+									->relationship(
+										'bank', 
+										'name', 
+										modifyQueryUsing: fn (Builder $query) => $query->where('is_active', true) 
+									)
+									->searchable()
+									->preload()
+									->placeholder('Select Bank'),
+									
+								Forms\Components\TextInput::make('payment_amount')
+										->label('Payment Amount')
+										->placeholder('Enter Payment Amount'),
+								]),
+								
+							])->collapsible(),
+							
                     ])
             ]);
     }
@@ -404,26 +573,44 @@ class CcResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')
-                    ->label('Name')
-                    ->sortable()
-                    ->searchable(),
+				TextColumn::make('proposal_type')
+                    ->formatStateUsing(function (Cc $record): string {
+                        return "{$record->proposal_type} {$record->posp}";
+                    })
+                    ->html()
+					->label('Proposal Type')
+                    ->searchable(['proposal_type', 'posp'])
+                    ->sortable(),
+                
+				TextColumn::make('first_name')
+                    ->formatStateUsing(function (Cc $record): string {
+                        return "{$record->first_name} {$record->last_name}";
+                    })
+                    ->html()
+					->label('Name')
+                    ->searchable(['first_name', 'last_name'])
+                    ->sortable(),
+                
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Phone')
                     ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('registration_no')
-                    ->label('Registration No')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('make.name')
+					->searchable(),
+				Tables\Columns\TextColumn::make('make.name')
                     ->label('Make')
                     ->sortable()
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Status')
-                    ->boolean()
-                    ->sortable(),
+					->searchable(),
+				Tables\Columns\TextColumn::make('vehicle_model')
+                    ->label('Model')
+                    ->sortable()
+					->searchable(),
+				Tables\Columns\TextColumn::make('policy_number')
+                    ->label('Policy Number')
+                    ->sortable()
+					->searchable(),
+				Tables\Columns\TextColumn::make('insuranceCompany.name')
+                    ->label('Insurance Company')
+                    ->sortable()
+					->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

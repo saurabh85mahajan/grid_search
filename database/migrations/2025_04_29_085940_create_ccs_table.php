@@ -76,17 +76,29 @@ return new class extends Migration
             $table->integer('rto_id')->nullable();
 
             // Premium details
-            // $table->decimal('od', 10, 2)->nullable();
-            // $table->decimal('add_on', 10, 2)->nullable();
-            // $table->decimal('other', 10, 2)->nullable();
-            // $table->decimal('basic_tp', 10, 2)->nullable();
-            // $table->decimal('net_premium', 10, 2)->nullable();
-            // $table->decimal('tax_amount', 10, 2)->nullable();
-            // $table->decimal('total_premium', 10, 2)->nullable();
+            $table->decimal('od', 10, 2)->nullable();
+            $table->decimal('add_on', 10, 2)->nullable();
+            $table->decimal('other', 10, 2)->nullable();
+            $table->decimal('tp_premium', 10, 2)->nullable();
+            $table->integer('tp_tax')->nullable();
+            $table->integer('tppd')->nullable();
+            $table->integer('liab_cng')->nullable();
+            $table->integer('liab_passenger')->nullable();
+            $table->integer('liab_owner_driver')->nullable();
+            $table->integer('tax')->nullable();
+            $table->decimal('tax_amount', 10, 2)->nullable();
+            $table->decimal('total_premium', 10, 2)->nullable();
+			$table->decimal('od_percentage', 10, 2)->nullable();
+			$table->decimal('tp_percentage', 10, 2)->nullable();
+            $table->decimal('specific_amount', 10, 2)->nullable();
+            $table->integer('add_on_coverages')->nullable();
             
             // // Payment details
-            // $table->string('payment_mode')->nullable();
-            // $table->decimal('amount', 10, 2)->nullable();
+            $table->string('payment_mode')->nullable();
+            $table->date('payment_date')->nullable();
+            $table->string('cheque_trans_number')->nullable();
+            $table->integer('bank_id')->nullable();
+            $table->decimal('payment_amount', 10, 2)->nullable();
             
             $table->boolean('is_active')->default(true);
 
