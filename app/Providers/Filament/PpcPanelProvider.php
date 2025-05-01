@@ -2,11 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Ppc\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -40,7 +40,7 @@ class PpcPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Ppc/Resources'), for: 'App\\Filament\\Ppc\\Resources')
             ->discoverPages(in: app_path('Filament/Ppc/Pages'), for: 'App\\Filament\\Ppc\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Ppc/Widgets'), for: 'App\\Filament\\Ppc\\Widgets')
             ->widgets([
