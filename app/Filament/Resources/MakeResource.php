@@ -20,7 +20,7 @@ class MakeResource extends Resource
 
     protected static ?string $model = Make::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Config';
+    protected static ?string $navigationGroup = 'Config Common';
 
     public static function form(Form $form): Form
     {

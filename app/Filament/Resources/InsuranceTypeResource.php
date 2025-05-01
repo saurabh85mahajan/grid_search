@@ -2,23 +2,26 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\InsuranceCompanyResource\Pages;
-use App\Filament\Resources\InsuranceCompanyResource\RelationManagers;
-use App\Models\InsuranceCompany;
+use App\Filament\Resources\InsuranceTypeResource\Pages;
+use App\Filament\Resources\InsuranceTypeResource\RelationManagers;
+use App\Models\InsuranceType;
 use App\Traits\HasStatusColumn;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class InsuranceCompanyResource extends Resource
+class InsuranceTypeResource extends Resource
 {
     use HasStatusColumn;
 
-    protected static ?string $model = InsuranceCompany::class;
+    protected static ?string $model = InsuranceType::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Config Common';
+    protected static ?string $navigationGroup = 'Config 1';
 
     public static function form(Form $form): Form
     {
@@ -72,9 +75,9 @@ class InsuranceCompanyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInsuranceCompanies::route('/'),
-            'create' => Pages\CreateInsuranceCompany::route('/create'),
-            'edit' => Pages\EditInsuranceCompany::route('/{record}/edit'),
+            'index' => Pages\ListInsuranceTypes::route('/'),
+            'create' => Pages\CreateInsuranceType::route('/create'),
+            'edit' => Pages\EditInsuranceType::route('/{record}/edit'),
         ];
     }
 }

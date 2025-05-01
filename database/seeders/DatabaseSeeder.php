@@ -2,11 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Bank;
-use App\Models\FuelType;
-use App\Models\Product;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,12 +11,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
 
         $this->call([
             SalutationSeeder::class,
@@ -29,12 +18,19 @@ class DatabaseSeeder extends Seeder
             RegionSeeder::class,
             BusinessLockSeeder::class,
             InsuranceCompanySeeder::class,
-            Product::class,
+            ProductSeeder::class,
             NcbSeeder::class,
-            FuelType::class,
-            Bank::class,
+            FuelTypeSeeder::class,
+            BankSeeder::class,
             MakeSeeder::class,
             RtoSeeder::class,
+
+            BusinessTypeSeeder::class,
+            InsuranceTypeSeeder::class,
+            LifeInsuranceTypeSeeder::class,
+            HealthInsuranceTypeSeeder::class,
+            GeneralInsuranceTypeSeeder::class,
+            PremiumFrequencySeeder::class,
         ]);
     }
 }
