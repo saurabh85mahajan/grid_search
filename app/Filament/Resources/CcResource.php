@@ -59,7 +59,9 @@ class CcResource extends Resource
 									
 										Forms\Components\Select::make('salutation_id')
                                             ->label('Salutation')
-                                            ->relationship('salutation', 'name')
+                                            ->relationship('salutation', 'name', function ($query) {
+                                                return $query->active()->orderBy('id', 'asc');
+                                            })
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Salutation'),
