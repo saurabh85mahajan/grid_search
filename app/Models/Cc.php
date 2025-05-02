@@ -81,5 +81,21 @@ class Cc extends Model
     {
         return $this->belongsTo(Bank::class);
     }
+
+    public function getRegistrationNumberAttribute()
+    {
+        $parts = [
+            $this->registration_number_1,
+            $this->registration_number_2,
+            $this->registration_number_3,
+            $this->registration_number_4,
+        ];
+
+        // Filter out empty values (like registration_number_3 which might be optional)
+        $parts = array_filter($parts, fn($part) => !is_null($part) && $part !== '');
+        
+        // Join parts with spaces
+        return implode(' ', $parts);
+    }
 	
 }

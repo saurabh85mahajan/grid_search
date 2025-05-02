@@ -819,57 +819,78 @@ class CcResource extends Resource
             ->columns([
                 TextColumn::make('proposal_type')
                     ->formatStateUsing(function (Cc $record): string {
-                        return "{$record->proposal_type} {$record->posp}";
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->proposal_type}</div>
+                                <div class='text-sm text-gray-500'>{$record->posp}</div>
+                            </div>
+                        ";
                     })
                     ->html()
                     ->label('Proposal Type')
-                    ->searchable(['proposal_type', 'posp'])
-                    ->sortable(),
+                    ->searchable(['proposal_type', 'posp']),
 
                 TextColumn::make('first_name')
                     ->formatStateUsing(function (Cc $record): string {
-                        return "{$record->first_name} {$record->last_name}";
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->first_name} {$record->last_name}</div>
+                                <div class='text-sm text-gray-500'>{$record->phone}</div>
+                            </div>
+                        ";
                     })
                     ->html()
                     ->label('Name')
-                    ->searchable(['first_name', 'last_name'])
+                    ->searchable(['first_name', 'last_name', 'phone'])
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('make.name')
-                    ->label('Make')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('vehicle_model')
-                    ->label('Model')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('policy_number')
-                    ->label('Policy Number')
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('make')
+                    ->label('Vehicle Details')
+                    ->formatStateUsing(function (Cc $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->registration_number}</div>
+                                <div class='text-sm text-gray-500'>{$record->make->name}, {$record->vehicle_model}</div>
+                            </div>
+                        ";
+                    })
+                    ->html(),
                 Tables\Columns\TextColumn::make('insuranceCompany.name')
                     ->label('Insurance Company')
-                    ->sortable()
-                    ->searchable(),
+                    ->formatStateUsing(function (Cc $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->insuranceCompany->name}</div>
+                                <div class='text-sm text-gray-500'>{$record->policy_number}</div>
+                                <div class='text-xs text-gray-500'>Issued on: {$record->policy_issue_date }</div>
+                            </div>
+                        ";
+                    })
+                    ->html(),
+                TextColumn::make('total_premium')
+                    ->label('Total Premium')
+                    ->formatStateUsing(function (Cc $record): string {
+                        $totalPremium = number_format($record->total_premium, 2);
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>₹{$totalPremium}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime('d M, Y')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                (new static)->getStatusFilter(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    ...(new static)->getStatusBulkActions(),
-                ]),
+
             ]);
     }
 
