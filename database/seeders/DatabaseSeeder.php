@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             BusinessLockSeeder::class,
             InsuranceCompanySeeder::class,
             ProductSeeder::class,
+            ProductCategorySeeder::class,
             NcbSeeder::class,
             FuelTypeSeeder::class,
             BankSeeder::class,

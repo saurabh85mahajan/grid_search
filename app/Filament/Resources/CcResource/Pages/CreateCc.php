@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateCc extends CreateRecord
 {
     protected static string $resource = CcResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

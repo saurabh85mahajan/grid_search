@@ -85,7 +85,7 @@ return new class extends Migration
             $table->decimal('liab_cng', 10, 2)->nullable();
             $table->decimal('liab_passenger', 10, 2)->nullable();
             $table->decimal('liab_owner_driver', 10, 2)->nullable();
-            $table->decima('tax', 10, 2)->nullable();
+            $table->decimal('tax', 10, 2)->nullable();
             $table->decimal('tax_amount', 10, 2)->nullable();
             $table->decimal('total_premium', 10, 2)->nullable();
 			$table->decimal('od_percentage', 10, 2)->nullable();
