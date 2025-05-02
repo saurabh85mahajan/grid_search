@@ -6,6 +6,7 @@ use App\Filament\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\ProductCategory;
 use App\Traits\HasStatusColumn;
+use Carbon\Carbon;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,7 +16,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Checkbox;
-
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -516,7 +518,7 @@ class CcResource extends Resource
                                             ->required()
                                             ->rules(['regex:/^[a-zA-Z0-9]+$/'])
                                             ->validationMessages([
-                                                'required' => 'Please enter Engine Nu.',
+                                                'required' => 'Please enter Engine No.',
                                                 'regex' => 'Only Enter letters and numbers.'
                                             ])
                                             ->placeholder('Enter Engine No.'),
@@ -836,6 +838,7 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->first_name} {$record->last_name}</div>
                                 <div class='text-sm text-gray-500'>{$record->phone}</div>
+                                <div class='text-xs text-gray-500'>{$record->city->name }, {$record->zipcode}</div>
                             </div>
                         ";
                     })
@@ -851,9 +854,11 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->registration_number}</div>
                                 <div class='text-sm text-gray-500'>{$record->make->name}, {$record->vehicle_model}</div>
+                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type } Chasis: {$record->chasis }</div>
                             </div>
                         ";
                     })
+                    ->searchable(['engine_type', 'chasis', 'registration_number_1', 'registration_number_2', 'registration_number_3', 'registration_number_4'])
                     ->html(),
                 Tables\Columns\TextColumn::make('insuranceCompany.name')
                     ->label('Insurance Company')
@@ -866,6 +871,7 @@ class CcResource extends Resource
                             </div>
                         ";
                     })
+                    ->searchable(['policy_number'])
                     ->html(),
                 TextColumn::make('total_premium')
                     ->label('Total Premium')
@@ -885,6 +891,37 @@ class CcResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
+                Filter::make('created_at')
+                ->form([
+                    DatePicker::make('created_from'),
+                    DatePicker::make('created_until'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => 
+                                $query->where('created_at', '>=', Carbon::parse($date)->startOfDay()),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => 
+                                $query->where('created_at', '<=', Carbon::parse($date)->endOfDay()),
+                        );
+                })
+                ->indicateUsing(function (array $data): array {
+                    $indicators = [];
+                    
+                    if ($data['created_from'] ?? null) {
+                        $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                    }
+                    
+                    if ($data['created_until'] ?? null) {
+                        $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                    }
+                    
+                    return $indicators;
+                })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
