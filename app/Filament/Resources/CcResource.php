@@ -756,9 +756,17 @@ class CcResource extends Resource
                                 Forms\Components\Grid::make(3)
                                     ->schema([
 
-                                        Forms\Components\TextInput::make('payment_mode')
+                                        Forms\Components\Select::make('payment_mode')
                                             ->label('Payment Mode')
-                                            ->placeholder('Enter Payment Mode'),
+                                            ->options([
+                                                'card' => 'Card',
+                                                'cheque' => 'Cheque',
+                                                'dd' => 'DD',
+                                                'neft' => 'NEFT',
+                                                'other' => 'OTHER',
+                                            ])
+                                            ->live()
+                                            ->placeholder('Select Payment Mode'),
 
                                         Forms\Components\DatePicker::make('payment_date')
                                             ->label('Payment Date')
@@ -766,6 +774,9 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('cheque_trans_number')
                                             ->label('Other')
+                                            ->hidden(fn (Forms\Get $get): bool => 
+                                                in_array($get('payment_mode'), ['other'])
+                                            )
                                             ->placeholder('Enter Cheque/Trans Number'),
 
                                     ]),
@@ -781,10 +792,18 @@ class CcResource extends Resource
                                             )
                                             ->searchable()
                                             ->preload()
+                                            ->hidden(fn (Forms\Get $get): bool => 
+                                                in_array($get('payment_mode'), ['card', 'other'])
+                                            )
                                             ->placeholder('Select Bank'),
 
                                         Forms\Components\TextInput::make('payment_amount')
                                             ->label('Payment Amount')
+                                            ->numeric()
+                                            ->prefix('₹')
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter Payment Amount'),
                                     ]),
 
