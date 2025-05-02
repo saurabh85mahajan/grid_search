@@ -91,7 +91,7 @@ return new class extends Migration
 			$table->decimal('od_percentage', 10, 2)->nullable();
 			$table->decimal('tp_percentage', 10, 2)->nullable();
             $table->decimal('specific_amount', 10, 2)->nullable();
-            // $table->integer('add_on_coverages')->nullable();
+            $table->json('add_on_coverages')->nullable();
             
             // // Payment details
             $table->string('payment_mode')->nullable();

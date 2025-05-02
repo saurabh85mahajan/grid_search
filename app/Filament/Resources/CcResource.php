@@ -551,6 +551,7 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('od')
                                             ->label('OD')
+                                            ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
@@ -559,6 +560,7 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('add_on')
                                             ->label('Add On')
+                                            ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
@@ -567,6 +569,7 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('other')
                                             ->label('Other')
+                                            ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
@@ -579,6 +582,7 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('tp_premium')
                                             ->label('TP Premium')
+                                            ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
@@ -597,6 +601,7 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('tppd')
                                             ->label('TPPD(-)')
+                                            ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
@@ -610,6 +615,7 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('liab_cng')
                                             ->label('Liab CNG')
                                             ->numeric()
+                                            ->prefix('₹')
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
@@ -618,6 +624,7 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('liab_passenger')
                                             ->label('Liab Passenger')
                                             ->numeric()
+                                            ->prefix('₹')
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
@@ -626,6 +633,7 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('liab_owner_driver')
                                             ->label('Liab Owner Driver')
                                             ->numeric()
+                                            ->prefix('₹')
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
@@ -651,7 +659,8 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('tax_amount')
                                             ->label('Tax Amount')
                                             ->disabled()
-                                            ->dehydrated(true) 
+                                            ->prefix('₹')
+                                            ->dehydrated(true)
                                             ->extraAttributes([
                                                 'x-data' => '{}',
                                                 'x-init' => 'Alpine.effect(() => {
@@ -688,7 +697,8 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('total_premium')
                                             ->label('Total Premium')
                                             ->disabled()
-                                            ->dehydrated(true) ,
+                                            ->prefix('₹')
+                                            ->dehydrated(true),
                                     ]),
                                 Forms\Components\Grid::make(3)
                                     ->schema([
@@ -715,26 +725,28 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('specific_amount')
                                             ->label('Specific Amount')
                                             ->numeric()
+                                            ->prefix('₹')
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
                                             ->placeholder('Specific Amount'),
 
                                     ]),
-                                // Fieldset::make('Add On Coverages')
-                                //     ->schema([
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Nil Dep.'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Consumable'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Engine Protector'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Tyre Cover'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Ncb Protector'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('R21'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Keycover'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('RSA'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Lose of Personal Belongings'),
-                                //         Checkbox::make('add_on_coverages')->inline()->label('Spare Car'),
-                                //     ])
-                                //     ->columns(4),
+                                Forms\Components\CheckboxList::make('add_on_coverages')
+                                    ->label('Add On Coverages')
+                                    ->options([
+                                        'nil_dep' => 'Nil Dep.',
+                                        'consumable' => 'Consumable',
+                                        'engine_protector' => 'Engine Protector',
+                                        'tyre_cover' => 'Tyre Cover',
+                                        'ncb_protector' => 'Ncb Protector',
+                                        'r21' => 'R21',
+                                        'keycover' => 'Keycover',
+                                        'rsa' => 'RSA',
+                                        'personal_belongings' => 'Lose of Personal Belongings',
+                                        'spare_car' => 'Spare Car',
+                                    ])
+                                    ->columns(4),
 
                             ])->collapsible(),
 
