@@ -48,6 +48,9 @@ class CcResource extends Resource
                                             ])
                                             ->placeholder('Select Proposal Type')
                                             ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please select Proposal Type',
+                                            ])
                                             ->disabledOn('edit')
                                             ->live()
                                             ->columnSpan(1),
@@ -55,7 +58,10 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('last_year_entry_no')
                                             ->label('Last Year Entry No')
                                             ->required()
-                                            ->visible(fn (Forms\Get $get) => $get('proposal_type') === 'Renewal')
+                                            ->validationMessages([
+                                                'required' => 'Please enter Last Year Entry No',
+                                            ])
+                                            ->visible(fn(Forms\Get $get) => $get('proposal_type') === 'Renewal')
                                             ->columnSpan(1),
 
                                         Forms\Components\Select::make('posp')
@@ -65,6 +71,9 @@ class CcResource extends Resource
                                                 'Non POSP' => 'Non POSP',
                                             ])
                                             ->placeholder('Select POSP')
+                                            ->validationMessages([
+                                                'required' => 'Please select POSP',
+                                            ])
                                             ->required(),
                                     ]),
                             ])->collapsible(),
@@ -77,8 +86,11 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('salutation_id')
                                             ->label('Salutation')
-                                            ->relationship('salutation', 'name', 
-                                                modifyQueryUsing: fn(Builder $query) => $query->active()->orderBy('id', 'asc'))
+                                            ->relationship(
+                                                'salutation',
+                                                'name',
+                                                modifyQueryUsing: fn(Builder $query) => $query->active()->orderBy('id', 'asc')
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->extraAttributes(['style' => 'width: 100px;'])
@@ -88,6 +100,9 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('first_name')
                                             ->label('First Name')
                                             ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please enter First Name',
+                                            ])
                                             ->extraInputAttributes(['maxlength' => 50])
                                             ->columnSpan(4)
                                             ->placeholder('Enter First Name'),
@@ -112,6 +127,9 @@ class CcResource extends Resource
                                             ->label('Address')
                                             ->placeholder('Enter Address 1')
                                             ->columnSpan(6)
+                                            ->validationMessages([
+                                                'required' => 'Please enter Address',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('address_2')
@@ -133,7 +151,9 @@ class CcResource extends Resource
                                             ->numeric()
                                             ->minLength(6)
                                             ->maxLength(8)
-                                            ->extraInputAttributes(['maxlength' => 8])
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 8) this.value = this.value.slice(0, 8);'
+                                            ])
                                             ->placeholder('Enter Pin Code'),
 
                                         Forms\Components\Select::make('city_id')
@@ -142,12 +162,18 @@ class CcResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select City')
+                                            ->validationMessages([
+                                                'required' => 'Please select City',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('phone')
                                             ->label('Mobile')
                                             ->tel()
                                             ->placeholder('Enter Mobile Number')
+                                            ->validationMessages([
+                                                'required' => 'Please enter Mobile',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('email')
@@ -193,6 +219,9 @@ class CcResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Region')
+                                            ->validationMessages([
+                                                'required' => 'Please select Region',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\Select::make('business_lock_id')
@@ -201,6 +230,9 @@ class CcResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Bussiness Lock')
+                                            ->validationMessages([
+                                                'required' => 'Please select Business Lock',
+                                            ])
                                             ->required(),
 
                                     ]),
@@ -215,12 +247,18 @@ class CcResource extends Resource
                                             ->preload()
                                             ->columnSpan(4)
                                             ->placeholder('Select Insurance Company')
+                                            ->validationMessages([
+                                                'required' => 'Please select Insurance Company',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('policy_number')
                                             ->label('Policy No.')
                                             ->placeholder('Enter Policy No.')
                                             ->columnSpan(3)
+                                            ->validationMessages([
+                                                'required' => 'Please enter Policy No',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\DatePicker::make('policy_issue_date')
@@ -229,12 +267,18 @@ class CcResource extends Resource
                                             ->format('Y-m-d')
                                             ->maxDate(now())
                                             ->columnSpan(2)
+                                            ->validationMessages([
+                                                'required' => 'Please enter date',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('code')
                                             ->label('Code')
                                             ->placeholder('Enter Code')
                                             ->columnSpan(3)
+                                            ->validationMessages([
+                                                'required' => 'Please enter Code',
+                                            ])
                                             ->required(),
                                     ])->columns(12),
 
@@ -247,11 +291,17 @@ class CcResource extends Resource
                                             ->relationship('product', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                                             ->searchable()
                                             ->preload()
+                                            ->validationMessages([
+                                                'required' => 'Please select Product',
+                                            ])
                                             ->placeholder('Select Product'),
 
                                         Forms\Components\Select::make('product_category_id')
                                             ->label('Product Category')
                                             ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please select Product Category',
+                                            ])
                                             ->relationship('productCategory', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                                             ->searchable()
                                             ->preload()
@@ -272,12 +322,18 @@ class CcResource extends Resource
                                         Forms\Components\DatePicker::make('inception_date')
                                             ->label('Inception Date')
                                             ->format('Y-m-d')
+                                            ->validationMessages([
+                                                'required' => 'Please enter date',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\DatePicker::make('expiry_date')
                                             ->label('Expiry Date')
                                             ->format('Y-m-d')
                                             ->minDate(now())
+                                            ->validationMessages([
+                                                'required' => 'Please enter date',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\Select::make('ncb_id')
@@ -303,6 +359,8 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('idv')
                                             ->label('IDV')
+                                            ->extraInputAttributes(['maxlength' => 9])
+                                            ->rules(['regex:/^[a-zA-Z0-9]+$/'])
                                             ->placeholder('Enter IDV'),
 
                                     ]),
@@ -328,10 +386,12 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('tarrif_rate')
                                             ->label('Tariff Rate')
+                                            ->extraInputAttributes(['maxlength' => 6])
                                             ->placeholder('Enter Tariff Rate'),
 
                                         Forms\Components\TextInput::make('actual_tarrif')
                                             ->label('Actual Tariff')
+                                            ->extraInputAttributes(['maxlength' => 6])
                                             ->placeholder('Enter Actual Tariff'),
 
                                         Forms\Components\Checkbox::make('third_party')
@@ -348,12 +408,18 @@ class CcResource extends Resource
                                             ->relationship('make', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                                             ->searchable()
                                             ->preload()
+                                            ->validationMessages([
+                                                'required' => 'Please select Make',
+                                            ])
                                             ->placeholder('Select Make')
                                             ->required(),
 
                                         Forms\Components\TextInput::make('vehicle_model')
                                             ->label('Vehicle Model')
                                             ->placeholder('Enter Vehicle Model')
+                                            ->validationMessages([
+                                                'required' => 'Please select Model',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('vehicle_sub_model')
@@ -368,6 +434,9 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('cc')
                                             ->label('CC')
                                             ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 25) this.value = this.value.slice(0, 25);'
+                                            ])
                                             ->placeholder('Enter CC'),
 
                                         Forms\Components\Select::make('yom')
@@ -377,13 +446,16 @@ class CcResource extends Resource
                                             ->options(function () {
                                                 $currentYear = now()->year;
                                                 $years = [];
-                                                
+
                                                 for ($year = $currentYear; $year >= 1990; $year--) {
                                                     $years[$year] = $year;
                                                 }
-                                                
+
                                                 return $years;
                                             })
+                                            ->validationMessages([
+                                                'required' => 'Please select YOM',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\Select::make('fuel_type_id')
@@ -392,6 +464,9 @@ class CcResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Fuel Type')
+                                            ->validationMessages([
+                                                'required' => 'Please select Fuel Type',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('seating_capacity')
@@ -419,7 +494,7 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('registration_number_3')
                                             ->hiddenLabel()
-                                            ->extraInputAttributes(['maxlength' => 2])
+                                            ->extraInputAttributes(['maxlength' => 4])
                                             ->placeholder('AB'),
 
                                         Forms\Components\TextInput::make('registration_number_4')
@@ -437,13 +512,24 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('engine_type')
                                             ->label('Engine No.')
                                             ->minLength(5)
+                                            ->extraInputAttributes(['maxlength' => 25])
                                             ->required()
+                                            ->rules(['regex:/^[a-zA-Z0-9]+$/'])
+                                            ->validationMessages([
+                                                'required' => 'Please enter Engine Nu.',
+                                                'regex' => 'Only Enter letters and numbers.'
+                                            ])
                                             ->placeholder('Enter Engine No.'),
 
                                         Forms\Components\TextInput::make('chasis')
                                             ->label('Chasis')
                                             ->minLength(5)
+                                            ->extraInputAttributes(['maxlength' => 25])
                                             ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please enter Chasis',
+                                                'regex' => 'Only Enter letters and numbers.'
+                                            ])
                                             ->placeholder('Enter Chasis'),
 
                                         Forms\Components\Select::make('rto_id')
@@ -465,14 +551,26 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('od')
                                             ->label('OD')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter OD'),
 
                                         Forms\Components\TextInput::make('add_on')
                                             ->label('Add On')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter Add On'),
 
                                         Forms\Components\TextInput::make('other')
                                             ->label('Other')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
+                                            ])
                                             ->placeholder('Enter Other'),
 
                                     ]),
@@ -481,21 +579,28 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('tp_premium')
                                             ->label('TP Premium')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter OD'),
 
                                         Forms\Components\Select::make('tp_tax')
                                             ->label('TP Tax')
-                                            ->placeholder('Enter TP Tax')
+                                            ->placeholder('Select TP Tax')
                                             ->options([
-                                                1 => 1,
-                                                2 => 2,
-                                                3 => 3,
-                                                4 => 4,
-                                                5 => 5
+                                                12 => 12,
+                                                13 => 13,
+                                                18 => 18,
+                                                19 => 19,
                                             ]),
 
                                         Forms\Components\TextInput::make('tppd')
-                                            ->label('TPPD')
+                                            ->label('TPPD(-)')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
+                                            ])
                                             ->placeholder('Enter Other'),
 
                                     ]),
@@ -504,14 +609,26 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('liab_cng')
                                             ->label('Liab CNG')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter Liab CNG'),
 
                                         Forms\Components\TextInput::make('liab_passenger')
                                             ->label('Liab Passenger')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter Liab Passenger'),
 
                                         Forms\Components\TextInput::make('liab_owner_driver')
                                             ->label('Liab Owner Driver')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
                                             ->placeholder('Enter Liab Owner Driver'),
 
                                     ]),
@@ -522,37 +639,102 @@ class CcResource extends Resource
                                             ->label('Tax')
                                             ->placeholder('Select Tax')
                                             ->options([
-                                                1 => 1,
-                                                2 => 2,
-                                                3 => 3,
-                                                4 => 4,
-                                                5 => 5
+                                                "1.5" => 1.5,
+                                                "1.8" => 1.8,
+                                                "2.25" => 2.25,
+                                                "4.5" => 4.5,
+                                                "12.6" => 12.6,
+                                                "15" => 15,
+                                                "18" => 18,
                                             ]),
 
                                         Forms\Components\TextInput::make('tax_amount')
                                             ->label('Tax Amount')
-                                            ->placeholder('Enter tax_amount'),
+                                            ->disabled()
+                                            ->dehydrated(true) 
+                                            ->extraAttributes([
+                                                'x-data' => '{}',
+                                                'x-init' => 'Alpine.effect(() => {
+                                                    // Get field values
+                                                    const odPremium = parseInt($wire.get("data.od") || 0);
+                                                    const addOnPremium = parseInt($wire.get("data.add_on") || 0);
+                                                    const otherPremium = parseInt($wire.get("data.other") || 0);
+                                                    const liabCng = parseInt($wire.get("data.liab_cng") || 0);
+                                                    const liabOwnerDriver = parseInt($wire.get("data.liab_owner_driver") || 0);
+                                                    const liabPassenger = parseInt($wire.get("data.liab_passenger") || 0);
+                                                    
+                                                    const amount1 = odPremium + addOnPremium + otherPremium + liabCng + liabOwnerDriver + liabPassenger;
+
+                                                    const tpPremium = parseInt($wire.get("data.tp_premium") || 0);
+                                                    const tppd = parseInt($wire.get("data.tppd") || 0);
+                                                    const tpTax = parseInt($wire.get("data.tp_tax") || 0);
+
+                                                    const tpgsAmount = ((tpPremium -tppd) * tpTax) / 100;
+                                                    const sTax = $wire.get("data.tax") || 0;
+
+                                                    const serviceTax = ((amount1 * sTax) / 100) + tpgsAmount;
+
+                                                    const premiumAmount = amount1 + tpPremium + serviceTax - tppd;
+
+                                                    const formattedTaxAmount = serviceTax.toFixed(2);
+                                                    const formattedPremiumAmount = premiumAmount.toFixed(2);
+                                                    
+                                                    // Set the value
+                                                    $wire.set("data.tax_amount", formattedTaxAmount);
+                                                    $wire.set("data.total_premium", formattedPremiumAmount);
+                                                })'
+                                            ]),
 
                                         Forms\Components\TextInput::make('total_premium')
                                             ->label('Total Premium')
-                                            ->placeholder('Enter Total Premium'),
+                                            ->disabled()
+                                            ->dehydrated(true) ,
+                                    ]),
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('od_percentage')
+                                            ->label('OD%')
+                                            ->numeric()
+                                            ->maxValue(100)
+                                            ->minValue(1)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                            ])
+                                            ->placeholder('OD(%)'),
+
+                                        Forms\Components\TextInput::make('tp_percentage')
+                                            ->label('TP%')
+                                            ->numeric()
+                                            ->maxValue(100)
+                                            ->minValue(1)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                            ])
+                                            ->placeholder('TP(%)'),
+
+                                        Forms\Components\TextInput::make('specific_amount')
+                                            ->label('Specific Amount')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Specific Amount'),
 
                                     ]),
-
-                                Fieldset::make('Add On Coverages')
-                                    ->schema([
-                                        Checkbox::make('add_on_coverages')->inline()->label('Nil Dep.'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Consumable'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Engine Protector'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Tyre Cover'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Ncb Protector'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('R21'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Keycover'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('RSA'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Lose of Personal Belongings'),
-                                        Checkbox::make('add_on_coverages')->inline()->label('Spare Car'),
-                                    ])
-                                    ->columns(4),
+                                // Fieldset::make('Add On Coverages')
+                                //     ->schema([
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Nil Dep.'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Consumable'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Engine Protector'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Tyre Cover'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Ncb Protector'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('R21'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Keycover'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('RSA'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Lose of Personal Belongings'),
+                                //         Checkbox::make('add_on_coverages')->inline()->label('Spare Car'),
+                                //     ])
+                                //     ->columns(4),
 
                             ])->collapsible(),
 

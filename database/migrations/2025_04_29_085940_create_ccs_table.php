@@ -80,18 +80,18 @@ return new class extends Migration
             $table->decimal('add_on', 10, 2)->nullable();
             $table->decimal('other', 10, 2)->nullable();
             $table->decimal('tp_premium', 10, 2)->nullable();
-            $table->integer('tp_tax')->nullable();
-            $table->integer('tppd')->nullable();
-            $table->integer('liab_cng')->nullable();
-            $table->integer('liab_passenger')->nullable();
-            $table->integer('liab_owner_driver')->nullable();
-            $table->integer('tax')->nullable();
+            $table->decimal('tp_tax', 10, 2)->nullable();
+            $table->decimal('tppd', 10, 2)->nullable();
+            $table->decimal('liab_cng', 10, 2)->nullable();
+            $table->decimal('liab_passenger', 10, 2)->nullable();
+            $table->decimal('liab_owner_driver', 10, 2)->nullable();
+            $table->decima('tax', 10, 2)->nullable();
             $table->decimal('tax_amount', 10, 2)->nullable();
             $table->decimal('total_premium', 10, 2)->nullable();
 			$table->decimal('od_percentage', 10, 2)->nullable();
 			$table->decimal('tp_percentage', 10, 2)->nullable();
             $table->decimal('specific_amount', 10, 2)->nullable();
-            $table->integer('add_on_coverages')->nullable();
+            // $table->integer('add_on_coverages')->nullable();
             
             // // Payment details
             $table->string('payment_mode')->nullable();
