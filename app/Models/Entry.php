@@ -7,5 +7,47 @@ use Illuminate\Database\Eloquent\Model;
 class Entry extends Model
 {
     //
+	protected $table = 'entries';
     protected $guarded = [];
+	
+	public function businessType()
+    {
+        return $this->belongsTo(BusinessType::class);
+    }
+	
+	public function insuranceCompany()
+    {
+        return $this->belongsTo(InsuranceCompany::class);
+    }
+	
+	public function insuranceType()
+    {
+        return $this->belongsTo(InsuranceType::class);
+    }
+	
+	public function lifeInsuranceType()
+    {
+        return $this->belongsTo(LifeInsuranceType::class);
+    }
+	
+	public function healthInsuranceType()
+    {
+        return $this->belongsTo(HealthInsuranceType::class);
+    }
+	
+	public function generalInsuranceType()
+    {
+        return $this->belongsTo(GeneralInsuranceType::class);
+    }
+	
+	public function make()
+    {
+        return $this->belongsTo(Make::class);
+    }
+	
+	public function premiumFrequency()
+    {
+        return $this->belongsTo(PremiumFrequency::class);
+    }
+	
 }
