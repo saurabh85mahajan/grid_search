@@ -540,6 +540,7 @@ class CcResource extends Resource
                                         Forms\Components\Select::make('rto_id')
                                             ->label('RTO')
                                             ->relationship('rto', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
+                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select RTO'),
@@ -1276,7 +1277,7 @@ class CcResource extends Resource
                                                     ->label('Chasis')
                                                     ->copyable(),
                                                 
-                                                TextEntry::make('rto.name')
+                                                TextEntry::make('rto.full_name')
                                                     ->label('RTO'),
                                             ]),
                                     ])

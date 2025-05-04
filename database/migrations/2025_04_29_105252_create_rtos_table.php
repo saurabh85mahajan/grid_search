@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('rtos', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
+            $table->string('code');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
