@@ -776,7 +776,8 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('cheque_trans_number')
                                             ->label('Other')
-                                            ->hidden(fn (Forms\Get $get): bool => 
+                                            ->hidden(
+                                                fn(Forms\Get $get): bool =>
                                                 in_array($get('payment_mode'), ['other'])
                                             )
                                             ->placeholder('Enter Cheque/Trans Number'),
@@ -794,7 +795,8 @@ class CcResource extends Resource
                                             )
                                             ->searchable()
                                             ->preload()
-                                            ->hidden(fn (Forms\Get $get): bool => 
+                                            ->hidden(
+                                                fn(Forms\Get $get): bool =>
                                                 in_array($get('payment_mode'), ['card', 'other'])
                                             )
                                             ->placeholder('Select Bank'),
@@ -838,7 +840,7 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->first_name} {$record->last_name}</div>
                                 <div class='text-sm text-gray-500'>{$record->phone}</div>
-                                <div class='text-xs text-gray-500'>{$record->city->name }, {$record->zipcode}</div>
+                                <div class='text-xs text-gray-500'>{$record->city->name}, {$record->zipcode}</div>
                             </div>
                         ";
                     })
@@ -854,7 +856,7 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->registration_number}</div>
                                 <div class='text-sm text-gray-500'>{$record->make->name}, {$record->vehicle_model}</div>
-                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type } Chasis: {$record->chasis }</div>
+                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type} Chasis: {$record->chasis}</div>
                             </div>
                         ";
                     })
@@ -867,7 +869,7 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->insuranceCompany->name}</div>
                                 <div class='text-sm text-gray-500'>{$record->policy_number}</div>
-                                <div class='text-xs text-gray-500'>Issued on: {$record->policy_issue_date }</div>
+                                <div class='text-xs text-gray-500'>Issued on: {$record->policy_issue_date}</div>
                             </div>
                         ";
                     })
@@ -892,43 +894,110 @@ class CcResource extends Resource
             ])
             ->filters([
                 Filter::make('created_at')
-                ->form([
-                    DatePicker::make('created_from'),
-                    DatePicker::make('created_until'),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['created_from'],
-                            fn (Builder $query, $date): Builder => 
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder =>
                                 $query->where('created_at', '>=', Carbon::parse($date)->startOfDay()),
-                        )
-                        ->when(
-                            $data['created_until'],
-                            fn (Builder $query, $date): Builder => 
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder =>
                                 $query->where('created_at', '<=', Carbon::parse($date)->endOfDay()),
-                        );
-                })
-                ->indicateUsing(function (array $data): array {
-                    $indicators = [];
-                    
-                    if ($data['created_from'] ?? null) {
-                        $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
-                    }
-                    
-                    if ($data['created_until'] ?? null) {
-                        $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
-                    }
-                    
-                    return $indicators;
-                })
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->headerActions([
+                Tables\Actions\Action::make('exportCsv')
+                    ->label('Download as CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($livewire) {
+                        // Get the active filters
+                        $search = $livewire->tableSearch;
 
-            ]);
+                        // You can also get the filter forms data
+                        $filters = $livewire->tableFiltersForm->getState();
+
+                        // Build query
+                        $query = CC::query();
+
+                        // Apply search
+                        if (!empty($search)) {
+                            $query->where(function ($q) use ($search) {
+                                $q->where('proposal_type', 'like', "%{$search}%")
+                                    ->orWhere('posp', 'like', "%{$search}%")
+                                    ->orWhere('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('phone', 'like', "%{$search}%")
+                                    ->orWhere('engine_type', 'like', "%{$search}%")
+                                    ->orWhere('chasis', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_1', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_2', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_3', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_4', 'like', "%{$search}%")
+                                    ->orWhere('policy_number', 'like', "%{$search}%");
+                            });
+                        }
+
+                        // Apply filters
+                        if (!empty($filters['created_from'])) {
+                            $query->where('created_at', '>=', Carbon::parse($filters['created_from'])->startOfDay());
+                        }
+
+                        if (!empty($filters['created_until'])) {
+                            $query->where('created_at', '<=', Carbon::parse($filters['created_until'])->endOfDay());
+                        }
+
+                        // Select only the required columns
+                        $data = $query->select('id', 'first_name', 'last_name', 'created_at')->get();
+
+                        $headers = ['ID', 'First Name', 'Last Name', 'Created At'];
+
+                        $csvContent = implode(',', $headers) . "\n";
+
+                        foreach ($data as $row) {
+                            $csvContent .= implode(',', [
+                                $row->id,
+                                '"' . str_replace('"', '""', $row->first_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->last_name ?? '') . '"',
+                                $row->created_at
+                            ]) . "\n";
+                        }
+
+                        // Create a temporary file
+                        $tempFile = tempnam(sys_get_temp_dir(), 'csv');
+                        file_put_contents($tempFile, $csvContent);
+
+                        // Return a download response
+                        return response()->download(
+                            $tempFile,
+                            'export-' . date('Y-m-d-H-i-s') . '.csv',
+                            ['Content-Type' => 'text/csv']
+                        )->deleteFileAfterSend();
+                    })
+            ])
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
