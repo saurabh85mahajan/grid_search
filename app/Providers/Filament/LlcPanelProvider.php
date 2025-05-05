@@ -7,6 +7,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -18,31 +19,28 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class PpcPanelProvider extends PanelProvider
+class LlcPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default(false)
-            ->id('ppc')
-            ->path('ppc')
+            ->id('llc')
+            ->path('llc')
             ->favicon(asset('favicon.ico'))
             // ->brandLogo(asset('images/logo.svg'))
             ->brandLogoHeight('3.5rem')
-            ->brandName('PPC')
+            ->brandName('LLC')
             ->login()
-            // ->viteTheme([
-            //     'resources/css/filament.css',
-            // ])
             ->colors([
                 'primary' => Color::Blue,
             ])
-            ->discoverResources(in: app_path('Filament/Ppc/Resources'), for: 'App\\Filament\\Ppc\\Resources')
-            ->discoverPages(in: app_path('Filament/Ppc/Pages'), for: 'App\\Filament\\Ppc\\Pages')
+            ->discoverResources(in: app_path('Filament/Llc/Resources'), for: 'App\\Filament\\Llc\\Resources')
+            ->discoverPages(in: app_path('Filament/Llc/Pages'), for: 'App\\Filament\\Llc\\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Ppc/Widgets'), for: 'App\\Filament\\Ppc\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Llc/Widgets'), for: 'App\\Filament\\Llc\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
@@ -57,7 +55,7 @@ class PpcPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                \App\Http\Middleware\EnsureUserIsPpc::class,
+                \App\Http\Middleware\EnsureUserIsLlc::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

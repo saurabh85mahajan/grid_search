@@ -28,6 +28,13 @@ class DevDbSeeder extends Seeder
             'organisation_id' => 2,
         ]);
 
+        User::create([
+            'name' => 'Admin LLC',
+            'email' => 'admin1@admin.com',
+            'password' => Hash::make('admin123'),
+            'organisation_id' => 1,
+        ]);
+
         Cc::factory()->count(10)->create();
         
     }
