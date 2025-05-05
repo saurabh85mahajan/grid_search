@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Llc\Resources;
 
-use App\Filament\Resources\CcResource\Pages;
+use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\ProductCategory;
 use App\Traits\HasStatusColumn;
 use Carbon\Carbon;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,12 +14,16 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Infolist;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Illuminate\Database\Eloquent\Builder;
-
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Filters\SelectFilter;
 
 class CcResource extends Resource
 {
@@ -42,6 +45,9 @@ class CcResource extends Resource
                             ->schema([
                                 Forms\Components\Grid::make(3)
                                     ->schema([
+                                        Forms\Components\Hidden::make("user_id")
+                                            ->default(auth()->user()->id)
+                                            ->dehydrated(fn ($state, $record) => $record === null),
                                         Forms\Components\Select::make('proposal_type')
                                             ->label('Proposal type')
                                             ->options([
@@ -486,12 +492,18 @@ class CcResource extends Resource
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 2])
                                             ->placeholder('GJ')
+                                            ->validationMessages([
+                                                'required' => 'Required',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('registration_number_2')
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 2])
                                             ->placeholder('01')
+                                            ->validationMessages([
+                                                'required' => 'Required',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('registration_number_3')
@@ -503,6 +515,9 @@ class CcResource extends Resource
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 4])
                                             ->placeholder('1234')
+                                            ->validationMessages([
+                                                'required' => 'Required',
+                                            ])
                                             ->required(),
                                     ])
                                     ->columns(4)
@@ -537,6 +552,7 @@ class CcResource extends Resource
                                         Forms\Components\Select::make('rto_id')
                                             ->label('RTO')
                                             ->relationship('rto', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
+                                            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select RTO'),
@@ -776,7 +792,8 @@ class CcResource extends Resource
 
                                         Forms\Components\TextInput::make('cheque_trans_number')
                                             ->label('Other')
-                                            ->hidden(fn (Forms\Get $get): bool => 
+                                            ->hidden(
+                                                fn(Forms\Get $get): bool =>
                                                 in_array($get('payment_mode'), ['other'])
                                             )
                                             ->placeholder('Enter Cheque/Trans Number'),
@@ -794,7 +811,8 @@ class CcResource extends Resource
                                             )
                                             ->searchable()
                                             ->preload()
-                                            ->hidden(fn (Forms\Get $get): bool => 
+                                            ->hidden(
+                                                fn(Forms\Get $get): bool =>
                                                 in_array($get('payment_mode'), ['card', 'other'])
                                             )
                                             ->placeholder('Select Bank'),
@@ -829,7 +847,7 @@ class CcResource extends Resource
                         ";
                     })
                     ->html()
-                    ->label('Proposal Type')
+                    ->label('Type')
                     ->searchable(['proposal_type', 'posp']),
 
                 TextColumn::make('first_name')
@@ -838,12 +856,12 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->first_name} {$record->last_name}</div>
                                 <div class='text-sm text-gray-500'>{$record->phone}</div>
-                                <div class='text-xs text-gray-500'>{$record->city->name }, {$record->zipcode}</div>
+                                <div class='text-xs text-gray-500'>{$record->city->name}, {$record->zipcode}</div>
                             </div>
                         ";
                     })
                     ->html()
-                    ->label('Name')
+                    ->label('Client Name')
                     ->searchable(['first_name', 'last_name', 'phone'])
                     ->sortable(),
 
@@ -854,24 +872,27 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->registration_number}</div>
                                 <div class='text-sm text-gray-500'>{$record->make->name}, {$record->vehicle_model}</div>
-                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type } Chasis: {$record->chasis }</div>
+                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type}</div>
+                                <div class='text-xs text-gray-500'>Chasis: {$record->chasis}</div>
                             </div>
                         ";
                     })
                     ->searchable(['engine_type', 'chasis', 'registration_number_1', 'registration_number_2', 'registration_number_3', 'registration_number_4'])
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->html(),
                 Tables\Columns\TextColumn::make('insuranceCompany.name')
-                    ->label('Insurance Company')
+                    ->label('Insurance')
                     ->formatStateUsing(function (Cc $record): string {
                         return "
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->insuranceCompany->name}</div>
                                 <div class='text-sm text-gray-500'>{$record->policy_number}</div>
-                                <div class='text-xs text-gray-500'>Issued on: {$record->policy_issue_date }</div>
+                                <div class='text-xs text-gray-500'>Issued on: {$record->policy_issue_date}</div>
                             </div>
                         ";
                     })
                     ->searchable(['policy_number'])
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->html(),
                 TextColumn::make('total_premium')
                     ->label('Total Premium')
@@ -885,6 +906,9 @@ class CcResource extends Resource
                     })
                     ->html()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Agent')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M, Y')
                     ->sortable()
@@ -892,43 +916,124 @@ class CcResource extends Resource
             ])
             ->filters([
                 Filter::make('created_at')
-                ->form([
-                    DatePicker::make('created_from'),
-                    DatePicker::make('created_until'),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['created_from'],
-                            fn (Builder $query, $date): Builder => 
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder =>
                                 $query->where('created_at', '>=', Carbon::parse($date)->startOfDay()),
-                        )
-                        ->when(
-                            $data['created_until'],
-                            fn (Builder $query, $date): Builder => 
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder =>
                                 $query->where('created_at', '<=', Carbon::parse($date)->endOfDay()),
-                        );
-                })
-                ->indicateUsing(function (array $data): array {
-                    $indicators = [];
-                    
-                    if ($data['created_from'] ?? null) {
-                        $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
-                    }
-                    
-                    if ($data['created_until'] ?? null) {
-                        $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
-                    }
-                    
-                    return $indicators;
-                })
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
+                    SelectFilter::make('agent')
+                        ->label('Agent')
+                        ->relationship('user', 'name', function (Builder $query) {
+                            return $query->where('organisation_id', 1);
+                        })
+                        ->preload() // Preload options instead of lazy-loading
+                        ->searchable() // Add search capability for larger lists
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn ($record) => $record->user_id === auth()->id()),
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
+            ->headerActions([
+                Tables\Actions\Action::make('exportCsv')
+                    ->label('Download as CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($livewire) {
+                        // Get the active filters
+                        $search = $livewire->tableSearch;
 
-            ]);
+                        // You can also get the filter forms data
+                        $filters = $livewire->tableFiltersForm->getState();
+
+                        // Build query
+                        $query = CC::query();
+
+                        // Apply search
+                        if (!empty($search)) {
+                            $query->where(function ($q) use ($search) {
+                                $q->where('proposal_type', 'like', "%{$search}%")
+                                    ->orWhere('posp', 'like', "%{$search}%")
+                                    ->orWhere('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%")
+                                    ->orWhere('phone', 'like', "%{$search}%")
+                                    ->orWhere('engine_type', 'like', "%{$search}%")
+                                    ->orWhere('chasis', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_1', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_2', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_3', 'like', "%{$search}%")
+                                    ->orWhere('registration_number_4', 'like', "%{$search}%")
+                                    ->orWhere('policy_number', 'like', "%{$search}%");
+                            });
+                        }
+
+                        // Apply filters
+                        if (!empty($filters['created_from'])) {
+                            $query->where('created_at', '>=', Carbon::parse($filters['created_from'])->startOfDay());
+                        }
+
+                        if (!empty($filters['created_until'])) {
+                            $query->where('created_at', '<=', Carbon::parse($filters['created_until'])->endOfDay());
+                        }
+
+                        if (!empty($filters['agent']['value'])) {
+                            $query->where('user_id', $filters['agent']['value']);
+                        }
+
+                        // Select only the required columns
+                        $data = $query->select('id', 'first_name', 'last_name', 'created_at')->get();
+
+                        //Todo Add All Columns.
+                        $headers = ['ID', 'First Name', 'Last Name', 'Created At'];
+
+                        $csvContent = implode(',', $headers) . "\n";
+
+                        foreach ($data as $row) {
+                            $csvContent .= implode(',', [
+                                $row->id,
+                                '"' . str_replace('"', '""', $row->first_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->last_name ?? '') . '"',
+                                $row->created_at
+                            ]) . "\n";
+                        }
+
+                        // Create a temporary file
+                        $tempFile = tempnam(sys_get_temp_dir(), 'csv');
+                        file_put_contents($tempFile, $csvContent);
+
+                        // Return a download response
+                        return response()->download(
+                            $tempFile,
+                            'export-' . date('Y-m-d-H-i-s') . '.csv',
+                            ['Content-Type' => 'text/csv']
+                        )->deleteFileAfterSend();
+                    })
+            ])
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -938,12 +1043,447 @@ class CcResource extends Resource
         ];
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('CC Entry')
+                    ->schema([
+                        // Proposal Information
+                        Section::make('Proposal Information')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('proposal_type')
+                                            ->label('Proposal type')
+                                            ->badge()
+                                            ->color(fn(string $state): string => match ($state) {
+                                                'Fresh' => 'success',
+                                                'Renewal' => 'warning',
+                                                default => 'gray',
+                                            }),
+
+                                        TextEntry::make('last_year_entry_no')
+                                            ->label('Last Year Entry No')
+                                            ->visible(fn($record) => $record->proposal_type === 'Renewal'),
+
+                                        TextEntry::make('posp')
+                                            ->label('Product Posp')
+                                            ->badge()
+                                            ->color(fn(string $state): string => match ($state) {
+                                                'POSP' => 'success',
+                                                'Non POSP' => 'warning',
+                                                default => 'gray',
+                                            }),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // Client Details
+                        Section::make('Client Details')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('full_name')
+                                            ->label('Client Name')
+                                            ->state(
+                                                fn($record) =>
+                                                trim(($record->salutation?->name ?? '') . ' ' .
+                                                    ($record->first_name ?? '') . ' ' .
+                                                    ($record->middle_name ?? '') . ' ' .
+                                                    ($record->last_name ?? ''))
+                                            )
+                                            ->weight(FontWeight::Bold),
+
+                                        TextEntry::make('email')
+                                            ->label('Email')
+                                            ->icon('heroicon-m-envelope')
+                                            ->copyable(),
+
+                                        TextEntry::make('phone')
+                                            ->label('Mobile')
+                                            ->icon('heroicon-m-device-phone-mobile')
+                                            ->copyable(),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('full_address')
+                                            ->label('Address')
+                                            ->state(
+                                                fn($record) =>
+                                                implode(', ', array_filter([
+                                                    $record->address_1,
+                                                    $record->address_2,
+                                                    $record->address_3,
+                                                    $record->city?->name,
+                                                    $record->zipcode
+                                                ]))
+                                            ),
+
+                                        TextEntry::make('zipcode')
+                                            ->label('Pin Code')
+                                            ->badge(),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // Nominee Details
+                        Section::make('Nominee Details')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('relationship')
+                                            ->label('Nominee Rel.'),
+
+                                        TextEntry::make('nominee_name')
+                                            ->label('Nominee Name'),
+
+                                        TextEntry::make('nominee_dob')
+                                            ->label('Nominee DOB')
+                                            ->date(),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // Policy Details
+                        Section::make('Policy Details')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('region.name')
+                                            ->label('Region')
+                                            ->badge(),
+
+                                        TextEntry::make('businessLock.name')
+                                            ->label('Business Lock')
+                                            ->badge(),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('insuranceCompany.name')
+                                            ->label('Insurance Company')
+                                            ->weight(FontWeight::Bold),
+
+                                        TextEntry::make('policy_number')
+                                            ->label('Policy No.')
+                                            ->copyable()
+                                            ->badge()
+                                            ->color('success'),
+
+                                        TextEntry::make('policy_issue_date')
+                                            ->label('Policy Issue Date')
+                                            ->date(),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('product.name')
+                                            ->label('Product')
+                                            ->badge(),
+
+                                        TextEntry::make('productCategory.name')
+                                            ->label('Product Category')
+                                            ->badge(),
+
+                                        TextEntry::make('risk_category')
+                                            ->label('Risk Category'),
+                                    ]),
+
+                                Grid::make(4)
+                                    ->schema([
+                                        TextEntry::make('inception_date')
+                                            ->label('Inception Date')
+                                            ->date(),
+
+                                        TextEntry::make('expiry_date')
+                                            ->label('Expiry Date')
+                                            ->date()
+                                            ->color(
+                                                fn($state) =>
+                                                $state && \Carbon\Carbon::parse($state)->isPast()
+                                                    ? 'danger'
+                                                    : 'success'
+                                            ),
+
+                                        TextEntry::make('ncb.name')
+                                            ->label('NCB')
+                                            ->badge(),
+
+                                        TextEntry::make('code')
+                                            ->label('Code'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('tp_inception_date')
+                                            ->label('TP Inception Date')
+                                            ->date(),
+
+                                        TextEntry::make('tp_expiry_date')
+                                            ->label('TP Expiry Date')
+                                            ->date(),
+
+                                        TextEntry::make('idv')
+                                            ->label('IDV'),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('py_insurance_company.name')
+                                            ->label('PY Ins. Comp.'),
+
+                                        TextEntry::make('py_policy_number')
+                                            ->label('PY Policy No.'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('tarrif_rate')
+                                            ->label('Tariff Rate')
+                                            ->suffix('%'),
+
+                                        TextEntry::make('actual_tarrif')
+                                            ->label('Actual Tariff')
+                                            ->suffix('%'),
+
+                                        IconEntry::make('third_party')
+                                            ->label('Third Party')
+                                            ->boolean(),
+                                    ]),
+
+                                // Vehicle Details
+                                Section::make('Vehicle Details')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('make.name')
+                                                    ->label('Make')
+                                                    ->badge(),
+
+                                                TextEntry::make('vehicle_model')
+                                                    ->label('Vehicle Model'),
+
+                                                TextEntry::make('vehicle_sub_model')
+                                                    ->label('Vehicle Sub Model'),
+                                            ]),
+
+                                        Grid::make(4)
+                                            ->schema([
+                                                TextEntry::make('cc')
+                                                    ->label('CC'),
+
+                                                TextEntry::make('yom')
+                                                    ->label('YOM')
+                                                    ->badge(),
+
+                                                TextEntry::make('fuelType.name')
+                                                    ->label('Fuel Type')
+                                                    ->badge(),
+
+                                                TextEntry::make('seating_capacity')
+                                                    ->label('Seating Capacity'),
+                                            ]),
+
+                                        TextEntry::make('registration_number')
+                                            ->label('Registration Number')
+                                            ->state(
+                                                fn($record) =>
+                                                trim(
+                                                    ($record->registration_number_1 ?? '') . '-' .
+                                                        ($record->registration_number_2 ?? '') . '-' .
+                                                        ($record->registration_number_3 ?? '') . '-' .
+                                                        ($record->registration_number_4 ?? '')
+                                                )
+                                            )
+                                            ->badge()
+                                            ->color('primary')
+                                            ->copyable(),
+
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('engine_type')
+                                                    ->label('Engine No.')
+                                                    ->copyable(),
+
+                                                TextEntry::make('chasis')
+                                                    ->label('Chasis')
+                                                    ->copyable(),
+
+                                                TextEntry::make('rto.full_name')
+                                                    ->label('RTO'),
+                                            ]),
+                                    ])
+                                    ->collapsible(),
+                            ])
+                            ->collapsible(),
+
+                        // Premium Details
+                        Section::make('Premium Details')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('od')
+                                            ->label('OD')
+                                            ->money('INR'),
+
+                                        TextEntry::make('add_on')
+                                            ->label('Add On')
+                                            ->money('INR'),
+
+                                        TextEntry::make('other')
+                                            ->label('Other')
+                                            ->money('INR'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('tp_premium')
+                                            ->label('TP Premium')
+                                            ->money('INR'),
+
+                                        TextEntry::make('tp_tax')
+                                            ->label('TP Tax')
+                                            ->suffix('%'),
+
+                                        TextEntry::make('tppd')
+                                            ->label('TPPD(-)')
+                                            ->money('INR'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('liab_cng')
+                                            ->label('Liab CNG')
+                                            ->money('INR'),
+
+                                        TextEntry::make('liab_passenger')
+                                            ->label('Liab Passenger')
+                                            ->money('INR'),
+
+                                        TextEntry::make('liab_owner_driver')
+                                            ->label('Liab Owner Driver')
+                                            ->money('INR'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('tax')
+                                            ->label('Tax')
+                                            ->suffix('%'),
+
+                                        TextEntry::make('tax_amount')
+                                            ->label('Tax Amount')
+                                            ->money('INR'),
+
+                                        TextEntry::make('total_premium')
+                                            ->label('Total Premium')
+                                            ->money('INR')
+                                            ->weight(FontWeight::Bold)
+                                            ->size('lg')
+                                            ->color('success'),
+                                    ]),
+
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('od_percentage')
+                                            ->label('OD%')
+                                            ->suffix('%'),
+
+                                        TextEntry::make('tp_percentage')
+                                            ->label('TP%')
+                                            ->suffix('%'),
+
+                                        TextEntry::make('specific_amount')
+                                            ->label('Specific Amount')
+                                            ->money('INR'),
+                                    ]),
+
+                                TextEntry::make('add_on_coverages')
+                                    ->label('Add On Coverages')
+                                    ->formatStateUsing(function ($state) {
+                                        if (!$state) return 'None';
+
+                                        $labels = [
+                                            'nil_dep' => 'Nil Dep.',
+                                            'consumable' => 'Consumable',
+                                            'engine_protector' => 'Engine Protector',
+                                            'tyre_cover' => 'Tyre Cover',
+                                            'ncb_protector' => 'Ncb Protector',
+                                            'r21' => 'R21',
+                                            'keycover' => 'Keycover',
+                                            'rsa' => 'RSA',
+                                            'personal_belongings' => 'Lose of Personal Belongings',
+                                            'spare_car' => 'Spare Car',
+                                        ];
+
+                                        // Convert array to string
+                                        if (is_array($state)) {
+                                            $formattedLabels = collect($state)
+                                                ->map(fn($item) => $labels[$item] ?? $item)
+                                                ->toArray();
+
+                                            return implode(', ', $formattedLabels);
+                                        }
+
+                                        return $state;
+                                    })
+                                    ->badge()
+                                    ->separator(', '),
+                            ])
+                            ->collapsible(),
+
+                        // Payment Details
+                        Section::make('Payment Details')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('payment_mode')
+                                            ->label('Payment Mode')
+                                            ->badge()
+                                            ->formatStateUsing(fn($state) => ucfirst($state))
+                                            ->color(fn(string $state): string => match ($state) {
+                                                'card' => 'info',
+                                                'cheque' => 'warning',
+                                                'neft' => 'success',
+                                                'dd' => 'primary',
+                                                default => 'gray',
+                                            }),
+
+                                        TextEntry::make('payment_date')
+                                            ->label('Payment Date')
+                                            ->date(),
+
+                                        TextEntry::make('cheque_trans_number')
+                                            ->label('Cheque/Trans Number')
+                                            ->visible(fn($record) => !in_array($record->payment_mode, ['other'])),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('bank.name')
+                                            ->label('Bank')
+                                            ->visible(fn($record) => !in_array($record->payment_mode, ['card', 'other'])),
+
+                                        TextEntry::make('payment_amount')
+                                            ->label('Payment Amount')
+                                            ->money('INR')
+                                            ->weight(FontWeight::Bold),
+                                    ]),
+                            ])
+                            ->collapsible(),
+                    ]),
+            ]);
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListCcs::route('/'),
             'create' => Pages\CreateCc::route('/create'),
             'edit' => Pages\EditCc::route('/{record}/edit'),
+            'view' => Pages\ViewCc::route('/{record}'),
         ];
     }
 }

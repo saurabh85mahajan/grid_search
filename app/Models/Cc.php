@@ -20,6 +20,11 @@ class Cc extends Model
         'add_on_coverages' => 'array',
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);

@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\CcResource\Pages;
+namespace App\Filament\Llc\Resources\UserResource\Pages;
 
-use App\Filament\Resources\CcResource;
-use Filament\Actions;
+use App\Filament\Llc\Resources\UserResource;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCc extends EditRecord
+class EditUser extends EditRecord
 {
-    protected static string $resource = CcResource::class;
+    protected static string $resource = UserResource::class;
 
     protected function getHeaderActions(): array
     {

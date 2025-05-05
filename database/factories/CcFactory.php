@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Cc;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
 
@@ -26,6 +27,7 @@ class CcFactory extends Factory
         
         return [
             // Policy details
+            'user_id' => User::factory()->state(['organisation_id' => 1]),
             'proposal_type' => $this->faker->randomElement(['Fresh', 'Renewal']),
             'last_year_entry_no' => $this->faker->optional(0.4)->regexify('[A-Z0-9]{8}'),
             'posp' => $this->faker->randomElement(['POSP', 'Non POSP']),

@@ -1507,9 +1507,17 @@ class RtoSeeder extends Seeder
         ];
 
         foreach ($cities as $city) {
+            $parts = explode(' - ', $city['name']);
+            $name = trim($parts[0]);
+            $code = trim($parts[1] ?? ''); // Use empty string if code is missing
+
+            // Create or update the record
             Rto::firstOrCreate(
-                ['name' => $city['name']],
-                ['is_active' => true],
+                ['code' => $code], // Search by code as it should be unique
+                [
+                    'name' => $name,
+                    'is_active' => true
+                ]
             );
         }
     }
