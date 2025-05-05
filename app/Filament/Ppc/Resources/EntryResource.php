@@ -15,6 +15,16 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Actions\ExportAction;
 use App\Filament\Exports\EntryExporter;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Carbon\Carbon;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Support\Enums\FontWeight;
 
 class EntryResource extends Resource
 {
@@ -392,42 +402,191 @@ class EntryResource extends Resource
     {
         return $table
             ->headerActions([
-                ExportAction::make()
-                    ->exporter(EntryExporter::class)
-                    ->label("Export Entries"),
+                Tables\Actions\Action::make('exportCsv')
+                    ->label('Download as CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($livewire) {
+                        // Get the active filters
+                        $search = $livewire->tableSearch;
+
+                        // You can also get the filter forms data
+                        $filters = $livewire->tableFiltersForm->getState();
+
+                        // Build query
+                        $query = Entry::query();
+
+                        // Apply search
+                        if (!empty($search)) {
+                            $query->where(function ($q) use ($search) {
+                                $q->where('business_sourced_by', 'like', "%{$search}%")
+                                    ->orWhere('advisor_name', 'like', "%{$search}%")
+                                    ->orWhere('advisor_code', 'like', "%{$search}%")
+                                    ->orWhere('name', 'like', "%{$search}%")
+                                    ->orWhere('mobile_no', 'like', "%{$search}%")
+                                    ->orWhere('email', 'like', "%{$search}%")
+                                    ->orWhere('vehicle_model', 'like', "%{$search}%")
+                                    ->orWhere('vehicle_number', 'like', "%{$search}%")
+                                    ->orWhere('premium_amount_total', 'like', "%{$search}%");
+                            });
+                        }
+
+                        // Apply filters
+                        if (!empty($filters['created_from'])) {
+                            $query->where('created_at', '>=', Carbon::parse($filters['created_from'])->startOfDay());
+                        }
+
+                        if (!empty($filters['created_until'])) {
+                            $query->where('created_at', '<=', Carbon::parse($filters['created_until'])->endOfDay());
+                        }
+
+                        // Select only the required columns
+                        $data = $query->select('id', 'name', 'email', 'mobile_no', 'business_sourced_by', 'advisor_name', 'advisor_code', 'nominee_name', 'nominee_relationship', 'nominee_dob', 'created_at')->get();
+
+                        //Todo Add All Columns.
+                        $headers = ['ID', 'Name', 'Email', 'Mobile', 'Business Sourced by', 'Advisor/POS Name', 'Advisor / POS Code', 'Nominee Name', 'Nominee Relationship', 'Nominee Date of Birth', 'Created At'];
+
+                        $csvContent = implode(',', $headers) . "\n";
+
+                        foreach ($data as $row) {
+                            $csvContent .= implode(',', [
+                                $row->id,
+                                '"' . str_replace('"', '""', $row->name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->email ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->mobile_no ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->business_sourced_by ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->advisor_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->advisor_code ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->nominee_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->nominee_relationship ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->nominee_dob ?? '') . '"',
+                                $row->created_at
+                            ]) . "\n";
+                        }
+
+                        // Create a temporary file
+                        $tempFile = tempnam(sys_get_temp_dir(), 'csv');
+                        file_put_contents($tempFile, $csvContent);
+
+                        // Return a download response
+                        return response()->download(
+                            $tempFile,
+                            'export-' . date('Y-m-d-H-i-s') . '.csv',
+                            ['Content-Type' => 'text/csv']
+                        )->deleteFileAfterSend();
+                    })
             ])
             ->columns([
-                Tables\Columns\TextColumn::make("business_sourced_by")
-                    ->label("Business Sourced By")
+				TextColumn::make('business_sourced_by')
+                    ->formatStateUsing(function (Entry $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->business_sourced_by}</div>
+                                <div class='text-sm text-gray-500'>{$record->advisor_name}</div>
+                                <div class='text-xs text-gray-500'>{$record->advisor_code}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->label('Business')
+                    ->searchable(['business_sourced_by', 'advisor_name', 'advisor_code'])
+                    ->sortable(),
+                TextColumn::make('name')
+                    ->formatStateUsing(function (Entry $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->name}</div>
+                                <div class='text-sm text-gray-500'>{$record->mobile_no}</div>
+                                <div class='text-xs text-gray-500'>{$record->email}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->label('Name')
+                    ->searchable(['name', 'mobile_no', 'email'])
+                    ->sortable(),
+				Tables\Columns\TextColumn::make('make')
+                    ->label('Vehicle Details')
+                    ->formatStateUsing(function (Entry $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->vehicle_number}</div>
+                                <div class='text-sm text-gray-500'>{$record->make->name}</div>
+								<div class='text-sm text-gray-500'>{$record->vehicle_model}</div>
+                            </div>
+                        ";
+                    })
+                    ->searchable(['vehicle_number', 'vehicle_model'])
+                    ->html(),
+				Tables\Columns\TextColumn::make('insuranceCompany.name')
+                    ->label('Insurance Detail')
+                    ->formatStateUsing(function (Entry $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->insuranceCompany->name}</div>
+                                <div class='text-sm text-gray-500'>{$record->insuranceType->name}</div>
+                                <div class='text-xs text-gray-500'>Life: Type: {$record->lifeInsuranceType->name}</div>
+                                <div class='text-xs text-gray-500'>Health: {$record->healthInsuranceType->name}</div>
+                                <div class='text-xs text-gray-500'>General: {$record->generalInsuranceType->name}</div>
+                            </div>
+                        ";
+                    })
+                    ->html(),
+				TextColumn::make('premium_amount_total')
+                    ->label('Total Premium')
+                    ->formatStateUsing(function (Entry $record): string {
+                        $totalPremium = number_format($record->premium_amount_total, 2);
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>₹{$totalPremium}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->sortable(),
+				Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime('d M, Y')
                     ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make("advisor_name")
-                    ->label("Advisor/POS Name")
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make("advisor_code")
-                    ->label("Advisor/POS Code")
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make("name")
-                    ->label("Name")
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make("mobile_no")
-                    ->label("Mobile No.")
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make("email")
-                    ->label("Email")
-                    ->sortable()
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
-            ->filters([])
-            ->actions([Tables\Actions\EditAction::make()])
+            ->filters([
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder =>
+                                $query->where('created_at', '>=', Carbon::parse($date)->startOfDay()),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder =>
+                                $query->where('created_at', '<=', Carbon::parse($date)->endOfDay()),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    })
+            ])
+            ->actions([
+				Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+			])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                
             ]);
     }
 
@@ -444,6 +603,192 @@ class EntryResource extends Resource
             "index" => Pages\ListEntries::route("/"),
             "create" => Pages\CreateEntry::route("/create"),
             "edit" => Pages\EditEntry::route("/{record}/edit"),
+			'view' => Pages\ViewEntry::route('/{record}'),
         ];
     }
+	
+	public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Bussiness Details')
+                    ->schema([
+						Grid::make(4)
+						->schema([
+							TextEntry::make('business_sourced_by')
+                            ->label('Business Sourced by'),
+							TextEntry::make('advisor_name')
+                            ->label('Advisor/POS Name'),
+							TextEntry::make('advisor_code')
+                            ->label('Advisor / POS Code'),
+							TextEntry::make('businessType.name')
+							->label('Nature of Business'),
+						]),
+				])->collapsible(),
+				Section::make('Personal Details')
+                    ->schema([
+					Grid::make(3)
+					->schema([
+						TextEntry::make('name')
+							->label('Name')
+							->state(fn ($record) => 
+								trim(($record->name ?? '') . ' ')
+							)
+							->weight(FontWeight::Bold),
+						TextEntry::make('email')
+							->label('Email')
+							->icon('heroicon-m-envelope')
+							->copyable(),
+
+						TextEntry::make('mobile_no')
+							->label('Mobile')
+							->icon('heroicon-m-device-phone-mobile')
+							->copyable(),
+						TextEntry::make('pan_card')
+							->label('Pan Card')
+							->icon('heroicon-m-document-text')
+							->badge(),
+						TextEntry::make('aadhaar_front')
+							->label('Aadhaar Front')
+							->icon('heroicon-m-document-text')
+							->badge(),
+						TextEntry::make('aadhaar_back')
+							->label('Aadhaar Front')
+							->icon('heroicon-m-document-text')
+							->badge(),
+					]),
+				])->collapsible(),
+				Section::make('Nominee Details')
+                    ->schema([
+						Grid::make(3)
+						->schema([
+							TextEntry::make('nominee_name')
+							->label('Nominee Name'),
+							TextEntry::make('nominee_dob')
+							->label('Nominee Date of Birth')
+							->icon('heroicon-m-calendar-date-range'),
+							TextEntry::make('nominee_relationship')
+							->label('Nominee Relationship'),
+					]),
+				])->collapsible(),
+				Section::make('Insurance Details')
+                    ->schema([
+					Grid::make(3)
+						->schema([
+							TextEntry::make('insuranceCompany.name')
+							->label('Insurance Company'),
+							TextEntry::make('insuranceType.name')
+							->label('Type'),
+							TextEntry::make('lifeInsuranceType.name')
+							->label('Life Insurance'),
+							TextEntry::make('healthInsuranceType.name')
+							->label('Health Plan'),
+							TextEntry::make('generalInsuranceType.name')
+							->label('General Insurance'),
+					]),
+				])->collapsible(),
+				Section::make('Vehicle Details')
+                    ->schema([
+					Grid::make(3)
+						->schema([
+							TextEntry::make('make.name')
+							->label('Vehicle Make')
+							->badge(),
+							TextEntry::make('vehicle_model')
+							->label('Vehicle Model')
+							->badge(),
+							TextEntry::make('vehicle_number')
+							->label('Vehicle Number')
+							->badge(),
+					]),
+				])->collapsible(),
+				Section::make('Policy Details')
+                    ->schema([
+					Grid::make(4)
+						->schema([
+							TextEntry::make('od_risk_start_date')
+							->label('Risk Start Date (Own Damage)')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('od_risk_end_date')
+							->label('Risk end Date (Own Damage)')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('tp_risk_start_date')
+							->label('Risk start Date (Third Party)')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('tp_risk_end_date')
+							->label('Risk End Date (Third Party)')
+							->icon('heroicon-m-calendar-days'),
+					]),
+					Grid::make(3)
+						->schema([
+							TextEntry::make('own_damage_premium')
+							->label('Own Damage and Riders Premium')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('idv')
+							->label('IDV')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('third_party_premium')
+							->label('Third Party Premium')
+							->weight(FontWeight::Bold)
+							->money('INR'),												
+					]),
+					Grid::make(3)
+						->schema([
+							TextEntry::make('policy_bond')
+							->label('Policy Bond')
+							->icon('heroicon-m-document-text')
+							->badge(),
+							TextEntry::make('rc_copy')
+							->label('RC')
+							->icon('heroicon-m-document-text')
+							->badge(),							
+					]),
+					Grid::make(4)
+						->schema([
+							TextEntry::make('premiumFrequency.name')
+							->label('Premium frequency'),
+							TextEntry::make('sum_insured')
+							->label('Sum Insured/Assured')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('premium_paying_term')
+							->label('Premium Paying Term'),
+							TextEntry::make('policy_term')
+							->label('Policy Term'),
+							TextEntry::make('premium_amount')
+							->label('Premium Amount without GST')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('risk_start_date')
+							->label('Risk Start Date')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('risk_end_date')
+							->label('Risk End Date')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('policy_bond')
+							->label('Premium Receipt')
+							->icon('heroicon-m-document-text')
+							->badge(),
+					]),
+					Grid::make(4)
+						->schema([
+							TextEntry::make('policy_term')
+							->label('Number of lives')
+							->icon('heroicon-m-user'),
+							TextEntry::make('premium_amount')
+							->label('Premium Amount')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('out_percentage')
+							->label('Out%')
+							->suffix('%'),
+							TextEntry::make('net_od')
+							->label('Net/Od')
+							->suffix('%'),
+					]),
+				])->collapsible(),
+			]);
+	}
 }
