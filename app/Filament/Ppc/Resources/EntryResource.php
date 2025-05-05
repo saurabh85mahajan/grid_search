@@ -44,15 +44,18 @@ class EntryResource extends Resource
 
                         Forms\Components\TextInput::make("business_sourced_by")
                             ->label("Business Sourced by")
-                            ->placeholder("Enter First Name"),
+                            ->placeholder("Enter First Name")
+							->extraInputAttributes(['maxlength' => 50]),
 
                         Forms\Components\TextInput::make("advisor_name")
                             ->label("Advisor/POS Name")
-                            ->placeholder("Enter Advisor/POS Name"),
+                            ->placeholder("Enter Advisor/POS Name")
+							->extraInputAttributes(['maxlength' => 50]),
 
                         Forms\Components\TextInput::make("advisor_code")
                             ->label("Advisor / POS Code")
-                            ->placeholder("Advisor / POS Code"),
+                            ->placeholder("Advisor / POS Code")
+							->extraInputAttributes(['maxlength' => 50]),
                     ]),
                     Forms\Components\Grid::make(3)->schema([
                         Forms\Components\Select::make("business_type_id")
@@ -82,7 +85,8 @@ class EntryResource extends Resource
                             ->validationMessages([
                                 "required" => "Please Enter Name",
                             ])
-                            ->placeholder("Enter Name"),
+                            ->placeholder("Enter Name")
+							->extraInputAttributes(['maxlength' => 50]),
 
                         Forms\Components\TextInput::make("mobile_no")
                             ->label("Mobile No.")
@@ -126,12 +130,19 @@ class EntryResource extends Resource
                 ->schema([
                     Forms\Components\Grid::make(3)->schema([
                         Forms\Components\TextInput::make("nominee_name")
-                            ->label("Nominee Name")
-                            ->helperText("Mention NA in case of Non-individual")
+
+                            ->label(
+                                "Nominee Name (Mention NA in case of Non-individual)"
+                            )
+							->extraInputAttributes(['maxlength' => 50])
                             ->placeholder("Enter Nominee Name"),
                         Forms\Components\TextInput::make("nominee_relationship")
-                            ->label("Nominee Relationship")
-                            ->placeholder("Enter Nominee Relationship"),
+                            ->label("Nominee Relationship with Policy Holder")
+                            ->placeholder(
+                                "Enter Nominee Relationship with Policy Holder"
+                            )
+							->extraInputAttributes(['maxlength' => 50]),
+
                         Forms\Components\DatePicker::make("nominee_dob")
                             ->label("Nominee Date of Birth")
                             ->helperText("Mention Date of Incorporation in case of Non-individual")
@@ -163,7 +174,11 @@ class EntryResource extends Resource
                             ->placeholder("--Select--"),
 
                         Forms\Components\Select::make("insurance_type_id")
-                            ->label("Select Type of Insurance")
+                            ->afterStateUpdated(function (Forms\Set $set) {
+								$set('life_insurance_type_id', null);
+								$set('health_insurance_type_id', null);
+							})
+							->label("Select Type of Insurance")
                             ->relationship(
                                 "insuranceType",
                                 "name",
@@ -173,11 +188,16 @@ class EntryResource extends Resource
                             )
                             ->searchable()
                             ->preload()
-                            ->placeholder("--Select--"),
+                            ->placeholder("--Select--")
+							->live(),
 
                         Forms\Components\Select::make("life_insurance_type_id")
                             ->label("Type of Life Insurance")
-                            ->relationship(
+                            ->hidden(
+								fn(Forms\Get $get): bool =>
+								in_array($get('insurance_type_id'), ['3'])
+							)
+							->relationship(
                                 "lifeInsuranceType",
                                 "name",
                                 modifyQueryUsing: fn(
@@ -186,13 +206,16 @@ class EntryResource extends Resource
                             )
                             ->searchable()
                             ->preload()
-
-                            ->placeholder("--Select--"),
-                        Forms\Components\Select::make(
-                            "health_insurance_type_id"
-                        )
+                            ->placeholder("--Select--")
+							,
+							
+                        Forms\Components\Select::make("health_insurance_type_id")
                             ->label("Type of Health Plan")
-                            ->relationship(
+                            ->hidden(
+								fn(Forms\Get $get): bool =>
+								in_array($get('insurance_type_id'), ['3'])
+							)
+							->relationship(
                                 "healthInsuranceType",
                                 "name",
                                 modifyQueryUsing: fn(
@@ -201,7 +224,6 @@ class EntryResource extends Resource
                             )
                             ->searchable()
                             ->preload()
-
                             ->placeholder("--Select--"),
                         Forms\Components\Select::make(
                             "general_insurance_type_id"
@@ -240,10 +262,12 @@ class EntryResource extends Resource
                             ->placeholder("Select Make"),
                         Forms\Components\TextInput::make("vehicle_model")
                             ->label("Vehicle Model")
-                            ->placeholder("Enter Vehicle Model"),
+                            ->placeholder("Enter Vehicle Model")
+							->extraInputAttributes(['maxlength' => 50]),
                         Forms\Components\TextInput::make("vehicle_number")
                             ->label("Vehicle Number")
-                            ->placeholder("Enter Vehicle Number"),
+                            ->placeholder("Enter Vehicle Number")
+							->extraInputAttributes(['maxlength' => 50]),
                     ]),
                 ])
                 ->collapsible(),
@@ -255,17 +279,29 @@ class EntryResource extends Resource
                         Forms\Components\TextInput::make("idv")
                             ->label("Insured Declared Value (IDV)")
                             ->placeholder("Enter IDV")
-                            ->numeric(),
+                            ->numeric()
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							]),
 
                         Forms\Components\TextInput::make("third_party_premium")
                             ->label("Third Party Premium (Without GST)")
                             ->placeholder("Enter Premium")
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							])
                             ->numeric(),
 
                         Forms\Components\TextInput::make("own_damage_premium")
                             ->label(
                                 "Own Damage and Riders Premium (without GST)"
                             )
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							])
                             ->placeholder("Enter Premium")
                             ->numeric(),
                     ]),
@@ -316,7 +352,10 @@ class EntryResource extends Resource
 
                         Forms\Components\TextInput::make("sum_insured")
                             ->label("Sum Insured/Assured")
-
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							])
                             ->placeholder("Sum Insured/Assured"),
 
                         Forms\Components\Select::make("premium_paying_term")
@@ -351,6 +390,10 @@ class EntryResource extends Resource
                         Forms\Components\TextInput::make("premium_amount")
                             ->label("Premium Amount without GST")
                             ->numeric()
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							])
                             ->placeholder("Enter Premium Amount without GST"),
 
                         Forms\Components\DatePicker::make("risk_start_date")
@@ -371,22 +414,38 @@ class EntryResource extends Resource
                         Forms\Components\TextInput::make("number_of_lives")
                             ->label("Number of lives")
                             ->numeric()
-                            ->placeholder("Enter Number of lives"),
+                            ->placeholder("Enter Number of lives")
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 1) this.value = this.value.slice(0, 1);'
+							]),
 
                         Forms\Components\TextInput::make("premium_amount_total")
                             ->label("Premium Amount")
                             ->numeric()
-                            ->placeholder("Enter Premium Amount"),
+                            ->placeholder("Enter Premium Amount")
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							]),
 
                         Forms\Components\TextInput::make("out_percentage")
                             ->label("Out%")
                             ->numeric()
-                            ->placeholder("Enter Out%"),
+                            ->placeholder("Enter Out%")
+							->maxValue(100)
+							->minValue(1)
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+							]),
 
                         Forms\Components\TextInput::make("net_od")
                             ->label("Net/Od")
                             ->numeric()
-                            ->placeholder("Enter Net/Od"),
+                            ->placeholder("Enter Net/Od")
+							->prefix('₹')
+							->extraInputAttributes([
+								'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+							]),
                     ]),
                 ])
                 ->collapsible(),
@@ -667,21 +726,25 @@ class EntryResource extends Resource
                     ])->collapsible(),
                 Section::make('Insurance Details')
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('insuranceCompany.name')
-                                    ->label('Insurance Company'),
-                                TextEntry::make('insuranceType.name')
-                                    ->label('Type'),
-                                TextEntry::make('lifeInsuranceType.name')
-                                    ->label('Life Insurance'),
-                                TextEntry::make('healthInsuranceType.name')
-                                    ->label('Health Plan'),
-                                TextEntry::make('generalInsuranceType.name')
-                                    ->label('General Insurance'),
-                            ]),
-                    ])->collapsible(),
-                Section::make('Vehicle Details')
+
+					Grid::make(3)
+						->schema([
+							TextEntry::make('insuranceCompany.name')
+							->label('Insurance Company'),
+							TextEntry::make('insuranceType.name')
+							->label('Type'),
+							TextEntry::make('lifeInsuranceType.name')
+							->label('Life Insurance')
+							->visible(fn ($state):bool => filled($state)),
+							TextEntry::make('healthInsuranceType.name')
+							->label('Health Plan')
+							->visible(fn ($state):bool => filled($state)),
+							TextEntry::make('generalInsuranceType.name')
+							->label('General Insurance'),
+					]),
+				])->collapsible(),
+				Section::make('Vehicle Details')
+
                     ->schema([
                         Grid::make(3)
                             ->schema([
