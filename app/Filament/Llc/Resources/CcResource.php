@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Support\Enums\FontWeight;
-
+use Filament\Tables\Filters\SelectFilter;
 
 class CcResource extends Resource
 {
@@ -878,6 +878,7 @@ class CcResource extends Resource
                         ";
                     })
                     ->searchable(['engine_type', 'chasis', 'registration_number_1', 'registration_number_2', 'registration_number_3', 'registration_number_4'])
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->html(),
                 Tables\Columns\TextColumn::make('insuranceCompany.name')
                     ->label('Insurance')
@@ -944,7 +945,14 @@ class CcResource extends Resource
                         }
 
                         return $indicators;
-                    })
+                    }),
+                    SelectFilter::make('agent')
+                        ->label('Agent')
+                        ->relationship('user', 'name', function (Builder $query) {
+                            return $query->where('organisation_id', 1);
+                        })
+                        ->preload() // Preload options instead of lazy-loading
+                        ->searchable() // Add search capability for larger lists
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -989,6 +997,10 @@ class CcResource extends Resource
 
                         if (!empty($filters['created_until'])) {
                             $query->where('created_at', '<=', Carbon::parse($filters['created_until'])->endOfDay());
+                        }
+
+                        if (!empty($filters['agent']['value'])) {
+                            $query->where('user_id', $filters['agent']['value']);
                         }
 
                         // Select only the required columns
