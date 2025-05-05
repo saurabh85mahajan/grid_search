@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cc;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +14,6 @@ class DevDbSeeder extends Seeder
      */
     public function run(): void
     {
-
         User::create([
             'name' => 'System Admin',
             'email' => 'admin@admin.com',
@@ -27,6 +27,8 @@ class DevDbSeeder extends Seeder
             'password' => Hash::make('nikhil123'),
             'organisation_id' => 2,
         ]);
+
+        Cc::factory()->count(10)->create();
         
     }
 }

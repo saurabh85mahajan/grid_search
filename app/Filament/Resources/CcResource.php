@@ -489,12 +489,18 @@ class CcResource extends Resource
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 2])
                                             ->placeholder('GJ')
+                                            ->validationMessages([
+                                                'required' => 'Required',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('registration_number_2')
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 2])
                                             ->placeholder('01')
+                                            ->validationMessages([
+                                                'required' => 'Required',
+                                            ])
                                             ->required(),
 
                                         Forms\Components\TextInput::make('registration_number_3')
@@ -506,6 +512,9 @@ class CcResource extends Resource
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 4])
                                             ->placeholder('1234')
+                                            ->validationMessages([
+                                                'required' => 'Required',
+                                            ])
                                             ->required(),
                                     ])
                                     ->columns(4)
