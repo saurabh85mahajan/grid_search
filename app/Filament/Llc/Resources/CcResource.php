@@ -955,7 +955,8 @@ class CcResource extends Resource
                         ->searchable() // Add search capability for larger lists
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn ($record) => $record->user_id === auth()->id()),
                 Tables\Actions\ViewAction::make(),
             ])
             ->headerActions([
