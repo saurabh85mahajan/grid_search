@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\CcResource\Pages;
+namespace App\Filament\Llc\Resources\CcResource\Pages;
 
-use App\Filament\Resources\CcResource;
+use App\Filament\Llc\Resources\CcResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 

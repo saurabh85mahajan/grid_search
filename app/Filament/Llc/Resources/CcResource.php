@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Llc\Resources;
 
-use App\Filament\Resources\CcResource\Pages;
+use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\ProductCategory;
 use App\Traits\HasStatusColumn;
@@ -844,7 +844,7 @@ class CcResource extends Resource
                         ";
                     })
                     ->html()
-                    ->label('Proposal Type')
+                    ->label('Type')
                     ->searchable(['proposal_type', 'posp']),
 
                 TextColumn::make('first_name')
@@ -869,14 +869,15 @@ class CcResource extends Resource
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->registration_number}</div>
                                 <div class='text-sm text-gray-500'>{$record->make->name}, {$record->vehicle_model}</div>
-                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type} Chasis: {$record->chasis}</div>
+                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type}</div>
+                                <div class='text-xs text-gray-500'>Chasis: {$record->chasis}</div>
                             </div>
                         ";
                     })
                     ->searchable(['engine_type', 'chasis', 'registration_number_1', 'registration_number_2', 'registration_number_3', 'registration_number_4'])
                     ->html(),
                 Tables\Columns\TextColumn::make('insuranceCompany.name')
-                    ->label('Insurance Company')
+                    ->label('Insurance')
                     ->formatStateUsing(function (Cc $record): string {
                         return "
                             <div class='space-y-1'>

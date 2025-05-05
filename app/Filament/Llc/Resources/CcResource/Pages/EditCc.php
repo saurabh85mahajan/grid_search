@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\CcResource\Pages;
+namespace App\Filament\Llc\Resources\CcResource\Pages;
 
-use App\Filament\Resources\CcResource;
-use Filament\Actions;
+use App\Filament\Llc\Resources\CcResource;
 use Filament\Resources\Pages\EditRecord;
 
 class EditCc extends EditRecord
