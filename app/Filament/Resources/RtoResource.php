@@ -31,6 +31,10 @@ class RtoResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
+                Forms\Components\TextInput::make('code')
+                    ->required()
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true),
             ]);
     }
 
@@ -38,8 +42,9 @@ class RtoResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('full_name')
+                    ->label('Name')
+                    ->searchable(['name', 'code'])
                     ->sortable(),
                 (new static)->getStatusColumn(),
                 Tables\Columns\TextColumn::make('created_at')
