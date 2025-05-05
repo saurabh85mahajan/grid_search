@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Filament\Llc\Resources;
+
+use App\Filament\Llc\Resources\UserResource\Pages;
+use App\Models\User;
+use App\Traits\HasStatusColumn;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Hash;
+
+class UserResource extends Resource
+{
+    use HasStatusColumn;
+
+    protected static ?string $model = User::class;
+    protected static ?string $modelLabel = 'Employee';
+    protected static ?string $pluralModelLabel = 'Employees';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationLabel = 'Employee';
+    protected static ?string $navigationGroup = 'Manage Employees';
+    protected static ?int $navigationSort = 10;
+
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user && in_array($user->email, [
+            'admin@admin.com',
+            'admin1@admin.com',
+        ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('organisation_id', 1)
+            ->where('email', '!=', 'admin1@admin.com');
+    }
+
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
+            \Filament\Forms\Components\TextInput::make('name')
+                ->required(),
+            \Filament\Forms\Components\TextInput::make('email')
+                ->email()
+                ->required()
+                ->unique(ignoreRecord: true),
+            \Filament\Forms\Components\TextInput::make('password')
+                ->password()
+                ->required(fn($livewire) => $livewire instanceof Pages\CreateUser)
+                ->dehydrateStateUsing(fn($state) =>
+                filled($state) ? Hash::make($state) : null)
+                ->dehydrated(fn($state) => filled($state))
+                ->label(fn($livewire) =>
+                $livewire instanceof Pages\EditUser ? 'New Password' : 'Password'),
+            (new static)->getStatusSelect(),
+            \Filament\Forms\Components\Hidden::make('organisation_id')
+                ->default(1),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                \Filament\Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                \Filament\Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
+                (new static)->getStatusColumn(),
+                \Filament\Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime(),
+            ])
+            ->filters([
+                (new static)->getStatusFilter(),
+            ])
+            ->actions([
+                \Filament\Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                \Filament\Tables\Actions\BulkActionGroup::make([
+                    ...(new static)->getStatusBulkActions(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
+        ];
+    }
+}

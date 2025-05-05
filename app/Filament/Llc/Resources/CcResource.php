@@ -45,6 +45,9 @@ class CcResource extends Resource
                             ->schema([
                                 Forms\Components\Grid::make(3)
                                     ->schema([
+                                        Forms\Components\Hidden::make("user_id")
+                                            ->default(auth()->user()->id)
+                                            ->dehydrated(fn ($state, $record) => $record === null),
                                         Forms\Components\Select::make('proposal_type')
                                             ->label('Proposal type')
                                             ->options([
@@ -549,7 +552,7 @@ class CcResource extends Resource
                                         Forms\Components\Select::make('rto_id')
                                             ->label('RTO')
                                             ->relationship('rto', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->full_name)
+                                            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select RTO'),
@@ -858,7 +861,7 @@ class CcResource extends Resource
                         ";
                     })
                     ->html()
-                    ->label('Name')
+                    ->label('Client Name')
                     ->searchable(['first_name', 'last_name', 'phone'])
                     ->sortable(),
 
@@ -888,6 +891,7 @@ class CcResource extends Resource
                         ";
                     })
                     ->searchable(['policy_number'])
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->html(),
                 TextColumn::make('total_premium')
                     ->label('Total Premium')
@@ -901,6 +905,9 @@ class CcResource extends Resource
                     })
                     ->html()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Agent')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M, Y')
                     ->sortable()
@@ -1037,7 +1044,7 @@ class CcResource extends Resource
                                         TextEntry::make('proposal_type')
                                             ->label('Proposal type')
                                             ->badge()
-                                            ->color(fn (string $state): string => match ($state) {
+                                            ->color(fn(string $state): string => match ($state) {
                                                 'Fresh' => 'success',
                                                 'Renewal' => 'warning',
                                                 default => 'gray',
@@ -1045,12 +1052,12 @@ class CcResource extends Resource
 
                                         TextEntry::make('last_year_entry_no')
                                             ->label('Last Year Entry No')
-                                            ->visible(fn ($record) => $record->proposal_type === 'Renewal'),
+                                            ->visible(fn($record) => $record->proposal_type === 'Renewal'),
 
                                         TextEntry::make('posp')
                                             ->label('Product Posp')
                                             ->badge()
-                                            ->color(fn (string $state): string => match ($state) {
+                                            ->color(fn(string $state): string => match ($state) {
                                                 'POSP' => 'success',
                                                 'Non POSP' => 'warning',
                                                 default => 'gray',
@@ -1066,11 +1073,12 @@ class CcResource extends Resource
                                     ->schema([
                                         TextEntry::make('full_name')
                                             ->label('Client Name')
-                                            ->state(fn ($record) => 
-                                                trim(($record->salutation?->name ?? '') . ' ' . 
-                                                     ($record->first_name ?? '') . ' ' . 
-                                                     ($record->middle_name ?? '') . ' ' . 
-                                                     ($record->last_name ?? ''))
+                                            ->state(
+                                                fn($record) =>
+                                                trim(($record->salutation?->name ?? '') . ' ' .
+                                                    ($record->first_name ?? '') . ' ' .
+                                                    ($record->middle_name ?? '') . ' ' .
+                                                    ($record->last_name ?? ''))
                                             )
                                             ->weight(FontWeight::Bold),
 
@@ -1089,7 +1097,8 @@ class CcResource extends Resource
                                     ->schema([
                                         TextEntry::make('full_address')
                                             ->label('Address')
-                                            ->state(fn ($record) => 
+                                            ->state(
+                                                fn($record) =>
                                                 implode(', ', array_filter([
                                                     $record->address_1,
                                                     $record->address_2,
@@ -1113,10 +1122,10 @@ class CcResource extends Resource
                                     ->schema([
                                         TextEntry::make('relationship')
                                             ->label('Nominee Rel.'),
-                                        
+
                                         TextEntry::make('nominee_name')
                                             ->label('Nominee Name'),
-                                        
+
                                         TextEntry::make('nominee_dob')
                                             ->label('Nominee DOB')
                                             ->date(),
@@ -1132,7 +1141,7 @@ class CcResource extends Resource
                                         TextEntry::make('region.name')
                                             ->label('Region')
                                             ->badge(),
-                                        
+
                                         TextEntry::make('businessLock.name')
                                             ->label('Business Lock')
                                             ->badge(),
@@ -1143,13 +1152,13 @@ class CcResource extends Resource
                                         TextEntry::make('insuranceCompany.name')
                                             ->label('Insurance Company')
                                             ->weight(FontWeight::Bold),
-                                        
+
                                         TextEntry::make('policy_number')
                                             ->label('Policy No.')
                                             ->copyable()
                                             ->badge()
                                             ->color('success'),
-                                        
+
                                         TextEntry::make('policy_issue_date')
                                             ->label('Policy Issue Date')
                                             ->date(),
@@ -1160,11 +1169,11 @@ class CcResource extends Resource
                                         TextEntry::make('product.name')
                                             ->label('Product')
                                             ->badge(),
-                                        
+
                                         TextEntry::make('productCategory.name')
                                             ->label('Product Category')
                                             ->badge(),
-                                        
+
                                         TextEntry::make('risk_category')
                                             ->label('Risk Category'),
                                     ]),
@@ -1174,20 +1183,21 @@ class CcResource extends Resource
                                         TextEntry::make('inception_date')
                                             ->label('Inception Date')
                                             ->date(),
-                                        
+
                                         TextEntry::make('expiry_date')
                                             ->label('Expiry Date')
                                             ->date()
-                                            ->color(fn ($state) => 
-                                                $state && \Carbon\Carbon::parse($state)->isPast() 
-                                                    ? 'danger' 
+                                            ->color(
+                                                fn($state) =>
+                                                $state && \Carbon\Carbon::parse($state)->isPast()
+                                                    ? 'danger'
                                                     : 'success'
                                             ),
-                                        
+
                                         TextEntry::make('ncb.name')
                                             ->label('NCB')
                                             ->badge(),
-                                        
+
                                         TextEntry::make('code')
                                             ->label('Code'),
                                     ]),
@@ -1197,11 +1207,11 @@ class CcResource extends Resource
                                         TextEntry::make('tp_inception_date')
                                             ->label('TP Inception Date')
                                             ->date(),
-                                        
+
                                         TextEntry::make('tp_expiry_date')
                                             ->label('TP Expiry Date')
                                             ->date(),
-                                        
+
                                         TextEntry::make('idv')
                                             ->label('IDV'),
                                     ]),
@@ -1210,7 +1220,7 @@ class CcResource extends Resource
                                     ->schema([
                                         TextEntry::make('py_insurance_company.name')
                                             ->label('PY Ins. Comp.'),
-                                        
+
                                         TextEntry::make('py_policy_number')
                                             ->label('PY Policy No.'),
                                     ]),
@@ -1220,11 +1230,11 @@ class CcResource extends Resource
                                         TextEntry::make('tarrif_rate')
                                             ->label('Tariff Rate')
                                             ->suffix('%'),
-                                        
+
                                         TextEntry::make('actual_tarrif')
                                             ->label('Actual Tariff')
                                             ->suffix('%'),
-                                        
+
                                         IconEntry::make('third_party')
                                             ->label('Third Party')
                                             ->boolean(),
@@ -1238,10 +1248,10 @@ class CcResource extends Resource
                                                 TextEntry::make('make.name')
                                                     ->label('Make')
                                                     ->badge(),
-                                                
+
                                                 TextEntry::make('vehicle_model')
                                                     ->label('Vehicle Model'),
-                                                
+
                                                 TextEntry::make('vehicle_sub_model')
                                                     ->label('Vehicle Sub Model'),
                                             ]),
@@ -1250,27 +1260,28 @@ class CcResource extends Resource
                                             ->schema([
                                                 TextEntry::make('cc')
                                                     ->label('CC'),
-                                                
+
                                                 TextEntry::make('yom')
                                                     ->label('YOM')
                                                     ->badge(),
-                                                
+
                                                 TextEntry::make('fuelType.name')
                                                     ->label('Fuel Type')
                                                     ->badge(),
-                                                
+
                                                 TextEntry::make('seating_capacity')
                                                     ->label('Seating Capacity'),
                                             ]),
 
                                         TextEntry::make('registration_number')
                                             ->label('Registration Number')
-                                            ->state(fn ($record) => 
+                                            ->state(
+                                                fn($record) =>
                                                 trim(
-                                                    ($record->registration_number_1 ?? '') . '-' . 
-                                                    ($record->registration_number_2 ?? '') . '-' . 
-                                                    ($record->registration_number_3 ?? '') . '-' . 
-                                                    ($record->registration_number_4 ?? '')
+                                                    ($record->registration_number_1 ?? '') . '-' .
+                                                        ($record->registration_number_2 ?? '') . '-' .
+                                                        ($record->registration_number_3 ?? '') . '-' .
+                                                        ($record->registration_number_4 ?? '')
                                                 )
                                             )
                                             ->badge()
@@ -1282,11 +1293,11 @@ class CcResource extends Resource
                                                 TextEntry::make('engine_type')
                                                     ->label('Engine No.')
                                                     ->copyable(),
-                                                
+
                                                 TextEntry::make('chasis')
                                                     ->label('Chasis')
                                                     ->copyable(),
-                                                
+
                                                 TextEntry::make('rto.full_name')
                                                     ->label('RTO'),
                                             ]),
@@ -1303,11 +1314,11 @@ class CcResource extends Resource
                                         TextEntry::make('od')
                                             ->label('OD')
                                             ->money('INR'),
-                                        
+
                                         TextEntry::make('add_on')
                                             ->label('Add On')
                                             ->money('INR'),
-                                        
+
                                         TextEntry::make('other')
                                             ->label('Other')
                                             ->money('INR'),
@@ -1318,11 +1329,11 @@ class CcResource extends Resource
                                         TextEntry::make('tp_premium')
                                             ->label('TP Premium')
                                             ->money('INR'),
-                                        
+
                                         TextEntry::make('tp_tax')
                                             ->label('TP Tax')
                                             ->suffix('%'),
-                                        
+
                                         TextEntry::make('tppd')
                                             ->label('TPPD(-)')
                                             ->money('INR'),
@@ -1333,11 +1344,11 @@ class CcResource extends Resource
                                         TextEntry::make('liab_cng')
                                             ->label('Liab CNG')
                                             ->money('INR'),
-                                        
+
                                         TextEntry::make('liab_passenger')
                                             ->label('Liab Passenger')
                                             ->money('INR'),
-                                        
+
                                         TextEntry::make('liab_owner_driver')
                                             ->label('Liab Owner Driver')
                                             ->money('INR'),
@@ -1348,11 +1359,11 @@ class CcResource extends Resource
                                         TextEntry::make('tax')
                                             ->label('Tax')
                                             ->suffix('%'),
-                                        
+
                                         TextEntry::make('tax_amount')
                                             ->label('Tax Amount')
                                             ->money('INR'),
-                                        
+
                                         TextEntry::make('total_premium')
                                             ->label('Total Premium')
                                             ->money('INR')
@@ -1366,11 +1377,11 @@ class CcResource extends Resource
                                         TextEntry::make('od_percentage')
                                             ->label('OD%')
                                             ->suffix('%'),
-                                        
+
                                         TextEntry::make('tp_percentage')
                                             ->label('TP%')
                                             ->suffix('%'),
-                                        
+
                                         TextEntry::make('specific_amount')
                                             ->label('Specific Amount')
                                             ->money('INR'),
@@ -1380,7 +1391,7 @@ class CcResource extends Resource
                                     ->label('Add On Coverages')
                                     ->formatStateUsing(function ($state) {
                                         if (!$state) return 'None';
-                                        
+
                                         $labels = [
                                             'nil_dep' => 'Nil Dep.',
                                             'consumable' => 'Consumable',
@@ -1393,16 +1404,16 @@ class CcResource extends Resource
                                             'personal_belongings' => 'Lose of Personal Belongings',
                                             'spare_car' => 'Spare Car',
                                         ];
-                                        
+
                                         // Convert array to string
                                         if (is_array($state)) {
                                             $formattedLabels = collect($state)
                                                 ->map(fn($item) => $labels[$item] ?? $item)
                                                 ->toArray();
-                                            
+
                                             return implode(', ', $formattedLabels);
                                         }
-                                        
+
                                         return $state;
                                     })
                                     ->badge()
@@ -1418,30 +1429,30 @@ class CcResource extends Resource
                                         TextEntry::make('payment_mode')
                                             ->label('Payment Mode')
                                             ->badge()
-                                            ->formatStateUsing(fn ($state) => ucfirst($state))
-                                            ->color(fn (string $state): string => match ($state) {
+                                            ->formatStateUsing(fn($state) => ucfirst($state))
+                                            ->color(fn(string $state): string => match ($state) {
                                                 'card' => 'info',
                                                 'cheque' => 'warning',
                                                 'neft' => 'success',
                                                 'dd' => 'primary',
                                                 default => 'gray',
                                             }),
-                                        
+
                                         TextEntry::make('payment_date')
                                             ->label('Payment Date')
                                             ->date(),
-                                        
+
                                         TextEntry::make('cheque_trans_number')
                                             ->label('Cheque/Trans Number')
-                                            ->visible(fn ($record) => !in_array($record->payment_mode, ['other'])),
+                                            ->visible(fn($record) => !in_array($record->payment_mode, ['other'])),
                                     ]),
 
                                 Grid::make(2)
                                     ->schema([
                                         TextEntry::make('bank.name')
                                             ->label('Bank')
-                                            ->visible(fn ($record) => !in_array($record->payment_mode, ['card', 'other'])),
-                                        
+                                            ->visible(fn($record) => !in_array($record->payment_mode, ['card', 'other'])),
+
                                         TextEntry::make('payment_amount')
                                             ->label('Payment Amount')
                                             ->money('INR')
