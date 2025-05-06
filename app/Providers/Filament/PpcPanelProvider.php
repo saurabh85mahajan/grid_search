@@ -37,8 +37,7 @@ class PpcPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Blue,
             ])
-			->databaseNotifications()
-            ->discoverResources(in: app_path('Filament/Ppc/Resources'), for: 'App\\Filament\\Ppc\\Resources')
+			->discoverResources(in: app_path('Filament/Ppc/Resources'), for: 'App\\Filament\\Ppc\\Resources')
             ->discoverPages(in: app_path('Filament/Ppc/Pages'), for: 'App\\Filament\\Ppc\\Pages')
             ->pages([
                 Dashboard::class,

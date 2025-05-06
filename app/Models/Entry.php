@@ -50,4 +50,9 @@ class Entry extends Model
         return $this->belongsTo(PremiumFrequency::class);
     }
 	
+	public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+	
 }
