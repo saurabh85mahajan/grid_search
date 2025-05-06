@@ -24,6 +24,8 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Support\Enums\FontWeight;
+use Filament\Infolists\Components\ImageEntry;
+
 
 class EntryResource extends Resource
 {
@@ -69,8 +71,7 @@ class EntryResource extends Resource
                             )
                             ->searchable()
                             ->preload()
-
-                            ->placeholder("--Select--"),
+							->placeholder("--Select--"),
                     ]),
                 ])
                 ->collapsible(),
@@ -104,8 +105,8 @@ class EntryResource extends Resource
 
                         Forms\Components\FileUpload::make("pan_card")
                             ->label("")
-
-                            ->placeholder("Upload PAN Card Copy"),
+							->placeholder("Upload PAN Card Copy")
+							->preserveFilenames(),
                     ]),
 
                     Fieldset::make(
@@ -114,11 +115,11 @@ class EntryResource extends Resource
                         ->schema([
                             Forms\Components\FileUpload::make("aadhaar_front")
                                 ->label("")
-
+								->preserveFilenames()
                                 ->placeholder("Upload Aadhaar Front"),
                             Forms\Components\FileUpload::make("aadhaar_back")
                                 ->label("")
-
+								->preserveFilenames()
                                 ->placeholder("Upload Aadhaar Back"),
                         ])
                         ->columns(2),
@@ -128,9 +129,8 @@ class EntryResource extends Resource
             // Nominee Details
             Forms\Components\Section::make("Nominee Details")
                 ->schema([
-                    Forms\Components\Grid::make(3)->schema([
+                    Forms\Components\Grid::make(2)->schema([
                         Forms\Components\TextInput::make("nominee_name")
-
                             ->label(
                                 "Nominee Name (Mention NA in case of Non-individual)"
                             )
@@ -142,10 +142,10 @@ class EntryResource extends Resource
                                 "Enter Nominee Relationship with Policy Holder"
                             )
 							->extraInputAttributes(['maxlength' => 50]),
-
                         Forms\Components\DatePicker::make("nominee_dob")
-                            ->label("Nominee Date of Birth")
-                            ->helperText("Mention Date of Incorporation in case of Non-individual")
+                            ->label(
+                                "Nominee Date of Birth (Mention Date of Incorporation in case of Non-individual)"
+                            )
                             ->placeholder("Select Nominee DOB")
                             ->format("Y-m-d"),
                     ]),
@@ -193,10 +193,12 @@ class EntryResource extends Resource
 
                         Forms\Components\Select::make("life_insurance_type_id")
                             ->label("Type of Life Insurance")
-                            ->hidden(
+                            ->disabled(fn (Forms\Get $get): bool => $get('insurance_type_id') == 3)
+							->dehydrated()
+							/* ->hidden(
 								fn(Forms\Get $get): bool =>
 								in_array($get('insurance_type_id'), ['3'])
-							)
+							) */
 							->relationship(
                                 "lifeInsuranceType",
                                 "name",
@@ -211,10 +213,12 @@ class EntryResource extends Resource
 							
                         Forms\Components\Select::make("health_insurance_type_id")
                             ->label("Type of Health Plan")
-                            ->hidden(
+                            ->dehydrated()
+							->disabled(fn (Forms\Get $get): bool => $get('insurance_type_id') == 3)
+							/* ->hidden(
 								fn(Forms\Get $get): bool =>
 								in_array($get('insurance_type_id'), ['3'])
-							)
+							) */
 							->relationship(
                                 "healthInsuranceType",
                                 "name",
@@ -327,12 +331,12 @@ class EntryResource extends Resource
                     Forms\Components\Grid::make(2)->schema([
                         Forms\Components\FileUpload::make("policy_bond")
                             ->label("")
-
+							->preserveFilenames()
                             ->placeholder("Upload Policy Bond"),
 
                         Forms\Components\FileUpload::make("rc_copy")
                             ->label("")
-
+							->preserveFilenames()
                             ->placeholder("Upload RC copy"),
                     ]),
 
@@ -406,7 +410,7 @@ class EntryResource extends Resource
 
                         Forms\Components\FileUpload::make("policy_bond_receipt")
                             ->label("")
-
+							->preserveFilenames()
                             ->placeholder(
                                 "Upload Policy Bond / Premium Receipt"
                             ),
@@ -530,7 +534,19 @@ class EntryResource extends Resource
                     })
             ])
             ->columns([
-                TextColumn::make('business_sourced_by')
+				TextColumn::make('user.id')
+                    ->formatStateUsing(function (Entry $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->user->name}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->label('Agent')
+                    ->searchable(['name'])
+                    ->sortable(),
+				TextColumn::make('business_sourced_by')
                     ->formatStateUsing(function (Entry $record): string {
                         return "
                             <div class='space-y-1'>
@@ -544,7 +560,7 @@ class EntryResource extends Resource
                     ->label('Business')
                     ->searchable(['business_sourced_by', 'advisor_name', 'advisor_code'])
                     ->sortable(),
-                TextColumn::make('name')
+				TextColumn::make('name')
                     ->formatStateUsing(function (Entry $record): string {
                         return "
                             <div class='space-y-1'>
@@ -558,7 +574,7 @@ class EntryResource extends Resource
                     ->label('Name')
                     ->searchable(['name', 'mobile_no', 'email'])
                     ->sortable(),
-                Tables\Columns\TextColumn::make('make')
+				Tables\Columns\TextColumn::make('make')
                     ->label('Vehicle Details')
                     ->formatStateUsing(function (Entry $record): string {
                         return "
@@ -571,7 +587,7 @@ class EntryResource extends Resource
                     })
                     ->searchable(['vehicle_number', 'vehicle_model'])
                     ->html(),
-                Tables\Columns\TextColumn::make('insuranceCompany.name')
+				Tables\Columns\TextColumn::make('insuranceCompany.name')
                     ->label('Insurance Detail')
                     ->formatStateUsing(function (Entry $record): string {
                         return "
@@ -585,7 +601,7 @@ class EntryResource extends Resource
                         ";
                     })
                     ->html(),
-                TextColumn::make('premium_amount_total')
+				TextColumn::make('premium_amount_total')
                     ->label('Total Premium')
                     ->formatStateUsing(function (Entry $record): string {
                         $totalPremium = number_format($record->premium_amount_total, 2);
@@ -597,7 +613,7 @@ class EntryResource extends Resource
                     })
                     ->html()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+				Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -636,17 +652,22 @@ class EntryResource extends Resource
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+				Tables\Actions\EditAction::make()
+				->hidden(fn ($record) :bool => 
+					$record['user_id'] != auth()->user()->id
+				),
                 Tables\Actions\ViewAction::make(),
-            ])
-            ->bulkActions([]);
+			])
+            ->bulkActions([
+                
+            ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
-        ];
+                //
+            ];
     }
 
     public static function getPages(): array
@@ -655,78 +676,76 @@ class EntryResource extends Resource
             "index" => Pages\ListEntries::route("/"),
             "create" => Pages\CreateEntry::route("/create"),
             "edit" => Pages\EditEntry::route("/{record}/edit"),
-            'view' => Pages\ViewEntry::route('/{record}'),
+			'view' => Pages\ViewEntry::route('/{record}'),
         ];
     }
-
-    public static function infolist(Infolist $infolist): Infolist
+	
+	public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
             ->schema([
                 Section::make('Bussiness Details')
                     ->schema([
-                        Grid::make(4)
-                            ->schema([
-                                TextEntry::make('business_sourced_by')
-                                    ->label('Business Sourced by'),
-                                TextEntry::make('advisor_name')
-                                    ->label('Advisor/POS Name'),
-                                TextEntry::make('advisor_code')
-                                    ->label('Advisor / POS Code'),
-                                TextEntry::make('businessType.name')
-                                    ->label('Nature of Business'),
-                            ]),
-                    ])->collapsible(),
-                Section::make('Personal Details')
+						Grid::make(4)
+						->schema([
+							TextEntry::make('business_sourced_by')
+                            ->label('Business Sourced by'),
+							TextEntry::make('advisor_name')
+                            ->label('Advisor/POS Name'),
+							TextEntry::make('advisor_code')
+                            ->label('Advisor / POS Code'),
+							TextEntry::make('businessType.name')
+							->label('Nature of Business'),
+						]),
+				])->collapsible(),
+				Section::make('Personal Details')
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('name')
-                                    ->label('Name')
-                                    ->state(
-                                        fn($record) =>
-                                        trim(($record->name ?? '') . ' ')
-                                    )
-                                    ->weight(FontWeight::Bold),
-                                TextEntry::make('email')
-                                    ->label('Email')
-                                    ->icon('heroicon-m-envelope')
-                                    ->copyable(),
+					Grid::make(3)
+					->schema([
+						TextEntry::make('name')
+							->label('Name')
+							->state(fn ($record) => 
+								trim(($record->name ?? '') . ' ')
+							)
+							->weight(FontWeight::Bold),
+						TextEntry::make('email')
+							->label('Email')
+							->icon('heroicon-m-envelope')
+							->copyable(),
 
-                                TextEntry::make('mobile_no')
-                                    ->label('Mobile')
-                                    ->icon('heroicon-m-device-phone-mobile')
-                                    ->copyable(),
-                                TextEntry::make('pan_card')
-                                    ->label('Pan Card')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                                TextEntry::make('aadhaar_front')
-                                    ->label('Aadhaar Front')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                                TextEntry::make('aadhaar_back')
-                                    ->label('Aadhaar Front')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                            ]),
-                    ])->collapsible(),
-                Section::make('Nominee Details')
+						TextEntry::make('mobile_no')
+							->label('Mobile')
+							->icon('heroicon-m-device-phone-mobile')
+							->copyable(),
+						TextEntry::make('pan_card')
+							->label('Pan Card')
+							->icon('heroicon-m-document-text')
+							->badge(),
+						TextEntry::make('aadhaar_front')
+							->label('Aadhaar Front')
+							->icon('heroicon-m-document-text')
+							->badge(),
+						TextEntry::make('aadhaar_back')
+							->label('Aadhaar Front')
+							->icon('heroicon-m-document-text')
+							->badge(),
+					]),
+				])->collapsible(),
+				Section::make('Nominee Details')
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('nominee_name')
-                                    ->label('Nominee Name'),
-                                TextEntry::make('nominee_dob')
-                                    ->label('Nominee Date of Birth')
-                                    ->icon('heroicon-m-calendar-date-range'),
-                                TextEntry::make('nominee_relationship')
-                                    ->label('Nominee Relationship'),
-                            ]),
-                    ])->collapsible(),
-                Section::make('Insurance Details')
+						Grid::make(3)
+						->schema([
+							TextEntry::make('nominee_name')
+							->label('Nominee Name'),
+							TextEntry::make('nominee_dob')
+							->label('Nominee Date of Birth')
+							->icon('heroicon-m-calendar-date-range'),
+							TextEntry::make('nominee_relationship')
+							->label('Nominee Relationship'),
+					]),
+				])->collapsible(),
+				Section::make('Insurance Details')
                     ->schema([
-
 					Grid::make(3)
 						->schema([
 							TextEntry::make('insuranceCompany.name')
@@ -744,108 +763,107 @@ class EntryResource extends Resource
 					]),
 				])->collapsible(),
 				Section::make('Vehicle Details')
-
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('make.name')
-                                    ->label('Vehicle Make')
-                                    ->badge(),
-                                TextEntry::make('vehicle_model')
-                                    ->label('Vehicle Model')
-                                    ->badge(),
-                                TextEntry::make('vehicle_number')
-                                    ->label('Vehicle Number')
-                                    ->badge(),
-                            ]),
-                    ])->collapsible(),
-                Section::make('Policy Details')
+					Grid::make(3)
+						->schema([
+							TextEntry::make('make.name')
+							->label('Vehicle Make')
+							->badge(),
+							TextEntry::make('vehicle_model')
+							->label('Vehicle Model')
+							->badge(),
+							TextEntry::make('vehicle_number')
+							->label('Vehicle Number')
+							->badge(),
+					]),
+				])->collapsible(),
+				Section::make('Policy Details')
                     ->schema([
-                        Grid::make(4)
-                            ->schema([
-                                TextEntry::make('od_risk_start_date')
-                                    ->label('Risk Start Date (Own Damage)')
-                                    ->icon('heroicon-m-calendar-days'),
-                                TextEntry::make('od_risk_end_date')
-                                    ->label('Risk end Date (Own Damage)')
-                                    ->icon('heroicon-m-calendar-days'),
-                                TextEntry::make('tp_risk_start_date')
-                                    ->label('Risk start Date (Third Party)')
-                                    ->icon('heroicon-m-calendar-days'),
-                                TextEntry::make('tp_risk_end_date')
-                                    ->label('Risk End Date (Third Party)')
-                                    ->icon('heroicon-m-calendar-days'),
-                            ]),
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('own_damage_premium')
-                                    ->label('Own Damage and Riders Premium')
-                                    ->weight(FontWeight::Bold)
-                                    ->money('INR'),
-                                TextEntry::make('idv')
-                                    ->label('IDV')
-                                    ->weight(FontWeight::Bold)
-                                    ->money('INR'),
-                                TextEntry::make('third_party_premium')
-                                    ->label('Third Party Premium')
-                                    ->weight(FontWeight::Bold)
-                                    ->money('INR'),
-                            ]),
-                        Grid::make(3)
-                            ->schema([
-                                TextEntry::make('policy_bond')
-                                    ->label('Policy Bond')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                                TextEntry::make('rc_copy')
-                                    ->label('RC')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                            ]),
-                        Grid::make(4)
-                            ->schema([
-                                TextEntry::make('premiumFrequency.name')
-                                    ->label('Premium frequency'),
-                                TextEntry::make('sum_insured')
-                                    ->label('Sum Insured/Assured')
-                                    ->weight(FontWeight::Bold)
-                                    ->money('INR'),
-                                TextEntry::make('premium_paying_term')
-                                    ->label('Premium Paying Term'),
-                                TextEntry::make('policy_term')
-                                    ->label('Policy Term'),
-                                TextEntry::make('premium_amount')
-                                    ->label('Premium Amount without GST')
-                                    ->weight(FontWeight::Bold)
-                                    ->money('INR'),
-                                TextEntry::make('risk_start_date')
-                                    ->label('Risk Start Date')
-                                    ->icon('heroicon-m-calendar-days'),
-                                TextEntry::make('risk_end_date')
-                                    ->label('Risk End Date')
-                                    ->icon('heroicon-m-calendar-days'),
-                                TextEntry::make('policy_bond')
-                                    ->label('Premium Receipt')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                            ]),
-                        Grid::make(4)
-                            ->schema([
-                                TextEntry::make('policy_term')
-                                    ->label('Number of lives')
-                                    ->icon('heroicon-m-user'),
-                                TextEntry::make('premium_amount')
-                                    ->label('Premium Amount')
-                                    ->weight(FontWeight::Bold)
-                                    ->money('INR'),
-                                TextEntry::make('out_percentage')
-                                    ->label('Out%')
-                                    ->suffix('%'),
-                                TextEntry::make('net_od')
-                                    ->label('Net/Od')
-                                    ->suffix('%'),
-                            ]),
-                    ])->collapsible(),
-            ]);
-    }
+					Grid::make(4)
+						->schema([
+							TextEntry::make('od_risk_start_date')
+							->label('Risk Start Date (Own Damage)')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('od_risk_end_date')
+							->label('Risk end Date (Own Damage)')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('tp_risk_start_date')
+							->label('Risk start Date (Third Party)')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('tp_risk_end_date')
+							->label('Risk End Date (Third Party)')
+							->icon('heroicon-m-calendar-days'),
+					]),
+					Grid::make(3)
+						->schema([
+							TextEntry::make('own_damage_premium')
+							->label('Own Damage and Riders Premium')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('idv')
+							->label('IDV')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('third_party_premium')
+							->label('Third Party Premium')
+							->weight(FontWeight::Bold)
+							->money('INR'),												
+					]),
+					Grid::make(3)
+						->schema([
+							TextEntry::make('policy_bond')
+							->label('Policy Bond')
+							->icon('heroicon-m-document-text')
+							->badge(),
+							TextEntry::make('rc_copy')
+							->label('RC')
+							->icon('heroicon-m-document-text')
+							->badge(),							
+					]),
+					Grid::make(4)
+						->schema([
+							TextEntry::make('premiumFrequency.name')
+							->label('Premium frequency'),
+							TextEntry::make('sum_insured')
+							->label('Sum Insured/Assured')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('premium_paying_term')
+							->label('Premium Paying Term'),
+							TextEntry::make('policy_term')
+							->label('Policy Term'),
+							TextEntry::make('premium_amount')
+							->label('Premium Amount without GST')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('risk_start_date')
+							->label('Risk Start Date')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('risk_end_date')
+							->label('Risk End Date')
+							->icon('heroicon-m-calendar-days'),
+							TextEntry::make('policy_bond')
+							->label('Premium Receipt')
+							->icon('heroicon-m-document-text')
+							->badge(),
+					]),
+					Grid::make(4)
+						->schema([
+							TextEntry::make('policy_term')
+							->label('Number of lives')
+							->icon('heroicon-m-user'),
+							TextEntry::make('premium_amount')
+							->label('Premium Amount')
+							->weight(FontWeight::Bold)
+							->money('INR'),
+							TextEntry::make('out_percentage')
+							->label('Out%')
+							->suffix('%'),
+							TextEntry::make('net_od')
+							->label('Net/Od')
+							->suffix('%'),
+					]),
+				])->collapsible(),
+			]);
+	}
 }
