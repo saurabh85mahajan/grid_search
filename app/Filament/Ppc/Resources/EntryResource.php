@@ -557,22 +557,7 @@ class EntryResource extends Resource
                     })
                     ->html()
                     ->label('Agent')
-                    ->searchable(['name'])
-                    ->sortable(),
-                TextColumn::make('business_sourced_by')
-                    ->formatStateUsing(function (Entry $record): string {
-                        return "
-                            <div class='space-y-1'>
-                                <div class='font-medium'>{$record->business_sourced_by}</div>
-                                <div class='text-sm text-gray-500'>{$record->advisor_name}</div>
-                                <div class='text-xs text-gray-500'>{$record->advisor_code}</div>
-                            </div>
-                        ";
-                    })
-                    ->html()
-                    ->label('Business')
-                    ->searchable(['business_sourced_by', 'advisor_name', 'advisor_code'])
-                    ->sortable(),
+                    ->searchable(['name']),
                 TextColumn::make('name')
                     ->formatStateUsing(function (Entry $record): string {
                         return "
@@ -584,9 +569,8 @@ class EntryResource extends Resource
                         ";
                     })
                     ->html()
-                    ->label('Name')
-                    ->searchable(['name', 'mobile_no', 'email'])
-                    ->sortable(),
+                    ->label('Client Name')
+                    ->searchable(['name', 'mobile_no', 'email']),
                 Tables\Columns\TextColumn::make('make')
                     ->label('Vehicle Details')
                     ->formatStateUsing(function (Entry $record): string {
@@ -599,6 +583,7 @@ class EntryResource extends Resource
                         ";
                     })
                     ->searchable(['vehicle_number', 'vehicle_model'])
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->html(),
                 Tables\Columns\TextColumn::make('insuranceCompany.name')
                     ->label('Insurance Detail')
@@ -613,7 +598,8 @@ class EntryResource extends Resource
                             </div>
                         ";
                     })
-                    ->html(),
+                    ->html()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('premium_amount_total')
                     ->label('Total Premium')
                     ->formatStateUsing(function (Entry $record): string {
