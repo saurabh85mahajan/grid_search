@@ -37,7 +37,7 @@ class EntryResource extends Resource
                     Forms\Components\Grid::make(3)->schema([
                         Forms\Components\Hidden::make("user_id")
                             ->default(auth()->user()->id)
-                            ->dehydrated(fn ($state, $record) => $record === null),
+                            ->dehydrated(fn($state, $record) => $record === null),
 
                         Forms\Components\TextInput::make("business_sourced_by")
                             ->label("Business Sourced by")
@@ -97,12 +97,18 @@ class EntryResource extends Resource
                             ->label("Email")
                             ->email()
                             ->placeholder("Enter Email Address"),
-
-                        Forms\Components\FileUpload::make("pan_card")
-                            ->label("")
-                            ->placeholder("Upload PAN Card Copy")
-                            ->preserveFilenames(),
                     ]),
+
+                    Fieldset::make(
+                        "Upload PAN Card"
+                    )
+                        ->schema([
+                            Forms\Components\FileUpload::make("pan_card")
+                                ->label("")
+                                ->placeholder("PAN Card")
+                                ->preserveFilenames(),
+                        ])
+                        ->columns(1),
 
                     Fieldset::make(
                         "Upload Adhar"
@@ -285,7 +291,8 @@ class EntryResource extends Resource
                             ]),
 
                         Forms\Components\TextInput::make("third_party_premium")
-                            ->label("Third Party Premium (Without GST)")
+                            ->label("Third Party Premium")
+                            ->helperText('Without GST')
                             ->placeholder("Enter Premium")
                             ->prefix('₹')
                             ->extraInputAttributes([
@@ -294,9 +301,8 @@ class EntryResource extends Resource
                             ->numeric(),
 
                         Forms\Components\TextInput::make("own_damage_premium")
-                            ->label(
-                                "Own Damage and Riders Premium (without GST)"
-                            )
+                            ->label("Own Damage and Riders Premium")
+                            ->helperText('Without GST')
                             ->prefix('₹')
                             ->extraInputAttributes([
                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
@@ -325,6 +331,14 @@ class EntryResource extends Resource
                             ->label("Risk End Date")
                             ->helperText('Third Party')
                             ->format("Y-m-d"),
+
+                        Forms\Components\DatePicker::make("risk_start_date")
+                            ->label("Risk Start Date")
+                            ->format("Y-m-d"),
+
+                        Forms\Components\DatePicker::make("risk_end_date")
+                            ->label("Risk End Date")
+                            ->format("Y-m-d"),
                     ]),
 
                     Forms\Components\Grid::make(2)->schema([
@@ -339,7 +353,7 @@ class EntryResource extends Resource
                             ->placeholder("Upload RC copy"),
                     ]),
 
-                    Forms\Components\Grid::make(2)->schema([
+                    Forms\Components\Grid::make(3)->schema([
                         Forms\Components\Select::make("premium_frequency_id")
                             ->label("Premium frequency")
                             ->relationship(
@@ -352,14 +366,6 @@ class EntryResource extends Resource
                             ->searchable()
                             ->preload()
                             ->placeholder("Select Premium frequency"),
-
-                        Forms\Components\TextInput::make("sum_insured")
-                            ->label("Sum Insured/Assured")
-                            ->prefix('₹')
-                            ->extraInputAttributes([
-                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                            ])
-                            ->placeholder("Sum Insured/Assured"),
 
                         Forms\Components\Select::make("premium_paying_term")
                             ->label("Premium Paying Term")
@@ -392,30 +398,43 @@ class EntryResource extends Resource
                                 return $years;
                             }),
 
+                    ]),
+
+                    Forms\Components\Grid::make(3)->schema([
+                        Forms\Components\TextInput::make("sum_insured")
+                            ->label("Sum Insured/Assured")
+                            ->prefix('₹')
+                            ->extraInputAttributes([
+                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                            ])
+                            ->placeholder("Sum Insured/Assured"),
                         Forms\Components\TextInput::make("premium_amount")
-                            ->label("Premium Amount without GST")
+                            ->label("Premium Amount")
+                            ->helperText('Without GST')
                             ->numeric()
                             ->prefix('₹')
                             ->extraInputAttributes([
                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                             ])
                             ->placeholder("Enter Premium Amount without GST"),
+                        Forms\Components\TextInput::make("premium_amount_total")
+                            ->label("Total Premium Amount")
+                            ->numeric()
+                            ->placeholder("Enter Total Premium Amount")
+                            ->prefix('₹')
+                            ->extraInputAttributes([
+                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                            ]),
+                    ]),
 
-                        Forms\Components\DatePicker::make("risk_start_date")
-                            ->label("Risk Start Date")
-                            ->format("Y-m-d"),
+                    Forms\Components\FileUpload::make("policy_bond_receipt")
+                        ->label("")
+                        ->preserveFilenames()
+                        ->placeholder(
+                            "Upload Policy Bond / Premium Receipt"
+                        ),
 
-                        Forms\Components\DatePicker::make("risk_end_date")
-                            ->label("Risk End Date")
-                            ->format("Y-m-d"),
-
-                        Forms\Components\FileUpload::make("policy_bond_receipt")
-                            ->label("")
-                            ->preserveFilenames()
-                            ->placeholder(
-                                "Upload Policy Bond / Premium Receipt"
-                            ),
-
+                    Forms\Components\Grid::make(3)->schema([
                         Forms\Components\TextInput::make("number_of_lives")
                             ->label("Number of lives")
                             ->numeric()
@@ -424,14 +443,7 @@ class EntryResource extends Resource
                                 'oninput' => 'if(this.value.length > 1) this.value = this.value.slice(0, 1);'
                             ]),
 
-                        Forms\Components\TextInput::make("premium_amount_total")
-                            ->label("Premium Amount")
-                            ->numeric()
-                            ->placeholder("Enter Premium Amount")
-                            ->prefix('₹')
-                            ->extraInputAttributes([
-                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                            ]),
+
 
                         Forms\Components\TextInput::make("out_percentage")
                             ->label("Out%")
