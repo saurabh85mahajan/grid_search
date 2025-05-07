@@ -59,6 +59,12 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'protected' => [
+            'driver' => 'local',
+            'root' => storage_path('app/protected'),
+            'visibility' => 'private',
+            'throw' => false,
+        ],
 
     ],
 

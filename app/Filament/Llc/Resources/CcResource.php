@@ -5,7 +5,6 @@ namespace App\Filament\Llc\Resources;
 use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\ProductCategory;
-use App\Traits\HasStatusColumn;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +14,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Infolist;
@@ -24,11 +24,11 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class CcResource extends Resource
 {
-    use HasStatusColumn;
-
     protected static ?string $model = Cc::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -828,6 +828,36 @@ class CcResource extends Resource
                                     ]),
 
                             ])->collapsible(),
+                            Forms\Components\Section::make('Documents')
+                            ->schema([
+                                FileUpload::make('proposal_form')
+                                ->label('Proposal Form')
+                                ->disk('protected')
+                                ->directory('cc_proposals/' . auth()->id())
+                                ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                ->maxSize(10240)
+                                ->downloadable()
+                                ->openable(),
+                                // ->visibility('private')
+                                // ->getUploadedFileNameForStorageUsing(
+                                //     fn (TemporaryUploadedFile $file): string => 
+                                //         Str::random(16) . '_' . $file->getClientOriginalName()
+                                // ),
+                                
+                                FileUpload::make('renewal_form')
+                                    ->label('Renewal Form')
+                                    ->disk('protected')
+                                    ->directory('cc_renewals/' . auth()->id()) // Different directory for organization
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->downloadable()
+                                    ->openable(),
+                                    // ->visibility('private')
+                                    // ->getUploadedFileNameForStorageUsing(
+                                    //     fn (TemporaryUploadedFile $file): string => 
+                                    //         Str::random(16) . '_' . $file->getClientOriginalName()
+                                    // ),
+                            ])->collapsible(),
 
                     ])
             ]);
@@ -1471,6 +1501,19 @@ class CcResource extends Resource
                                             ->money('INR')
                                             ->weight(FontWeight::Bold),
                                     ]),
+                            ])
+                            ->collapsible(),
+                        // Payment Details
+                        Section::make('Payment Details')
+                            ->schema([
+                                ViewEntry::make('proposal_form')
+                                ->label('Proposal Form')
+                                ->view('filament.infolists.components.file-viewer'),
+                                
+                                // For renewal form - works for both PDF and image
+                                ViewEntry::make('renewal_form')
+                                    ->label('Renewal Form')
+                                    ->view('filament.infolists.components.file-viewer'),
                             ])
                             ->collapsible(),
                     ]),

@@ -101,7 +101,8 @@ return new class extends Migration
             $table->integer('bank_id')->nullable();
             $table->decimal('payment_amount', 10, 2)->nullable();
             
-            $table->boolean('is_active')->default(true);
+            $table->string('proposal_form')->nullable();
+            $table->string('renewal_form')->nullable();
 
             $table->timestamps();
         });
