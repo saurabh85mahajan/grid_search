@@ -652,7 +652,7 @@ class EntryResource extends Resource
                     ->html()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d M, Y')
+                    ->dateTime('dS M, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
