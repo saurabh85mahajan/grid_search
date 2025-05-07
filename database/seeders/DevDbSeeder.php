@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Cc;
+use App\Models\Entry;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -36,6 +37,7 @@ class DevDbSeeder extends Seeder
         ]);
 
         Cc::factory()->count(10)->create();
+        Entry::factory()->count(10)->create();
         
     }
 }

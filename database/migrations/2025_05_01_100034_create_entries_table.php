@@ -66,7 +66,7 @@ return new class extends Migration
             $table->integer('number_of_lives')->nullable();
             $table->decimal('premium_amount_total', 15, 2)->nullable();
             $table->decimal('out_percentage', 5, 2)->nullable();
-            $table->decimal('net_od', 5, 2)->nullable();
+            $table->decimal('net_od', 15, 2)->nullable();
             $table->timestamps();
         });
     }
