@@ -591,10 +591,7 @@ class EntryResource extends Resource
                         return "
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->insuranceCompany->name}</div>
-                                <div class='text-sm text-gray-500'>{$record->insuranceType->name}</div>
-                                <div class='text-xs text-gray-500'>Life: Type: {$record->lifeInsuranceType->name}</div>
-                                <div class='text-xs text-gray-500'>Health: {$record->healthInsuranceType->name}</div>
-                                <div class='text-xs text-gray-500'>General: {$record->generalInsuranceType->name}</div>
+                                <div class='text-xs text-gray-500'>{$record->insurance_type_name}</div>
                             </div>
                         ";
                     })
