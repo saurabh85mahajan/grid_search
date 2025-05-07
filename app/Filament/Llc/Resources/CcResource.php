@@ -910,7 +910,7 @@ class CcResource extends Resource
                     ->label('Agent')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d M, Y')
+                    ->dateTime('dS M, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
