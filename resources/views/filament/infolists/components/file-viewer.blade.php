@@ -2,6 +2,7 @@
     @php
         $state = $getState();
         $record = $getRecord();
+        $label = $getLabel();
         $fileUrl = null;
         $fileType = null;
         
@@ -21,37 +22,43 @@
         }
     @endphp
     
-    @if(!$state)
-        <div class="text-gray-500 italic">N.A.</div>
-    @elseif($fileType == 'pdf')
-        <div class="flex flex-col gap-1">
-            <a 
-                href="{{ $fileUrl }}" 
-                target="_blank" 
-                class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset filament-button h-9 px-4 text-sm text-white shadow focus:ring-white border-primary-600 bg-primary-600 hover:bg-primary-500 hover:border-primary-500"
-            >
-                <span>View PDF</span>
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-            </a>
+    <div class="flex flex-col gap-2">
+        <div class="text-sm font-medium text-gray-600">
+            {{ $label }}
         </div>
-    @elseif($fileType == 'image')
-        <div class="rounded-xl overflow-hidden border border-gray-300 shadow-sm">
-            <img src="{{ $fileUrl }}" alt="Document" class="max-w-xs h-auto object-cover" />
-        </div>
-    @else
-        <div class="flex flex-col gap-1">
-            <a 
-                href="{{ $fileUrl }}" 
-                target="_blank" 
-                class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset filament-button h-9 px-4 text-sm text-white shadow focus:ring-white border-primary-600 bg-primary-600 hover:bg-primary-500 hover:border-primary-500"
-            >
-                <span>View Document</span>
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-            </a>
-        </div>
-    @endif
+        
+        @if(!$state)
+            <div class="text-gray-500 italic">No document uploaded</div>
+        @elseif($fileType == 'pdf')
+            <div class="flex flex-col gap-1">
+                <a 
+                    href="{{ $fileUrl }}" 
+                    target="_blank" 
+                    class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset filament-button h-9 px-4 text-sm text-white shadow focus:ring-white border-primary-600 bg-primary-600 hover:bg-primary-500 hover:border-primary-500"
+                >
+                    <span>View PDF</span>
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+        @elseif($fileType == 'image')
+            <div class="rounded-xl overflow-hidden border border-gray-300 shadow-sm">
+                <img src="{{ $fileUrl }}" alt="{{ $label }}" class="max-w-xs h-auto object-cover" />
+            </div>
+        @else
+            <div class="flex flex-col gap-1">
+                <a 
+                    href="{{ $fileUrl }}" 
+                    target="_blank" 
+                    class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset filament-button h-9 px-4 text-sm text-white shadow focus:ring-white border-primary-600 bg-primary-600 hover:bg-primary-500 hover:border-primary-500"
+                >
+                    <span>View Document</span>
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+        @endif
+    </div>
 </div>

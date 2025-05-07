@@ -22,6 +22,7 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Str;
@@ -338,7 +339,7 @@ class CcResource extends Resource
                                         Forms\Components\DatePicker::make('expiry_date')
                                             ->label('Expiry Date')
                                             ->format('Y-m-d')
-                                            ->minDate(now())
+                                            ->minDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->validationMessages([
                                                 'required' => 'Please enter date',
                                             ])
@@ -362,7 +363,7 @@ class CcResource extends Resource
 
                                         Forms\Components\DatePicker::make('tp_expiry_date')
                                             ->label('TP Expiry Date')
-                                            ->minDate(now())
+                                            ->minDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->format('Y-m-d'),
 
                                         Forms\Components\TextInput::make('idv')
@@ -828,37 +829,34 @@ class CcResource extends Resource
                                     ]),
 
                             ])->collapsible(),
-                            Forms\Components\Section::make('Documents')
+                        Forms\Components\Section::make('Documents')
                             ->schema([
                                 FileUpload::make('proposal_form')
                                 ->label('Proposal Form')
                                 ->disk('protected')
-                                ->directory('cc_proposals/' . auth()->id())
+                                ->directory('cc_proposals/')
                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                 ->maxSize(10240)
-                                ->downloadable()
-                                ->openable(),
-                                // ->visibility('private')
-                                // ->getUploadedFileNameForStorageUsing(
-                                //     fn (TemporaryUploadedFile $file): string => 
-                                //         Str::random(16) . '_' . $file->getClientOriginalName()
-                                // ),
+                                ->maxFiles(1) 
+                                ->previewable()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn (TemporaryUploadedFile $file): string => 
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                ),
                                 
                                 FileUpload::make('renewal_form')
                                     ->label('Renewal Form')
                                     ->disk('protected')
-                                    ->directory('cc_renewals/' . auth()->id()) // Different directory for organization
+                                    ->directory('cc_renewals/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
-                                    ->downloadable()
-                                    ->openable(),
-                                    // ->visibility('private')
-                                    // ->getUploadedFileNameForStorageUsing(
-                                    //     fn (TemporaryUploadedFile $file): string => 
-                                    //         Str::random(16) . '_' . $file->getClientOriginalName()
-                                    // ),
+                                    ->maxFiles(1) 
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn (TemporaryUploadedFile $file): string => 
+                                            time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
                             ])->collapsible(),
-
                     ])
             ]);
     }
