@@ -5,7 +5,6 @@ namespace App\Filament\Llc\Resources;
 use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\ProductCategory;
-use App\Traits\HasStatusColumn;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,6 +14,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Infolist;
@@ -22,13 +22,14 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class CcResource extends Resource
 {
-    use HasStatusColumn;
-
     protected static ?string $model = Cc::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -208,7 +209,7 @@ class CcResource extends Resource
                                         Forms\Components\DatePicker::make('nominee_dob')
                                             ->label('Nominee DOB')
                                             ->placeholder('Select Nominee DOB')
-                                            ->maxDate(now())
+                                            ->maxDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->format('Y-m-d'),
                                     ]),
 
@@ -273,7 +274,7 @@ class CcResource extends Resource
                                             ->label('Policy Issue Date')
                                             ->placeholder('Select Policy Issue Date')
                                             ->format('Y-m-d')
-                                            ->maxDate(now())
+                                            ->maxDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->columnSpan(2)
                                             ->validationMessages([
                                                 'required' => 'Please enter date',
@@ -338,7 +339,7 @@ class CcResource extends Resource
                                         Forms\Components\DatePicker::make('expiry_date')
                                             ->label('Expiry Date')
                                             ->format('Y-m-d')
-                                            ->minDate(now())
+                                            ->minDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->validationMessages([
                                                 'required' => 'Please enter date',
                                             ])
@@ -362,7 +363,7 @@ class CcResource extends Resource
 
                                         Forms\Components\DatePicker::make('tp_expiry_date')
                                             ->label('TP Expiry Date')
-                                            ->minDate(now())
+                                            ->minDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->format('Y-m-d'),
 
                                         Forms\Components\TextInput::make('idv')
@@ -828,7 +829,34 @@ class CcResource extends Resource
                                     ]),
 
                             ])->collapsible(),
-
+                        Forms\Components\Section::make('Documents')
+                            ->schema([
+                                FileUpload::make('proposal_form')
+                                ->label('Proposal Form')
+                                ->disk('protected')
+                                ->directory('cc_proposals/')
+                                ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                ->maxSize(10240)
+                                ->maxFiles(1) 
+                                ->previewable()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn (TemporaryUploadedFile $file): string => 
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                ),
+                                
+                                FileUpload::make('renewal_form')
+                                    ->label('Renewal Form')
+                                    ->disk('protected')
+                                    ->directory('cc_renewals/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1) 
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn (TemporaryUploadedFile $file): string => 
+                                            time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                            ])->collapsible(),
                     ])
             ]);
     }
@@ -837,17 +865,6 @@ class CcResource extends Resource
     {
         return $table
             ->columns([
-				TextColumn::make('user.id')
-                    ->formatStateUsing(function (Cc $record): string {
-                        return "
-                            <div class='space-y-1'>
-                                <div class='font-medium'>{$record->user->name}</div>
-                            </div>
-                        ";
-                    })
-                    ->html()
-                    ->label('Agent')
-                    ->searchable(['name']),
                 TextColumn::make('proposal_type')
                     ->formatStateUsing(function (Cc $record): string {
                         return "
@@ -921,7 +938,7 @@ class CcResource extends Resource
                     ->label('Agent')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('d M, Y')
+                    ->dateTime('dS M, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
@@ -1559,6 +1576,19 @@ class CcResource extends Resource
                                             ->money('INR')
                                             ->weight(FontWeight::Bold),
                                     ]),
+                            ])
+                            ->collapsible(),
+                        // Payment Details
+                        Section::make('Payment Details')
+                            ->schema([
+                                ViewEntry::make('proposal_form')
+                                ->label('Proposal Form')
+                                ->view('filament.infolists.components.file-viewer'),
+                                
+                                // For renewal form - works for both PDF and image
+                                ViewEntry::make('renewal_form')
+                                    ->label('Renewal Form')
+                                    ->view('filament.infolists.components.file-viewer'),
                             ])
                             ->collapsible(),
                     ]),
