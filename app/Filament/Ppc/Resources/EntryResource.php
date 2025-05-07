@@ -484,18 +484,17 @@ class EntryResource extends Resource
                         $filters = $livewire->tableFiltersForm->getState();
 
                         // Build query
-                        $query = Entry::query();
-
+                        $query = Entry::query()
+						->join('users', 'users.id', '=', 'entries.user_id');
                         // Apply search
                         if (!empty($search)) {
                             $query->where(function ($q) use ($search) {
-                                $q->where('business_sourced_by', 'like', "%{$search}%")
-                                    ->orWhere('advisor_name', 'like', "%{$search}%")
-                                    ->orWhere('advisor_code', 'like', "%{$search}%")
-                                    ->orWhere('name', 'like', "%{$search}%")
-                                    ->orWhere('mobile_no', 'like', "%{$search}%")
-                                    ->orWhere('email', 'like', "%{$search}%")
-                                    ->orWhere('vehicle_model', 'like', "%{$search}%")
+                                $q->Where('users.name', 'like', "%{$search}%")
+                                    ->orWhere('entries.name', 'like', "%{$search}%")
+									->orWhere('mobile_no', 'like', "%{$search}%")
+                                    ->orWhere('entries.email', 'like', "%{$search}%")
+									->orWhere('makes.name', 'like', "%{$search}%")
+									->orWhere('vehicle_model', 'like', "%{$search}%")
                                     ->orWhere('vehicle_number', 'like', "%{$search}%")
                                     ->orWhere('premium_amount_total', 'like', "%{$search}%");
                             });
@@ -511,27 +510,70 @@ class EntryResource extends Resource
                         }
 
                         // Select only the required columns
-                        $data = $query->select('id', 'name', 'email', 'mobile_no', 'business_sourced_by', 'advisor_name', 'advisor_code', 'nominee_name', 'nominee_relationship', 'nominee_dob', 'created_at')->get();
+                        $data = $query
+						->select('entries.id', 'entries.business_sourced_by', 'entries.advisor_name', 'entries.advisor_code', 'business_types.name as bussines_name', 'entries.name', 'entries.pan_card', 'entries.mobile_no', 'entries.email', 'entries.aadhaar_front', 'entries.aadhaar_back', 'entries.nominee_name', 'entries.nominee_dob', 'entries.nominee_relationship', 'entries.nominee_dob', 'insurance_companies.name as insurance_company_name', 		'insurance_types.name as insurance_name_type', 'life_insurance_types.name as life_insurance_type_name', 'health_insurance_types.name as health_insurance_name', 'general_insurance_types.name as general_insurance_type_name', 'makes.name as make_name', 'premium_frequencies.name as premium_frequency_name', 'entries.vehicle_model', 'entries.vehicle_number', 'entries.idv', 'entries.own_damage_premium', 'entries.third_party_premium', 'entries.od_risk_start_date', 'entries.od_risk_end_date', 'entries.tp_risk_start_date', 'entries.tp_risk_end_date', 'entries.policy_bond', 'entries.rc_copy', 'entries.tp_risk_end_date', 'entries.sum_insured', 'entries.premium_paying_term', 'entries.policy_term', 'entries.premium_amount', 'entries.risk_start_date', 'entries.risk_end_date', 'entries.policy_bond_receipt', 'entries.number_of_lives', 'entries.premium_amount_total', 'entries.out_percentage', 'entries.net_od')
+						->join('business_types', 'business_types.id', '=', 'entries.business_type_id')
+						->join('insurance_companies', 'insurance_companies.id', '=', 'entries.insurance_company_id')
+						->join('insurance_types', 'insurance_types.id', '=', 'entries.insurance_type_id')
+						->join('life_insurance_types', 'life_insurance_types.id', '=', 'entries.life_insurance_type_id')
+						->join('health_insurance_types', 'health_insurance_types.id', '=', 'entries.health_insurance_type_id')
+						->join('general_insurance_types', 'general_insurance_types.id', '=', 'entries.general_insurance_type_id')
+						->join('makes', 'makes.id', '=', 'entries.make_id')
+						->join('premium_frequencies', 'premium_frequencies.id', '=', 'entries.premium_frequency_id')
+						->get();
 
                         //Todo Add All Columns.
-                        $headers = ['ID', 'Name', 'Email', 'Mobile', 'Business Sourced by', 'Advisor/POS Name', 'Advisor / POS Code', 'Nominee Name', 'Nominee Relationship', 'Nominee Date of Birth', 'Created At'];
+                        $headers = ['Sr No','Business sourced by','Advisor/POS Name','	Advisor / POS Code','Nature of Business','Name','Upload PAN Card Copy','Mobile No.','Email id','Upload Address Proof (Aadhar Card Copy - front)','Upload Address Proof (Aadhar Card Copy - back)','Nominee Name (Mention NA in case of Non-individual)','Nominee Date of Birth (Mention Date of Incorporation in case of Non-individual)','Nominee Relationship with Policy Holder','Select insurance company name','Select Type of Insurance','Type of Life Insurance','Type of Health Plan','Type of General Insurance','Vehicle Make','Vehicle Model','Vehicle Number','Insured Declared Value (IDV)','Own Damage and Riders Premium (without GST)','Third Party Premium (Without GST)','Risk Start Date (Own Damage)','Risk end Date (Own Damage)','Risk start Date (Third Party)','Risk End Date (Third Party)','Upload Policy Bond','Upload RC copy','Premium frequency','Sum Insured/Assured','Premium Paying Term (In number of years)','Policy Term (In number of years)','Premium Amount without GST)','Risk Start Date','Risk End Date','Upload Policy Bond / Premium Receipt','Number of lives','Premium Amount','Out %','Net/Od'];
 
                         $csvContent = implode(',', $headers) . "\n";
-
-                        foreach ($data as $row) {
+						$i=1;
+						foreach ($data as $row) {
                             $csvContent .= implode(',', [
-                                $row->id,
-                                '"' . str_replace('"', '""', $row->name ?? '') . '"',
-                                '"' . str_replace('"', '""', $row->email ?? '') . '"',
-                                '"' . str_replace('"', '""', $row->mobile_no ?? '') . '"',
+                                $i,
                                 '"' . str_replace('"', '""', $row->business_sourced_by ?? '') . '"',
                                 '"' . str_replace('"', '""', $row->advisor_name ?? '') . '"',
                                 '"' . str_replace('"', '""', $row->advisor_code ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->bussines_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->pan_card ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->mobile_no ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->email ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->aadhaar_front ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->aadhaar_back ?? '') . '"',
                                 '"' . str_replace('"', '""', $row->nominee_name ?? '') . '"',
-                                '"' . str_replace('"', '""', $row->nominee_relationship ?? '') . '"',
                                 '"' . str_replace('"', '""', $row->nominee_dob ?? '') . '"',
-                                $row->created_at
+                                '"' . str_replace('"', '""', $row->nominee_relationship ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->insurance_company_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->insurance_name_type ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->life_insurance_type_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->health_insurance_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->general_insurance_type_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->make_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->vehicle_model ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->vehicle_number ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->idv ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->own_damage_premium ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->third_party_premium ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->od_risk_start_date ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->od_risk_end_date ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->tp_risk_start_date ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->tp_risk_end_date ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->policy_bond ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->rc_copy ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->premium_frequency_name ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->sum_insured ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->premium_paying_term ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->policy_term ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->premium_amount ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->risk_start_date ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->risk_end_date ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->policy_bond_receipt ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->number_of_lives ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->premium_amount_total ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->out_percentage ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->net_od ?? '') . '"',
                             ]) . "\n";
+							$i++;
                         }
 
                         // Create a temporary file
@@ -610,7 +652,7 @@ class EntryResource extends Resource
                     ->html()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime('dS M, Y')
+                    ->dateTime('d M, Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
