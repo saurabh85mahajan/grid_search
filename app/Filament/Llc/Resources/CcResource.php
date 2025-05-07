@@ -999,16 +999,20 @@ class CcResource extends Resource
                         $filters = $livewire->tableFiltersForm->getState();
 
                         // Build query
-                        $query = CC::query();
+                        $query = CC::query()
+						->join('users', 'users.id', '=', 'ccs.user_id');
 
                         // Apply search
                         if (!empty($search)) {
                             $query->where(function ($q) use ($search) {
-                                $q->where('proposal_type', 'like', "%{$search}%")
+                                $q->Where('users.name', 'like', "%{$search}%")
+									->orwhere('proposal_type', 'like', "%{$search}%")
                                     ->orWhere('posp', 'like', "%{$search}%")
                                     ->orWhere('first_name', 'like', "%{$search}%")
                                     ->orWhere('last_name', 'like', "%{$search}%")
                                     ->orWhere('phone', 'like', "%{$search}%")
+                                    ->orWhere('zipcode', 'like', "%{$search}%")
+                                    ->orWhere('cities.name', 'like', "%{$search}%")
                                     ->orWhere('engine_type', 'like', "%{$search}%")
                                     ->orWhere('chasis', 'like', "%{$search}%")
                                     ->orWhere('registration_number_1', 'like', "%{$search}%")
@@ -1033,20 +1037,93 @@ class CcResource extends Resource
                         }
 
                         // Select only the required columns
-                        $data = $query->select('id', 'first_name', 'last_name', 'created_at')->get();
+                        $data = $query->select('ccs.proposal_type','ccs.last_year_entry_no','ccs.posp','salutations.name as salutation_name','ccs.first_name','ccs.middle_name','ccs.last_name','ccs.address_1','ccs.address_2','ccs.address_3','ccs.zipcode','ccs.city_id','ccs.email','ccs.phone','ccs.relationship','ccs.nominee_name','ccs.nominee_dob','regions.name as region_name','business_locks.name as business_lock_name','insurance_companies.name as insurance_company_name','ccs.policy_number','ccs.policy_issue_date','ccs.code','products.name as product_name','product_categories.name as product_category_name','ccs.risk_category','ccs.inception_date','ccs.expiry_date','ncbs.name as ncb_name','ccs.tp_inception_date','ccs.tp_expiry_date','ccs.idv','insurance_companies.name as py_company_name','ccs.py_policy_number','ccs.tarrif_rate','ccs.actual_tarrif','ccs.third_party','makes.name as make_name','ccs.vehicle_model','ccs.vehicle_sub_model','ccs.cc','ccs.yom','fuel_types.name as fuel_type_name','ccs.seating_capacity','ccs.registration_number_1','ccs.registration_number_2','ccs.registration_number_3','ccs.registration_number_4','ccs.engine_type','ccs.chasis','rtos.name as rto_name','ccs.od','ccs.add_on','ccs.other','ccs.tp_premium','ccs.tp_tax','ccs.tppd','ccs.liab_cng','ccs.liab_passenger','ccs.liab_owner_driver','ccs.tax','ccs.tax_amount','ccs.total_premium','ccs.od_percentage','ccs.tp_percentage','ccs.specific_amount','ccs.add_on_coverages','ccs.payment_mode','ccs.payment_date','ccs.cheque_trans_number','banks.name as bank_name','ccs.payment_amount')
+						->join('salutations', 'salutations.id', '=', 'ccs.salutation_id')
+						->join('regions', 'regions.id', '=', 'ccs.region_id')
+						->join('cities', 'cities.id', '=', 'ccs.city_id')
+						->join('business_locks', 'business_locks.id', '=', 'ccs.business_lock_id')
+						->join('insurance_companies', 'insurance_companies.id', '=', 'ccs.insurance_company_id')
+						->join('products', 'products.id', '=', 'ccs.product_id')
+						->join('product_categories', 'product_categories.id', '=', 'ccs.product_category_id')
+						->join('ncbs', 'ncbs.id', '=', 'ccs.ncb_id')
+						->join('makes', 'makes.id', '=', 'ccs.make_id')
+						->join('fuel_types', 'fuel_types.id', '=', 'ccs.fuel_type_id')
+						->join('rtos', 'rtos.id', '=', 'ccs.rto_id')
+						->join('banks', 'banks.id', '=', 'ccs.bank_id')
+						->get();
 
                         //Todo Add All Columns.
-                        $headers = ['ID', 'First Name', 'Last Name', 'Created At'];
+                        $headers = ['Sr. No.', 'Proposal Type', 'Proposal type', 'Client Name', 'Email', 'Mobile', 'Address', 'Pin Code', 'Nominee Rel.', 'Nominee Name', 'Nominee DOB', 'Region', 'Business Lock', 'Insurance Company', 'Policy No.', 'Policy Issue Date', 'Product', 'Product Category', 'Risk Category', 'Inception Date', 'Expiry Date', 'NCB', 'Code', 'TP Inception Date', 'TP Expiry Date', 'IDV', 'PY Ins. Comp.', 'PY Policy No.', 'Tariff Rate', 'Actual Tariff', 'Third Party', 'Make', 'Vehicle Model', 'Vehicle Sub Model', 'CC', 'YOM', 'Fuel Type', 'Seating Capacity', 'Registration Number', 'Engine No.', 'Chasis', 'RTO', 'OD', 'Add On', 'Other', 'TP Premium', 'TP Tax', 'TPPD(-)', 'Liab CNG', 'Liab Passenger', 'Liab Owner Driver', 'Tax', 'Tax Amount', 'Total Premium', 'OD%', 'TP%','Add On Coverages','Payment Mode', 'Payment Date', 'Cheque/Trans Number', 'Bank', 'Payment Amount'];
 
                         $csvContent = implode(',', $headers) . "\n";
-
+						$i=1;
                         foreach ($data as $row) {
                             $csvContent .= implode(',', [
-                                $row->id,
-                                '"' . str_replace('"', '""', $row->first_name ?? '') . '"',
-                                '"' . str_replace('"', '""', $row->last_name ?? '') . '"',
-                                $row->created_at
+                                $i,
+                                '"' . str_replace('"', '""', $row->proposal_type ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->posp ?? '') . '"',
+                                '"' . str_replace('"', '""', $row->salutation_name ?? '') . ' '. str_replace('"', '""', $row->first_name ?? '') . ' ' . str_replace('"', '""', $row->middle_name ?? '') . ' ' . str_replace('"', '""', $row->last_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->email ?? '') . '"',
+								'"' . str_replace('"', '""', $row->phone ?? '') . '"',
+								'"' . str_replace('"', '""', $row->address_1 ?? '') . ' ' . str_replace('"', '""', $row->address_2 ?? '') . ' ' . str_replace('"', '""', $row->address_3 ?? '') . '"',
+								'"' . str_replace('"', '""', $row->zipcode ?? '') . '"',
+								'"' . str_replace('"', '""', $row->relationship ?? '') . '"',
+								'"' . str_replace('"', '""', $row->nominee_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->nominee_dob ?? '') . '"',
+								'"' . str_replace('"', '""', $row->region_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->business_lock_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->insurance_company_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->policy_number ?? '') . '"',
+								'"' . str_replace('"', '""', $row->policy_issue_date ?? '') . '"',
+								'"' . str_replace('"', '""', $row->product_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->product_category_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->risk_category ?? '') . '"',
+								'"' . str_replace('"', '""', $row->inception_date ?? '') . '"',
+								'"' . str_replace('"', '""', $row->expiry_date ?? '') . '"',
+								'"' . str_replace('"', '""', $row->ncb_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->code ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tp_inception_date ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tp_expiry_date ?? '') . '"',
+								'"' . str_replace('"', '""', $row->idv ?? '') . '"',
+								'"' . str_replace('"', '""', $row->py_company_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->py_policy_number ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tarrif_rate ?? '') . '"',
+								'"' . str_replace('"', '""', $row->actual_tarrif ?? '') . '"',
+								'"' . str_replace('"', '""', $row->third_party ?? '') . '"',
+								'"' . str_replace('"', '""', $row->make_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->vehicle_model ?? '') . '"',
+								'"' . str_replace('"', '""', $row->vehicle_sub_model ?? '') . '"',
+								'"' . str_replace('"', '""', $row->cc ?? '') . '"',
+								'"' . str_replace('"', '""', $row->yom ?? '') . '"',
+								'"' . str_replace('"', '""', $row->fuel_type_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->seating_capacity ?? '') . '"',
+								'"' . str_replace('"', '""', $row->registration_number_1 ?? '') . ' '. str_replace('"', '""', $row->registration_number_2 ?? '') . ' ' . str_replace('"', '""', $row->registration_number_3 ?? '') . ' ' . str_replace('"', '""', $row->registration_number_4 ?? '') . '"',
+								'"' . str_replace('"', '""', $row->engine_type ?? '') . '"',
+								'"' . str_replace('"', '""', $row->chasis ?? '') . '"',
+								'"' . str_replace('"', '""', $row->rto_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->od ?? '') . '"',
+								'"' . str_replace('"', '""', $row->add_on ?? '') . '"',
+								'"' . str_replace('"', '""', $row->other ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tp_premium ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tp_tax ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tppd ?? '') . '"',
+								'"' . str_replace('"', '""', $row->liab_cng ?? '') . '"',
+								'"' . str_replace('"', '""', $row->liab_passenger ?? '') . '"',
+								'"' . str_replace('"', '""', $row->liab_owner_driver ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tax ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tax_amount ?? '') . '"',
+								'"' . str_replace('"', '""', $row->total_premium ?? '') . '"',
+								'"' . str_replace('"', '""', $row->od_percentage ?? '') . '"',
+								'"' . str_replace('"', '""', $row->tp_percentage ?? '') . '"',
+								'"' . str_replace('"', '""', $row->specific_amount ?? '') . '"',
+								'"' . str_replace('"', '""', $row->add_on_coverages ?? '') . '"',
+								'"' . str_replace('"', '""', $row->payment_mode ?? '') . '"',
+								'"' . str_replace('"', '""', $row->payment_date ?? '') . '"',
+								'"' . str_replace('"', '""', $row->cheque_trans_number ?? '') . '"',
+								'"' . str_replace('"', '""', $row->bank_name ?? '') . '"',
+								'"' . str_replace('"', '""', $row->payment_amount ?? '') . '"',
                             ]) . "\n";
+							$i++;
                         }
 
                         // Create a temporary file
