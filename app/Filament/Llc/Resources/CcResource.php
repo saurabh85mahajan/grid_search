@@ -208,7 +208,7 @@ class CcResource extends Resource
                                         Forms\Components\DatePicker::make('nominee_dob')
                                             ->label('Nominee DOB')
                                             ->placeholder('Select Nominee DOB')
-                                            ->maxDate(now())
+                                            ->maxDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->format('Y-m-d'),
                                     ]),
 
@@ -273,7 +273,7 @@ class CcResource extends Resource
                                             ->label('Policy Issue Date')
                                             ->placeholder('Select Policy Issue Date')
                                             ->format('Y-m-d')
-                                            ->maxDate(now())
+                                            ->maxDate(fn (string $operation) => $operation === 'create' ? now() : null)
                                             ->columnSpan(2)
                                             ->validationMessages([
                                                 'required' => 'Please enter date',

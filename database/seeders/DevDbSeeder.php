@@ -22,6 +22,7 @@ class DevDbSeeder extends Seeder
             'organisation_id' => null,
         ]);
 
+        //Entry Resource, ppc
         User::create([
             'name' => 'Nikhil M',
             'email' => 'nikhil@gmail.com',
@@ -29,6 +30,7 @@ class DevDbSeeder extends Seeder
             'organisation_id' => 2,
         ]);
 
+        //CC Resource, llc
         User::create([
             'name' => 'Admin LLC',
             'email' => 'admin1@admin.com',
