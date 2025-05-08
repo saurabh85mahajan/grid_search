@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Entry extends Model
 {
@@ -13,49 +14,49 @@ class Entry extends Model
 
     use HasFactory;
 
-    public function businessType()
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function businessType(): BelongsTo
     {
         return $this->belongsTo(BusinessType::class);
     }
 
-    public function insuranceCompany()
+    public function insuranceCompany(): BelongsTo
     {
         return $this->belongsTo(InsuranceCompany::class);
     }
 
-    public function insuranceType()
+    public function insuranceType(): BelongsTo
     {
         return $this->belongsTo(InsuranceType::class);
     }
 
-    public function lifeInsuranceType()
+    public function lifeInsuranceType(): BelongsTo
     {
         return $this->belongsTo(LifeInsuranceType::class);
     }
 
-    public function healthInsuranceType()
+    public function healthInsuranceType(): BelongsTo
     {
         return $this->belongsTo(HealthInsuranceType::class);
     }
 
-    public function generalInsuranceType()
+    public function generalInsuranceType(): BelongsTo
     {
         return $this->belongsTo(GeneralInsuranceType::class);
     }
 
-    public function make()
+    public function make(): BelongsTo
     {
         return $this->belongsTo(Make::class);
     }
 
-    public function premiumFrequency()
+    public function premiumFrequency(): BelongsTo
     {
         return $this->belongsTo(PremiumFrequency::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function getInsuranceTypeNameAttribute(): ?string
