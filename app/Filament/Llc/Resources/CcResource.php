@@ -831,10 +831,22 @@ class CcResource extends Resource
                             ])->collapsible(),
                         Forms\Components\Section::make('Documents')
                             ->schema([
+                                FileUpload::make('policy')
+                                    ->label('Policy')
+                                    ->disk('protected')
+                                    ->directory('cc/policy/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
                                 FileUpload::make('proposal_form')
                                     ->label('Proposal Form')
                                     ->disk('protected')
-                                    ->directory('cc_proposals/')
+                                    ->directory('cc/proposals/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -847,7 +859,72 @@ class CcResource extends Resource
                                 FileUpload::make('renewal_form')
                                     ->label('Renewal Form')
                                     ->disk('protected')
-                                    ->directory('cc_renewals/')
+                                    ->directory('cc/renewals/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+
+                                FileUpload::make('rc_book')
+                                    ->label('RC Book')
+                                    ->disk('protected')
+                                    ->directory('cc/rc_book/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+
+                                FileUpload::make('visiting_card')
+                                    ->label('Visiting Card')
+                                    ->disk('protected')
+                                    ->directory('cc/visiting_card/')
+                                    ->acceptedFileTypes(['image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+
+                                FileUpload::make('mandate')
+                                    ->label('Mandate')
+                                    ->disk('protected')
+                                    ->directory('cc/mandate/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+
+                                FileUpload::make('other')
+                                    ->label('Other')
+                                    ->disk('protected')
+                                    ->directory('cc/other/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+
+                                FileUpload::make('pan_card')
+                                    ->label('PAN Card')
+                                    ->disk('protected')
+                                    ->directory('cc/pan_card/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1588,16 +1665,32 @@ class CcResource extends Resource
                                     ]),
                             ])
                             ->collapsible(),
-                        // Payment Details
-                        Section::make('Payment Details')
+                        //Documents
+                        Section::make('Documents')
                             ->schema([
+                                ViewEntry::make('policy')
+                                    ->label('Proposal Form')
+                                    ->view('filament.infolists.components.file-viewer'),
                                 ViewEntry::make('proposal_form')
                                     ->label('Proposal Form')
                                     ->view('filament.infolists.components.file-viewer'),
-
-                                // For renewal form - works for both PDF and image
                                 ViewEntry::make('renewal_form')
                                     ->label('Renewal Form')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('rc_book')
+                                    ->label('RC Book')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('visiting_card')
+                                    ->label('Visiting Card')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('mandate')
+                                    ->label('Mandate')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('other')
+                                    ->label('Other')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('pan_card')
+                                    ->label('PAN Card')
                                     ->view('filament.infolists.components.file-viewer'),
                             ])
                             ->collapsible(),
