@@ -485,16 +485,16 @@ class EntryResource extends Resource
 
                         // Build query
                         $query = Entry::query()
-						->join('users', 'users.id', '=', 'entries.user_id');
+                            ->join('users', 'users.id', '=', 'entries.user_id');
                         // Apply search
                         if (!empty($search)) {
                             $query->where(function ($q) use ($search) {
                                 $q->Where('users.name', 'like', "%{$search}%")
                                     ->orWhere('entries.name', 'like', "%{$search}%")
-									->orWhere('mobile_no', 'like', "%{$search}%")
+                                    ->orWhere('mobile_no', 'like', "%{$search}%")
                                     ->orWhere('entries.email', 'like', "%{$search}%")
-									->orWhere('makes.name', 'like', "%{$search}%")
-									->orWhere('vehicle_model', 'like', "%{$search}%")
+                                    ->orWhere('makes.name', 'like', "%{$search}%")
+                                    ->orWhere('vehicle_model', 'like', "%{$search}%")
                                     ->orWhere('vehicle_number', 'like', "%{$search}%")
                                     ->orWhere('premium_amount_total', 'like', "%{$search}%");
                             });
@@ -511,23 +511,23 @@ class EntryResource extends Resource
 
                         // Select only the required columns
                         $data = $query
-						->select('entries.id', 'entries.business_sourced_by', 'entries.advisor_name', 'entries.advisor_code', 'business_types.name as bussines_name', 'entries.name', 'entries.pan_card', 'entries.mobile_no', 'entries.email', 'entries.aadhaar_front', 'entries.aadhaar_back', 'entries.nominee_name', 'entries.nominee_dob', 'entries.nominee_relationship', 'entries.nominee_dob', 'insurance_companies.name as insurance_company_name', 		'insurance_types.name as insurance_name_type', 'life_insurance_types.name as life_insurance_type_name', 'health_insurance_types.name as health_insurance_name', 'general_insurance_types.name as general_insurance_type_name', 'makes.name as make_name', 'premium_frequencies.name as premium_frequency_name', 'entries.vehicle_model', 'entries.vehicle_number', 'entries.idv', 'entries.own_damage_premium', 'entries.third_party_premium', 'entries.od_risk_start_date', 'entries.od_risk_end_date', 'entries.tp_risk_start_date', 'entries.tp_risk_end_date', 'entries.policy_bond', 'entries.rc_copy', 'entries.tp_risk_end_date', 'entries.sum_insured', 'entries.premium_paying_term', 'entries.policy_term', 'entries.premium_amount', 'entries.risk_start_date', 'entries.risk_end_date', 'entries.policy_bond_receipt', 'entries.number_of_lives', 'entries.premium_amount_total', 'entries.out_percentage', 'entries.net_od')
-						->join('business_types', 'business_types.id', '=', 'entries.business_type_id')
-						->join('insurance_companies', 'insurance_companies.id', '=', 'entries.insurance_company_id')
-						->join('insurance_types', 'insurance_types.id', '=', 'entries.insurance_type_id')
-						->join('life_insurance_types', 'life_insurance_types.id', '=', 'entries.life_insurance_type_id')
-						->join('health_insurance_types', 'health_insurance_types.id', '=', 'entries.health_insurance_type_id')
-						->join('general_insurance_types', 'general_insurance_types.id', '=', 'entries.general_insurance_type_id')
-						->join('makes', 'makes.id', '=', 'entries.make_id')
-						->join('premium_frequencies', 'premium_frequencies.id', '=', 'entries.premium_frequency_id')
-						->get();
+                            ->select('entries.id', 'entries.business_sourced_by', 'entries.advisor_name', 'entries.advisor_code', 'business_types.name as bussines_name', 'entries.name', 'entries.pan_card', 'entries.mobile_no', 'entries.email', 'entries.aadhaar_front', 'entries.aadhaar_back', 'entries.nominee_name', 'entries.nominee_dob', 'entries.nominee_relationship', 'entries.nominee_dob', 'insurance_companies.name as insurance_company_name',         'insurance_types.name as insurance_name_type', 'life_insurance_types.name as life_insurance_type_name', 'health_insurance_types.name as health_insurance_name', 'general_insurance_types.name as general_insurance_type_name', 'makes.name as make_name', 'premium_frequencies.name as premium_frequency_name', 'entries.vehicle_model', 'entries.vehicle_number', 'entries.idv', 'entries.own_damage_premium', 'entries.third_party_premium', 'entries.od_risk_start_date', 'entries.od_risk_end_date', 'entries.tp_risk_start_date', 'entries.tp_risk_end_date', 'entries.policy_bond', 'entries.rc_copy', 'entries.tp_risk_end_date', 'entries.sum_insured', 'entries.premium_paying_term', 'entries.policy_term', 'entries.premium_amount', 'entries.risk_start_date', 'entries.risk_end_date', 'entries.policy_bond_receipt', 'entries.number_of_lives', 'entries.premium_amount_total', 'entries.out_percentage', 'entries.net_od')
+                            ->join('business_types', 'business_types.id', '=', 'entries.business_type_id')
+                            ->join('insurance_companies', 'insurance_companies.id', '=', 'entries.insurance_company_id')
+                            ->join('insurance_types', 'insurance_types.id', '=', 'entries.insurance_type_id')
+                            ->join('life_insurance_types', 'life_insurance_types.id', '=', 'entries.life_insurance_type_id')
+                            ->join('health_insurance_types', 'health_insurance_types.id', '=', 'entries.health_insurance_type_id')
+                            ->join('general_insurance_types', 'general_insurance_types.id', '=', 'entries.general_insurance_type_id')
+                            ->join('makes', 'makes.id', '=', 'entries.make_id')
+                            ->join('premium_frequencies', 'premium_frequencies.id', '=', 'entries.premium_frequency_id')
+                            ->get();
 
                         //Todo Add All Columns.
-                        $headers = ['Sr No','Business sourced by','Advisor/POS Name','	Advisor / POS Code','Nature of Business','Name','Upload PAN Card Copy','Mobile No.','Email id','Upload Address Proof (Aadhar Card Copy - front)','Upload Address Proof (Aadhar Card Copy - back)','Nominee Name (Mention NA in case of Non-individual)','Nominee Date of Birth (Mention Date of Incorporation in case of Non-individual)','Nominee Relationship with Policy Holder','Select insurance company name','Select Type of Insurance','Type of Life Insurance','Type of Health Plan','Type of General Insurance','Vehicle Make','Vehicle Model','Vehicle Number','Insured Declared Value (IDV)','Own Damage and Riders Premium (without GST)','Third Party Premium (Without GST)','Risk Start Date (Own Damage)','Risk end Date (Own Damage)','Risk start Date (Third Party)','Risk End Date (Third Party)','Upload Policy Bond','Upload RC copy','Premium frequency','Sum Insured/Assured','Premium Paying Term (In number of years)','Policy Term (In number of years)','Premium Amount without GST)','Risk Start Date','Risk End Date','Upload Policy Bond / Premium Receipt','Number of lives','Premium Amount','Out %','Net/Od'];
+                        $headers = ['Sr No', 'Business sourced by', 'Advisor/POS Name', '	Advisor / POS Code', 'Nature of Business', 'Name', 'Upload PAN Card Copy', 'Mobile No.', 'Email id', 'Upload Address Proof (Aadhar Card Copy - front)', 'Upload Address Proof (Aadhar Card Copy - back)', 'Nominee Name (Mention NA in case of Non-individual)', 'Nominee Date of Birth (Mention Date of Incorporation in case of Non-individual)', 'Nominee Relationship with Policy Holder', 'Select insurance company name', 'Select Type of Insurance', 'Type of Life Insurance', 'Type of Health Plan', 'Type of General Insurance', 'Vehicle Make', 'Vehicle Model', 'Vehicle Number', 'Insured Declared Value (IDV)', 'Own Damage and Riders Premium (without GST)', 'Third Party Premium (Without GST)', 'Risk Start Date (Own Damage)', 'Risk end Date (Own Damage)', 'Risk start Date (Third Party)', 'Risk End Date (Third Party)', 'Upload Policy Bond', 'Upload RC copy', 'Premium frequency', 'Sum Insured/Assured', 'Premium Paying Term (In number of years)', 'Policy Term (In number of years)', 'Premium Amount without GST)', 'Risk Start Date', 'Risk End Date', 'Upload Policy Bond / Premium Receipt', 'Number of lives', 'Premium Amount', 'Out %', 'Net/Od'];
 
                         $csvContent = implode(',', $headers) . "\n";
-						$i=1;
-						foreach ($data as $row) {
+                        $i = 1;
+                        foreach ($data as $row) {
                             $csvContent .= implode(',', [
                                 $i,
                                 '"' . str_replace('"', '""', $row->business_sourced_by ?? '') . '"',
@@ -573,7 +573,7 @@ class EntryResource extends Resource
                                 '"' . str_replace('"', '""', $row->out_percentage ?? '') . '"',
                                 '"' . str_replace('"', '""', $row->net_od ?? '') . '"',
                             ]) . "\n";
-							$i++;
+                            $i++;
                         }
 
                         // Create a temporary file
