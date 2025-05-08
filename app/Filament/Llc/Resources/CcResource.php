@@ -1130,7 +1130,7 @@ class CcResource extends Resource
                             'PY Policy No.' => 'py_policy_number',
                             'Tariff Rate' => 'tarrif_rate',
                             'Actual Tariff' => 'actual_tarrif',
-                            'Third Party' => 'third_party',
+                            'Third Party' => fn($row) => ($row->third_party == 1) ? ('Yes') : ('No'),
                             'Make' => fn($row) => optional($row->make)->name,
                             'Vehicle Model' => 'vehicle_model',
                             'Vehicle Sub Model' => 'vehicle_sub_model',
@@ -1423,7 +1423,7 @@ class CcResource extends Resource
 
                                 Grid::make(2)
                                     ->schema([
-                                        TextEntry::make('py_insurance_company.name')
+                                        TextEntry::make('previousInsurer.name')
                                             ->label('PY Ins. Comp.'),
 
                                         TextEntry::make('py_policy_number')
