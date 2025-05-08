@@ -544,6 +544,8 @@ class EntryResource extends Resource
                         // Define CSV structure - field name mapping to record accessor
                         $csvStructure = [
                             'Sr No' => fn($row, $index) => $index + 1,
+                            'Agent' => fn($row) => optional($row->user)->name,
+                            'Created At' => fn($row) => $row->created_at->format('Y-m-d'),
                             'Business sourced by' => 'business_sourced_by',
                             'Advisor/POS Name' => 'advisor_name',
                             'Advisor / POS Code' => 'advisor_code',

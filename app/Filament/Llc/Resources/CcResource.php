@@ -1022,6 +1022,8 @@ class CcResource extends Resource
                         // Define CSV structure - field name mapping to record accessor
                         $csvStructure = [
                             'Sr. No.' => fn($row, $index) => $index + 1,
+                            'Agent' => fn($row) => optional($row->user)->name,
+                            'Created At' => fn($row) => $row->created_at->format('Y-m-d'),
                             'Proposal Type' => 'proposal_type',
                             'Proposal type' => 'posp',
                             'Client Name' => fn($row) => trim(optional($row->salutation)->name . ' ' . $row->first_name . ' ' . $row->middle_name . ' ' . $row->last_name),
