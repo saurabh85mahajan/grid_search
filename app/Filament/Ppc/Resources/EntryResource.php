@@ -22,6 +22,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Infolists\Components\ViewEntry;
 
 class EntryResource extends Resource
 {
@@ -554,8 +555,8 @@ class EntryResource extends Resource
                             'Upload PAN Card Copy' => fn($row) => $formatUpload($row->pan_card),
                             'Mobile No.' => 'mobile_no',
                             'Email id' => 'email',
-                            'Upload Address Proof (Aadhar Card Copy - front)' => fn($row) => $formatUpload($row->aadhar_front),
-                            'Upload Address Proof (Aadhar Card Copy - back)' => fn($row) => $formatUpload($row->aadhar_back),
+                            'Upload Address Proof (Aadhar Card Copy - front)' => fn($row) => $formatUpload($row->aadhaar_front),
+                            'Upload Address Proof (Aadhar Card Copy - back)' => fn($row) => $formatUpload($row->aadhaar_back),
                             'Nominee Name (Mention NA in case of Non-individual)' => 'nominee_name',
                             'Nominee Date of Birth (Mention Date of Incorporation in case of Non-individual)' => 'nominee_dob',
                             'Nominee Relationship with Policy Holder' => 'nominee_relationship',
@@ -797,18 +798,15 @@ class EntryResource extends Resource
                                     ->label('Mobile')
                                     ->icon('heroicon-m-device-phone-mobile')
                                     ->copyable(),
-                                TextEntry::make('pan_card')
+                                ViewEntry::make('pan_card')
                                     ->label('Pan Card')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                                TextEntry::make('aadhaar_front')
+                                    ->view('filament.infolists.components.file-viewer'),
+								ViewEntry::make('aadhaar_front')
                                     ->label('Aadhaar Front')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                                TextEntry::make('aadhaar_back')
-                                    ->label('Aadhaar Front')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
+                                    ->view('filament.infolists.components.file-viewer'),
+								ViewEntry::make('aadhaar_back')
+                                    ->label('Aadhaar Back')
+                                    ->view('filament.infolists.components.file-viewer'),
                             ]),
                     ])->collapsible(),
                 Section::make('Nominee Details')
@@ -891,14 +889,12 @@ class EntryResource extends Resource
                             ]),
                         Grid::make(3)
                             ->schema([
-                                TextEntry::make('policy_bond')
+                                ViewEntry::make('policy_bond')
                                     ->label('Policy Bond')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
-                                TextEntry::make('rc_copy')
+                                    ->view('filament.infolists.components.file-viewer'),
+								ViewEntry::make('rc_copy')
                                     ->label('RC')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
+                                    ->view('filament.infolists.components.file-viewer'),
                             ]),
                         Grid::make(4)
                             ->schema([
@@ -922,14 +918,13 @@ class EntryResource extends Resource
                                 TextEntry::make('risk_end_date')
                                     ->label('Risk End Date')
                                     ->icon('heroicon-m-calendar-days'),
-                                TextEntry::make('policy_bond')
+                                ViewEntry::make('policy_bond_receipt')
                                     ->label('Premium Receipt')
-                                    ->icon('heroicon-m-document-text')
-                                    ->badge(),
+                                    ->view('filament.infolists.components.file-viewer'),
                             ]),
                         Grid::make(4)
                             ->schema([
-                                TextEntry::make('policy_term')
+                                TextEntry::make('number_of_lives')
                                     ->label('Number of lives')
                                     ->icon('heroicon-m-user'),
                                 TextEntry::make('premium_amount')
