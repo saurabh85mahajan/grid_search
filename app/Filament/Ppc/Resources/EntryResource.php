@@ -10,17 +10,18 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
 use Carbon\Carbon;
+use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Support\Enums\FontWeight;
-
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class EntryResource extends Resource
 {
@@ -99,31 +100,45 @@ class EntryResource extends Resource
                             ->placeholder("Enter Email Address"),
                     ]),
 
-                    Fieldset::make(
-                        "Upload PAN Card"
-                    )
-                        ->schema([
-                            Forms\Components\FileUpload::make("pan_card")
-                                ->label("")
-                                ->placeholder("PAN Card")
-                                ->preserveFilenames(),
+                    Forms\Components\Grid::make(3)->schema([
+                            FileUpload::make('pan_card')
+                                ->label('PAN Card')
+                                ->disk('protected')
+                                ->directory('entry/pan/')
+                                ->acceptedFileTypes(['image/*'])
+                                ->maxSize(10240)
+                                ->maxFiles(1)
+                                ->previewable()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn(TemporaryUploadedFile $file): string =>
+                                    time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                ),
+                            FileUpload::make('aadhaar_front')
+                                ->label('Aadhar Front Side')
+                                ->disk('protected')
+                                ->directory('entry/aadhaar_front/')
+                                ->acceptedFileTypes(['image/*'])
+                                ->maxSize(10240)
+                                ->maxFiles(1)
+                                ->previewable()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn(TemporaryUploadedFile $file): string =>
+                                    time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                ),
+                            FileUpload::make('aadhaar_back')
+                                ->label('Aadhar Back Side')
+                                ->disk('protected')
+                                ->directory('entry/aadhaar_back/')
+                                ->acceptedFileTypes(['image/*'])
+                                ->maxSize(10240)
+                                ->maxFiles(1)
+                                ->previewable()
+                                ->getUploadedFileNameForStorageUsing(
+                                    fn(TemporaryUploadedFile $file): string =>
+                                    time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                ),
                         ])
-                        ->columns(1),
-
-                    Fieldset::make(
-                        "Upload Adhar"
-                    )
-                        ->schema([
-                            Forms\Components\FileUpload::make("aadhaar_front")
-                                ->label("")
-                                ->preserveFilenames()
-                                ->placeholder("Front Side"),
-                            Forms\Components\FileUpload::make("aadhaar_back")
-                                ->label("")
-                                ->preserveFilenames()
-                                ->placeholder("Back Side"),
-                        ])
-                        ->columns(2),
+                        ->columns(3),
                 ])
                 ->collapsible(),
 
@@ -342,15 +357,30 @@ class EntryResource extends Resource
                     ]),
 
                     Forms\Components\Grid::make(2)->schema([
-                        Forms\Components\FileUpload::make("policy_bond")
-                            ->label("")
-                            ->preserveFilenames()
-                            ->placeholder("Upload Policy Bond"),
-
-                        Forms\Components\FileUpload::make("rc_copy")
-                            ->label("")
-                            ->preserveFilenames()
-                            ->placeholder("Upload RC copy"),
+                        FileUpload::make('policy_bond')
+                            ->label('Policy Bond')
+                            ->disk('protected')
+                            ->directory('entry/policy_bond/')
+                            ->acceptedFileTypes(['image/*'])
+                            ->maxSize(10240)
+                            ->maxFiles(1)
+                            ->previewable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn(TemporaryUploadedFile $file): string =>
+                                time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                            ),
+                        FileUpload::make('rc_copy')
+                            ->label('Upload RC copy')
+                            ->disk('protected')
+                            ->directory('entry/rc/')
+                            ->acceptedFileTypes(['image/*'])
+                            ->maxSize(10240)
+                            ->maxFiles(1)
+                            ->previewable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn(TemporaryUploadedFile $file): string =>
+                                time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                            ),
                     ]),
 
                     Forms\Components\Grid::make(3)->schema([
@@ -427,11 +457,18 @@ class EntryResource extends Resource
                             ]),
                     ]),
 
-                    Forms\Components\FileUpload::make("policy_bond_receipt")
-                        ->label("")
-                        ->preserveFilenames()
-                        ->placeholder(
-                            "Upload Policy Bond / Premium Receipt"
+
+                    FileUpload::make('policy_bond')
+                        ->label('Upload Premium Receipt')
+                        ->disk('protected')
+                        ->directory('entry/receipt/')
+                        ->acceptedFileTypes(['image/*'])
+                        ->maxSize(10240)
+                        ->maxFiles(1)
+                        ->previewable()
+                        ->getUploadedFileNameForStorageUsing(
+                            fn(TemporaryUploadedFile $file): string =>
+                            time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
                         ),
 
                     Forms\Components\Grid::make(3)->schema([
