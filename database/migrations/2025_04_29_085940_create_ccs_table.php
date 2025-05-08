@@ -101,8 +101,14 @@ return new class extends Migration
             $table->integer('bank_id')->nullable();
             $table->decimal('payment_amount', 10, 2)->nullable();
             
+            $table->string('policy')->nullable();
             $table->string('proposal_form')->nullable();
             $table->string('renewal_form')->nullable();
+            $table->string('rc_book')->nullable();
+            $table->string('visiting_card')->nullable();
+            $table->string('mandate')->nullable();
+            $table->string('other')->nullable();
+            $table->string('pan_card')->nullable();
 
             $table->timestamps();
         });
