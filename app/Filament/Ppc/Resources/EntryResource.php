@@ -927,7 +927,7 @@ class EntryResource extends Resource
                                 TextEntry::make('number_of_lives')
                                     ->label('Number of lives')
                                     ->icon('heroicon-m-user'),
-                                TextEntry::make('premium_amount')
+                                TextEntry::make('premium_amount_total')
                                     ->label('Premium Amount')
                                     ->weight(FontWeight::Bold)
                                     ->money('INR'),
