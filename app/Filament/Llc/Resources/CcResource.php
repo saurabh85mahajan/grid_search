@@ -591,7 +591,7 @@ class CcResource extends Resource
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
                                             ->placeholder('Enter Other'),
 
@@ -623,7 +623,7 @@ class CcResource extends Resource
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 3) this.value = this.value.slice(0, 3);'
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
                                             ->placeholder('Enter Other'),
 
@@ -908,10 +908,10 @@ class CcResource extends Resource
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
                                     ),
 
-                                FileUpload::make('other')
+                                FileUpload::make('other_document')
                                     ->label('Other')
                                     ->disk('protected')
-                                    ->directory('cc/other/')
+                                    ->directory('cc/other_document/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1093,7 +1093,7 @@ class CcResource extends Resource
                             if (empty($value)) {
                                 return '';
                             }
-                            return '₹' . number_format((float) $value, 2, '.', ',');
+                            return number_format((float) $value, 2, '.', ',');
                         };
 
                         // Define CSV structure - field name mapping to record accessor
@@ -1686,7 +1686,7 @@ class CcResource extends Resource
                                 ViewEntry::make('mandate')
                                     ->label('Mandate')
                                     ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('other')
+                                ViewEntry::make('other_document')
                                     ->label('Other')
                                     ->view('filament.infolists.components.file-viewer'),
                                 ViewEntry::make('pan_card')

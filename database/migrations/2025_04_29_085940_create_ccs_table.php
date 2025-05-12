@@ -107,7 +107,7 @@ return new class extends Migration
             $table->string('rc_book')->nullable();
             $table->string('visiting_card')->nullable();
             $table->string('mandate')->nullable();
-            $table->string('other')->nullable();
+            $table->string('other_document')->nullable();
             $table->string('pan_card')->nullable();
 
             $table->timestamps();

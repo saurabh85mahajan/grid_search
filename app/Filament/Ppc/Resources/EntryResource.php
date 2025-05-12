@@ -532,7 +532,7 @@ class EntryResource extends Resource
                             if (empty($value)) {
                                 return '';
                             }
-                            return '₹' . number_format((float) $value, 2, '.', ',');
+                            return number_format((float) $value, 2, '.', ',');
                         };
 
                         $formatUpload = function ($value) {
