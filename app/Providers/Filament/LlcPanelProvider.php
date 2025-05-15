@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Llc\Resources\ProfileResource;
 use App\Filament\Ppc\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -18,6 +19,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\UserMenuItem;
 
 class LlcPanelProvider extends PanelProvider
 {
@@ -34,6 +36,14 @@ class LlcPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => Color::Blue,
+            ])
+			->userMenuItems([
+                UserMenuItem::make()
+                    ->label('Edit Profile')
+                    ->url(fn () => auth()->user()->id 
+                        ? ProfileResource::getUrl('edit', ['record' => auth()->user()->id])
+                        : "")
+                    ->icon('heroicon-o-user-circle'),
             ])
             ->discoverResources(in: app_path('Filament/Llc/Resources'), for: 'App\\Filament\\Llc\\Resources')
             ->discoverPages(in: app_path('Filament/Llc/Pages'), for: 'App\\Filament\\Llc\\Pages')
