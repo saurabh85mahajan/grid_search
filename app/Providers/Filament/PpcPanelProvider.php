@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Ppc\Resources\ProfileResource;
 use App\Filament\Ppc\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -17,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\UserMenuItem;
 
 class PpcPanelProvider extends PanelProvider
 {
@@ -36,6 +38,14 @@ class PpcPanelProvider extends PanelProvider
             // ])
             ->colors([
                 'primary' => Color::Blue,
+            ])
+			->userMenuItems([
+                UserMenuItem::make()
+                    ->label('Edit Profile')
+                    ->url(fn () => auth()->user()->id 
+                        ? ProfileResource::getUrl('edit', ['record' => auth()->user()->id])
+                        : "")
+                    ->icon('heroicon-o-user-circle'),
             ])
 			->discoverResources(in: app_path('Filament/Ppc/Resources'), for: 'App\\Filament\\Ppc\\Resources')
             ->discoverPages(in: app_path('Filament/Ppc/Pages'), for: 'App\\Filament\\Ppc\\Pages')
