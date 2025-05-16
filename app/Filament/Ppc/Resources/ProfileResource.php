@@ -21,10 +21,20 @@ class ProfileResource extends Resource
     {
         return $form
             ->schema([
+                \Filament\Forms\Components\TextInput::make('name')
+                ->required(),
+				\Filament\Forms\Components\TextInput::make('email')
+                ->email()
+                ->required()
+                ->unique(ignoreRecord: true),
                 \Filament\Forms\Components\TextInput::make('password')
                 ->password()
+				->dehydrated(fn ($state) => filled($state))
 				->dehydrateStateUsing(fn ($state) => Hash::make($state))
                 ->label('Change Password')
+				->autocomplete(false)
+				->revealable()
+				->extraInputAttributes(['autocomplete' => 'new-password']),
             ]);
     }
 
