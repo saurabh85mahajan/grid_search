@@ -4,6 +4,7 @@ namespace App\Filament\Llc\Resources;
 
 use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
+use App\Models\User;
 use App\Models\ProductCategory;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -33,6 +34,24 @@ class CcResource extends Resource
     protected static ?string $model = Cc::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+	
+	public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+		$is_organisation_admin = $user->is_organisation_admin;
+		$is_manager = $user->is_manager;
+		
+		if($is_organisation_admin){
+			$ccs = parent::getEloquentQuery();
+		}else if ($is_manager){
+			$userUnderManager = User::getUserUnderManager(auth()->user()->id);
+			$userUnderManager[] = auth()->user()->id;
+			$ccs = parent::getEloquentQuery()->whereIn('user_id', $userUnderManager);
+		}else{
+			$ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+		}
+		return $ccs;
+    }
 
     public static function form(Form $form): Form
     {

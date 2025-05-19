@@ -58,6 +58,20 @@ class UserResource extends Resource
             (new static)->getStatusSelect(),
             \Filament\Forms\Components\Hidden::make('organisation_id')
                 ->default(2),
+			\Filament\Forms\Components\Select::make('is_manager')
+				->label('Is Manager')
+				->options([
+					'0' => 'No',
+					'1' => 'Yes',
+				])
+				->default('0')
+				->selectablePlaceholder(false)
+				->live(),
+			\Filament\Forms\Components\Select::make("manager_id")
+				->label("Select Manager")
+				->visible(fn(\Filament\Forms\Get $get): bool => $get('is_manager') == 0)
+				->options(fn ($get): array => User::where([['is_manager', 1],['organisation_id', 2],['is_active', 1],['id', '!=', auth()->user()->id]])->pluck('name', 'id')->toArray())
+				->placeholder("--Select--"),
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Filament\Ppc\Resources;
 
 use App\Filament\Ppc\Resources\EntryResource\Pages;
 use App\Models\Entry;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,6 +30,25 @@ class EntryResource extends Resource
     protected static ?string $model = Entry::class;
 
     protected static ?string $navigationIcon = "heroicon-o-rectangle-stack";
+	
+	public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+		$is_organisation_admin = $user->is_organisation_admin;
+		$organisationId = $user->organisation_id;
+		$is_manager = $user->is_manager;
+		
+		if($is_organisation_admin){
+			$ccs = parent::getEloquentQuery();
+		}else if ($is_manager){
+			$userUnderManager = User::getUserUnderManager(auth()->user()->id, $organisationId);
+			$userUnderManager[] = auth()->user()->id;
+			$ccs = parent::getEloquentQuery()->whereIn('user_id', $userUnderManager);
+		}else{
+			$ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+		}
+		return $ccs;
+    }
 
     public static function form(Form $form): Form
     {

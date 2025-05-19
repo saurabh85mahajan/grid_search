@@ -28,6 +28,7 @@ class DevDbSeeder extends Seeder
             'email' => 'nikhil@gmail.com',
             'password' => Hash::make('nikhil123'),
             'organisation_id' => 2,
+			'is_organisation_admin' => 2,
         ]);
 
         //CC Resource, llc
@@ -36,6 +37,7 @@ class DevDbSeeder extends Seeder
             'email' => 'admin1@admin.com',
             'password' => Hash::make('admin123'),
             'organisation_id' => 1,
+            'is_organisation_admin' => 2,
         ]);
 
         Cc::factory()->count(10)->create();
