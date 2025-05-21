@@ -753,8 +753,7 @@ class EntryResource extends Resource
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([]);

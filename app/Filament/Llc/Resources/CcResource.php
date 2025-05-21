@@ -1080,8 +1080,7 @@ class CcResource extends Resource
                     ->searchable() // Add search capability for larger lists
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
             ])
             ->headerActions([
