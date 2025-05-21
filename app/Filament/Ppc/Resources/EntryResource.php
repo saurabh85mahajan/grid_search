@@ -754,10 +754,7 @@ class EntryResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->hidden(
-                        fn($record): bool =>
-                        $record['user_id'] != auth()->user()->id
-                    ),
+                    ->visible(),
                 Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([]);

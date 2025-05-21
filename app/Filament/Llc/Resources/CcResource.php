@@ -1081,7 +1081,7 @@ class CcResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn($record) => $record->user_id === auth()->id()),
+                    ->visible(),
                 Tables\Actions\ViewAction::make(),
             ])
             ->headerActions([
