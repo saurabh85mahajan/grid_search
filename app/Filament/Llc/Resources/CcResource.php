@@ -39,12 +39,13 @@ class CcResource extends Resource
     {
         $user = auth()->user();
 		$is_organisation_admin = $user->is_organisation_admin;
+		$organisationId = $user->organisation_id;
 		$is_manager = $user->is_manager;
 		
 		if($is_organisation_admin){
 			$ccs = parent::getEloquentQuery();
 		}else if ($is_manager){
-			$userUnderManager = User::getUserUnderManager(auth()->user()->id);
+			$userUnderManager = User::getUsersUnderManager($organisationId);
 			$userUnderManager[] = auth()->user()->id;
 			$ccs = parent::getEloquentQuery()->whereIn('user_id', $userUnderManager);
 		}else{

@@ -41,7 +41,7 @@ class EntryResource extends Resource
 		if($is_organisation_admin){
 			$ccs = parent::getEloquentQuery();
 		}else if ($is_manager){
-			$userUnderManager = User::getUserUnderManager(auth()->user()->id, $organisationId);
+			$userUnderManager = User::getUsersUnderManager($organisationId);
 			$userUnderManager[] = auth()->user()->id;
 			$ccs = parent::getEloquentQuery()->whereIn('user_id', $userUnderManager);
 		}else{
