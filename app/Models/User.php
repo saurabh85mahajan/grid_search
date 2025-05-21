@@ -60,7 +60,7 @@ class User extends Authenticatable implements FilamentUser
         return true;
     }
 	
-	public static function getUsersUnderManager($managerId, $organisationId ): array
+	public static function getUsersUnderManager($organisationId ): array
     {
         $userUnderManager = User::where([
 				['is_manager', 0],
