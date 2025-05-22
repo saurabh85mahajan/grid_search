@@ -71,7 +71,7 @@ class UserResource extends Resource
                     fn($get): array =>
                     User::query()
                         ->active()
-                        ->hasOrganisation(1)
+                        ->hasOrganisation(2)
                         ->isManager()
                         ->where('id', '!=',  auth()->user()->id)
                         ->pluck('name', 'id')->toArray()
