@@ -30,24 +30,23 @@ class EntryResource extends Resource
     protected static ?string $model = Entry::class;
 
     protected static ?string $navigationIcon = "heroicon-o-rectangle-stack";
-	
-	public static function getEloquentQuery(): Builder
+
+    public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
-		$is_organisation_admin = $user->is_organisation_admin;
-		$organisationId = $user->organisation_id;
-		$is_manager = $user->is_manager;
-		
-		if($is_organisation_admin){
-			$ccs = parent::getEloquentQuery();
-		}else if ($is_manager){
-			$userUnderManager = User::getUsersUnderManager($organisationId);
-			$userUnderManager[] = auth()->user()->id;
-			$ccs = parent::getEloquentQuery()->whereIn('user_id', $userUnderManager);
-		}else{
-			$ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
-		}
-		return $ccs;
+        $is_organisation_admin = $user->is_organisation_admin;
+        $organisationId = $user->organisation_id;
+        $is_manager = $user->is_manager;
+
+        if ($is_organisation_admin) {
+            $ccs = parent::getEloquentQuery();
+        } else if ($is_manager) {
+            $users = User::getSubordinates($organisationId);
+            $ccs = parent::getEloquentQuery()->whereIn('user_id', $users);
+        } else {
+            $ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        }
+        return $ccs;
     }
 
     public static function form(Form $form): Form
@@ -122,43 +121,43 @@ class EntryResource extends Resource
                     ]),
 
                     Forms\Components\Grid::make(3)->schema([
-                            FileUpload::make('pan_card')
-                                ->label('PAN Card')
-                                ->disk('protected')
-                                ->directory('entry/pan/')
-                                ->acceptedFileTypes(['image/*'])
-                                ->maxSize(10240)
-                                ->maxFiles(1)
-                                ->previewable()
-                                ->getUploadedFileNameForStorageUsing(
-                                    fn(TemporaryUploadedFile $file): string =>
-                                    time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                ),
-                            FileUpload::make('aadhaar_front')
-                                ->label('Aadhar Front Side')
-                                ->disk('protected')
-                                ->directory('entry/aadhaar_front/')
-                                ->acceptedFileTypes(['image/*'])
-                                ->maxSize(10240)
-                                ->maxFiles(1)
-                                ->previewable()
-                                ->getUploadedFileNameForStorageUsing(
-                                    fn(TemporaryUploadedFile $file): string =>
-                                    time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                ),
-                            FileUpload::make('aadhaar_back')
-                                ->label('Aadhar Back Side')
-                                ->disk('protected')
-                                ->directory('entry/aadhaar_back/')
-                                ->acceptedFileTypes(['image/*'])
-                                ->maxSize(10240)
-                                ->maxFiles(1)
-                                ->previewable()
-                                ->getUploadedFileNameForStorageUsing(
-                                    fn(TemporaryUploadedFile $file): string =>
-                                    time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                ),
-                        ])
+                        FileUpload::make('pan_card')
+                            ->label('PAN Card')
+                            ->disk('protected')
+                            ->directory('entry/pan/')
+                            ->acceptedFileTypes(['image/*'])
+                            ->maxSize(10240)
+                            ->maxFiles(1)
+                            ->previewable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn(TemporaryUploadedFile $file): string =>
+                                time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                            ),
+                        FileUpload::make('aadhaar_front')
+                            ->label('Aadhar Front Side')
+                            ->disk('protected')
+                            ->directory('entry/aadhaar_front/')
+                            ->acceptedFileTypes(['image/*'])
+                            ->maxSize(10240)
+                            ->maxFiles(1)
+                            ->previewable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn(TemporaryUploadedFile $file): string =>
+                                time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                            ),
+                        FileUpload::make('aadhaar_back')
+                            ->label('Aadhar Back Side')
+                            ->disk('protected')
+                            ->directory('entry/aadhaar_back/')
+                            ->acceptedFileTypes(['image/*'])
+                            ->maxSize(10240)
+                            ->maxFiles(1)
+                            ->previewable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn(TemporaryUploadedFile $file): string =>
+                                time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                            ),
+                    ])
                         ->columns(3),
                 ])
                 ->collapsible(),
@@ -817,10 +816,10 @@ class EntryResource extends Resource
                                 ViewEntry::make('pan_card')
                                     ->label('Pan Card')
                                     ->view('filament.infolists.components.file-viewer'),
-								ViewEntry::make('aadhaar_front')
+                                ViewEntry::make('aadhaar_front')
                                     ->label('Aadhaar Front')
                                     ->view('filament.infolists.components.file-viewer'),
-								ViewEntry::make('aadhaar_back')
+                                ViewEntry::make('aadhaar_back')
                                     ->label('Aadhaar Back')
                                     ->view('filament.infolists.components.file-viewer'),
                             ]),
@@ -908,7 +907,7 @@ class EntryResource extends Resource
                                 ViewEntry::make('policy_bond')
                                     ->label('Policy Bond')
                                     ->view('filament.infolists.components.file-viewer'),
-								ViewEntry::make('rc_copy')
+                                ViewEntry::make('rc_copy')
                                     ->label('RC')
                                     ->view('filament.infolists.components.file-viewer'),
                             ]),

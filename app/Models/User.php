@@ -4,8 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\HasStatus;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,6 +16,7 @@ class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use HasStatus;
 
     /**
      * The attributes that are mass assignable.
@@ -26,7 +29,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'organisation_id',
         'is_active',
-		'is_manager',
+        'is_manager',
         'manager_id',
     ];
 
@@ -61,15 +64,39 @@ class User extends Authenticatable implements FilamentUser
 
         return true;
     }
-	
-	public static function getUsersUnderManager($organisationId ): array
+
+    public function scopeIsNotManager(Builder $query): Builder
     {
-        $userUnderManager = User::where([
-				['is_manager', 0],
-				['organisation_id', $organisationId],
-				['manager_id', auth()->user()->id],
-				['is_active', 1]
-			])->pluck('id')->toArray();
-		return $userUnderManager;
+        return $query->where('is_manager', 0);
+    }
+
+    public function scopeIsManager(Builder $query): Builder
+    {
+        return $query->where('is_manager', 1);
+    }
+
+    public function scopeHasManager(Builder $query, $userId): Builder
+    {
+        return $query->where('manager_id', $userId);
+    }
+
+    public function scopeHasOrganisation(Builder $query, $organisationId): Builder
+    {
+        return $query->where('organisation_id', $organisationId);
+    }
+
+    public static function getSubordinates($organisationId): array
+    {
+        $results = User::query()
+            ->active()
+            ->isNotManager()
+            ->hasManager(auth()->user()->id)
+            ->hasOrganisation($organisationId)
+            ->pluck('id')
+            ->toArray();
+
+        $results[] = auth()->user()->id;
+
+        return $results;
     }
 }

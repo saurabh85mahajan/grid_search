@@ -26,16 +26,13 @@ class UserResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth()->user();
-        return $user && in_array($user->email, [
-            'admin@admin.com',
-            'nikhil@gmail.com',
-        ]);
+        return $user->is_organisation_admin || is_null($user->organisation_id);
     }
 
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('organisation_id', 2)
-            ->where('email', '!=', 'nikhil@gmail.com');
+            ->where('is_organisation_admin', '!=', true);
     }
 
     public static function form(Form $form): Form
@@ -58,20 +55,28 @@ class UserResource extends Resource
             (new static)->getStatusSelect(),
             \Filament\Forms\Components\Hidden::make('organisation_id')
                 ->default(2),
-			\Filament\Forms\Components\Select::make('is_manager')
-				->label('Is Manager')
-				->options([
-					'0' => 'No',
-					'1' => 'Yes',
-				])
-				->default('0')
-				->selectablePlaceholder(false)
-				->live(),
-			\Filament\Forms\Components\Select::make("manager_id")
-				->label("Select Manager")
-				->visible(fn(\Filament\Forms\Get $get): bool => $get('is_manager') == 0)
-				->options(fn ($get): array => User::where([['is_manager', 1],['organisation_id', 2],['is_active', 1],['id', '!=', auth()->user()->id]])->pluck('name', 'id')->toArray())
-				->placeholder("--Select--"),
+            \Filament\Forms\Components\Select::make('is_manager')
+                ->label('Is Manager')
+                ->options([
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ])
+                ->default('0')
+                ->selectablePlaceholder(false)
+                ->live(),
+            \Filament\Forms\Components\Select::make("manager_id")
+                ->label("Select Manager")
+                ->visible(fn(\Filament\Forms\Get $get): bool => $get('is_manager') == 0)
+                ->options(
+                    fn($get): array =>
+                    User::query()
+                        ->active()
+                        ->hasOrganisation(1)
+                        ->isManager()
+                        ->where('id', '!=',  auth()->user()->id)
+                        ->pluck('name', 'id')->toArray()
+                )
+                ->placeholder("--Select--"),
         ]);
     }
 

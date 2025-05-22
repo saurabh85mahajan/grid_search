@@ -34,24 +34,23 @@ class CcResource extends Resource
     protected static ?string $model = Cc::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-	
-	public static function getEloquentQuery(): Builder
+
+    public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
-		$is_organisation_admin = $user->is_organisation_admin;
-		$organisationId = $user->organisation_id;
-		$is_manager = $user->is_manager;
-		
-		if($is_organisation_admin){
-			$ccs = parent::getEloquentQuery();
-		}else if ($is_manager){
-			$userUnderManager = User::getUsersUnderManager($organisationId);
-			$userUnderManager[] = auth()->user()->id;
-			$ccs = parent::getEloquentQuery()->whereIn('user_id', $userUnderManager);
-		}else{
-			$ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
-		}
-		return $ccs;
+        $is_organisation_admin = $user->is_organisation_admin;
+        $organisationId = $user->organisation_id;
+        $is_manager = $user->is_manager;
+
+        if ($is_organisation_admin) {
+            $ccs = parent::getEloquentQuery();
+        } else if ($is_manager) {
+            $users = User::getSubordinates($organisationId);
+            $ccs = parent::getEloquentQuery()->whereIn('user_id', $users);
+        } else {
+            $ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        }
+        return $ccs;
     }
 
     public static function form(Form $form): Form

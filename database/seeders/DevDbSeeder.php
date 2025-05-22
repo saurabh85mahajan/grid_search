@@ -24,24 +24,76 @@ class DevDbSeeder extends Seeder
 
         //Entry Resource, ppc
         User::create([
-            'name' => 'Nikhil M',
-            'email' => 'nikhil@gmail.com',
-            'password' => Hash::make('nikhil123'),
+            'name' => 'Admin PPC',
+            'email' => 'admin_ppc@admin.com',
+            'password' => Hash::make('admin123'),
             'organisation_id' => 2,
-			'is_organisation_admin' => 2,
+            'is_organisation_admin' => true,
         ]);
 
         //CC Resource, llc
         User::create([
             'name' => 'Admin LLC',
-            'email' => 'admin1@admin.com',
+            'email' => 'admin_llc@admin.com',
             'password' => Hash::make('admin123'),
             'organisation_id' => 1,
-            'is_organisation_admin' => 2,
+            'is_organisation_admin' => true,
         ]);
 
-        Cc::factory()->count(10)->create();
-        Entry::factory()->count(10)->create();
-        
+        $managers = User::factory()->count(2)->sequence(
+            ['name' => 'Manager One'],
+            ['name' => 'Manager Two']
+        )->create([
+            'is_manager' => 1,
+            'organisation_id' => 1,
+        ]);
+
+        $subordinates = collect();
+        $employeeCounter = 1;
+
+        $managers->each(function ($manager) use ($subordinates, &$employeeCounter) {
+            $managerSubordinates = User::factory()->count(3)->sequence(function ($sequence) use (&$employeeCounter) {
+                return ['name' => 'Employee ' . $employeeCounter++];
+            })->create([
+                'is_manager' => 0,
+                'manager_id' => $manager->id,
+                'organisation_id' => 1,
+            ]);
+            $subordinates->push(...$managerSubordinates);
+        });
+
+        Cc::factory()->count(10)->create([
+            'user_id' => function () use ($subordinates) {
+                return $subordinates->random()->id;
+            }
+        ]);
+
+        $managers = User::factory()->count(2)->sequence(
+            ['name' => 'Manager One'],
+            ['name' => 'Manager Two']
+        )->create([
+            'is_manager' => 1,
+            'organisation_id' => 2,
+        ]);
+
+        $subordinates = collect();
+        $employeeCounter = 1;
+
+        $managers->each(function ($manager) use ($subordinates, &$employeeCounter) {
+            $managerSubordinates = User::factory()->count(3)->sequence(function ($sequence) use (&$employeeCounter) {
+                return ['name' => 'Employee ' . $employeeCounter++];
+            })->create([
+                'is_manager' => 0,
+                'manager_id' => $manager->id,
+                'organisation_id' => 2,
+            ]);
+            $subordinates->push(...$managerSubordinates);
+        });
+
+        Entry::factory()->count(10)->create([
+            'user_id' => function () use ($subordinates) {
+                return $subordinates->random()->id;
+            }
+        ]);
     }
 }
