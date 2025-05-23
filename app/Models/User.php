@@ -62,6 +62,14 @@ class User extends Authenticatable implements FilamentUser
             return  config('app.env') == 'local' || str_ends_with($this->email, 'admin@admin.com');
         }
 
+        if ($panel->getId() === 'llc') {
+            return  auth()->user()->organisation_id == 1;
+        }
+
+        if ($panel->getId() === 'ppc') {
+            return  auth()->user()->organisation_id == 2;
+        }
+
         return true;
     }
 
