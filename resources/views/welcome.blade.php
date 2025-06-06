@@ -4,11 +4,15 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Custom Software Tools - Streamline Your Workflows</title>
+        <title>Custom Software Tools | Streamline Your Workflows with Tailored Data Management Solutions</title>
+
+        <meta name="description" content="Simplify your business operations with custom software tools from AIWebDesk. Build tailored workflows, custom forms, secure data management, and export capabilities — designed to meet your unique business needs.">
+        <meta name="keywords" content="custom software tools, workflow automation, data management, business software, secure delete, custom forms, export data, automate workflows, AIWebDesk software, enterprise tools, tailored software solutions">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+        <link rel="icon" href="https://aiwebdesk.com/vendor/shop/themes/default/assets/favicon.ico">
 
         <!-- Embedded Tailwind CSS - No build process needed -->
         <style>
