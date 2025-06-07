@@ -54,7 +54,7 @@ class Cc extends Model
 
     public function ncb()
     {
-        return $this->belongsTo(NCB::class);
+        return $this->belongsTo(Ncb::class);
     }
 
 	public function salutation(): BelongsTo
