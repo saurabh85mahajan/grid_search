@@ -30,7 +30,7 @@ class LlcPanelProvider extends PanelProvider
             ->id('llc')
             ->path('llc')
              ->favicon('https://aiwebdesk.com/vendor/shop/themes/default/assets/favicon.ico')
-            // ->brandLogo(asset('images/logo.svg'))
+            ->brandLogo('https://aiwebdesk.com/vendor/shop/themes/default/assets/small-logo.png')
             ->brandLogoHeight('3.5rem')
             ->brandName('LLC')
             ->login()

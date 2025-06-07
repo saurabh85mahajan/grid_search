@@ -29,9 +29,9 @@ class PpcPanelProvider extends PanelProvider
             ->id('ppc')
             ->path('ppc')
              ->favicon('https://aiwebdesk.com/vendor/shop/themes/default/assets/favicon.ico')
-            // ->brandLogo(asset('images/logo.svg'))
+            ->brandLogo('https://aiwebdesk.com/vendor/shop/themes/default/assets/small-logo.png')
             ->brandLogoHeight('3.5rem')
-            ->brandName('PPC')
+            ->brandName('Certigo Insurance Broker')
             ->login()
             // ->viteTheme([
             //     'resources/css/filament.css',
