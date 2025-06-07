@@ -18,7 +18,7 @@ class BusinessLockResource extends Resource
     protected static ?string $model = BusinessLock::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Config';
+    protected static ?string $navigationGroup = 'Config LLC';
 
     public static function form(Form $form): Form
     {

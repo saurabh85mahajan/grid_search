@@ -18,7 +18,7 @@ class FuelTypeResource extends Resource
     protected static ?string $model = FuelType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Config';
+    protected static ?string $navigationGroup = 'Config LLC';
 
     public static function form(Form $form): Form
     {

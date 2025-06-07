@@ -21,7 +21,7 @@ class PremiumFrequencyResource extends Resource
     protected static ?string $model = PremiumFrequency::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Config 1';
+    protected static ?string $navigationGroup = 'Config PPC';
 
     public static function form(Form $form): Form
     {
