@@ -68,41 +68,43 @@ class CcResource extends Resource
                                         Forms\Components\Hidden::make("user_id")
                                             ->default(auth()->user()->id)
                                             ->dehydrated(fn($state, $record) => $record === null),
-                                        Forms\Components\Select::make('proposal_type')
-                                            ->label('Proposal type')
+                                        Forms\Components\Select::make('broker')
+                                            ->label('Broker Name')
                                             ->options([
-                                                'Fresh' => 'Fresh',
-                                                'Renewal' => 'Renewal',
+                                                'Robinhood' => 'Robinhood',
+                                                'Landmark ' => 'Landmark',
+                                                'Certigo' => 'Certigo',
+                                                'Alligeance' => 'Alligeance',
+                                                'Arham' => 'Arham',
                                             ])
-                                            ->placeholder('Select Proposal Type')
+                                            ->placeholder('Select Broker')
                                             ->required()
                                             ->validationMessages([
-                                                'required' => 'Please select Proposal Type',
+                                                'required' => 'Please select Broker',
                                             ])
                                             ->disabledOn('edit')
                                             ->live()
                                             ->columnSpan(1),
 
-                                        Forms\Components\TextInput::make('last_year_entry_no')
-                                            ->label('Last Year Entry No')
+                                        Forms\Components\TextInput::make('posp')
+                                            ->label('Posp Name')
                                             ->required()
                                             ->validationMessages([
-                                                'required' => 'Please enter Last Year Entry No',
+                                                'required' => 'Please enter Posp Name',
                                             ])
-                                            ->visible(fn(Forms\Get $get) => $get('proposal_type') === 'Renewal')
-                                            ->columnSpan(1),
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(1)
+                                            ->placeholder('Posp Name'),
 
-                                        Forms\Components\Select::make('posp')
-                                            ->label('Product Posp')
-                                            ->options([
-                                                'POSP' => 'POSP',
-                                                'Non POSP' => 'Non POSP',
-                                            ])
-                                            ->placeholder('Select POSP')
+                                        Forms\Components\TextInput::make('source')
+                                            ->label('Source')
+                                            ->required()
                                             ->validationMessages([
-                                                'required' => 'Please select POSP',
+                                                'required' => 'Please enter Source',
                                             ])
-                                            ->required(),
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(1)
+                                            ->placeholder('Enter Source Name'),
                                     ]),
                             ])->collapsible(),
 
@@ -241,40 +243,70 @@ class CcResource extends Resource
                                 Forms\Components\Grid::make(2)
                                     ->schema([
 
-                                        Forms\Components\Select::make('region_id')
-                                            ->label('Region')
-                                            ->relationship('region', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select Region')
-                                            ->validationMessages([
-                                                'required' => 'Please select Region',
+                                        Forms\Components\Select::make('business_type')
+                                            ->label('Nature of Business')
+                                            ->options([
+                                                'Fresh' => 'Fresh',
+                                                'Port ' => 'Port',
+                                                'Renwal' => 'Renwal',
+                                                'Rollover' => 'Rollover',
                                             ])
-                                            ->required(),
+                                            ->placeholder('Select Business')
+                                            ->live(),
 
-                                        Forms\Components\Select::make('business_lock_id')
-                                            ->label('Business Lock')
-                                            ->relationship('businessLock', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select Bussiness Lock')
-                                            ->validationMessages([
-                                                'required' => 'Please select Business Lock',
+                                        Forms\Components\Select::make('insurance_type')
+                                            ->label('Type of Insurance')
+                                            ->options([
+                                                'Motor' => 'Motor',
+                                                'Health ' => 'Health',
+                                                'Marine' => 'Marine',
+                                                '2 Wheeler' => '2 Wheeler',
+                                                'Life' => 'Life',
+                                                'Fire' => 'Fire',
+                                                'Travel' => 'Travel',
                                             ])
-                                            ->required(),
-
+                                            ->placeholder('Select Insurance Type')
                                     ]),
-
-                                Forms\Components\Grid::make()
+                                Forms\Components\Grid::make(2)
                                     ->schema([
 
-                                        Forms\Components\Select::make('insurance_company_id')
+                                        Forms\Components\DatePicker::make('risk_start_date')
+                                            ->label('Risk Start Date')
+                                            ->format('Y-m-d'),
+
+                                        Forms\Components\DatePicker::make('risk_end_date')
+                                            ->label('Risk End Date')
+                                            ->format('Y-m-d'),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+
+                                        Forms\Components\DatePicker::make('tp_start_date')
+                                            ->label('TP Start Date')
+                                            ->format('Y-m-d'),
+
+                                        Forms\Components\DatePicker::make('tp_end_date')
+                                            ->label('TP End Date')
+                                            ->format('Y-m-d'),
+                                    ]),
+
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+
+                                        Forms\Components\Select::make('insurance_company_name')
                                             ->label('Insurance Company')
-                                            ->relationship('insuranceCompany', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->columnSpan(4)
-                                            ->placeholder('Select Insurance Company')
+                                            ->options([
+                                                'Digit' => 'Digit',
+                                                'Hdfc ' => 'Hdfc',
+                                                'Icici' => 'Icici',
+                                                'Tata' => 'Tata',
+                                                'United' => 'United',
+                                                'Sbi' => 'Sbi',
+                                                'Reliance' => 'Reliance',
+                                                'Bajaj' => 'Bajaj',
+                                                'New India' => 'New India',
+                                            ])
+                                            ->placeholder('Select Insurance Type')
                                             ->validationMessages([
                                                 'required' => 'Please select Insurance Company',
                                             ])
@@ -283,150 +315,13 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('policy_number')
                                             ->label('Policy No.')
                                             ->placeholder('Enter Policy No.')
-                                            ->columnSpan(3)
                                             ->validationMessages([
                                                 'required' => 'Please enter Policy No',
                                             ])
                                             ->required(),
 
-                                        Forms\Components\DatePicker::make('policy_issue_date')
-                                            ->label('Policy Issue Date')
-                                            ->placeholder('Select Policy Issue Date')
-                                            ->format('Y-m-d')
-                                            ->maxDate(fn(string $operation) => $operation === 'create' ? now() : null)
-                                            ->columnSpan(2)
-                                            ->validationMessages([
-                                                'required' => 'Please enter date',
-                                            ])
-                                            ->required(),
-
-                                        Forms\Components\TextInput::make('code')
-                                            ->label('Code')
-                                            ->placeholder('Enter Code')
-                                            ->columnSpan(3)
-                                            ->validationMessages([
-                                                'required' => 'Please enter Code',
-                                            ])
-                                            ->required(),
-                                    ])->columns(12),
-
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-
-                                        Forms\Components\Select::make('product_id')
-                                            ->label('Product')
-                                            ->required()
-                                            ->relationship('product', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->validationMessages([
-                                                'required' => 'Please select Product',
-                                            ])
-                                            ->placeholder('Select Product'),
-
-                                        Forms\Components\Select::make('product_category_id')
-                                            ->label('Product Category')
-                                            ->required()
-                                            ->validationMessages([
-                                                'required' => 'Please select Product Category',
-                                            ])
-                                            ->relationship('productCategory', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder(fn(Forms\Get $get): string => empty($get('product_id')) ? 'First Select Product' : 'Select an option')
-                                            ->options(function (Forms\Get $get) {
-                                                return ProductCategory::active()->where('product_id', $get('product_id'))->pluck('name', 'id');
-                                            }),
-
-                                        Forms\Components\TextInput::make('risk_category')
-                                            ->label('Risk Category')
-                                            ->placeholder('Risk Category'),
-
                                     ]),
 
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-
-                                        Forms\Components\DatePicker::make('inception_date')
-                                            ->label('Inception Date')
-                                            ->format('Y-m-d')
-                                            ->validationMessages([
-                                                'required' => 'Please enter date',
-                                            ])
-                                            ->required(),
-
-                                        Forms\Components\DatePicker::make('expiry_date')
-                                            ->label('Expiry Date')
-                                            ->format('Y-m-d')
-                                            ->minDate(fn(string $operation) => $operation === 'create' ? now() : null)
-                                            ->validationMessages([
-                                                'required' => 'Please enter date',
-                                            ])
-                                            ->required(),
-
-                                        Forms\Components\Select::make('ncb_id')
-                                            ->label('NCB')
-                                            ->relationship('ncb', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select NCB'),
-
-                                    ]),
-
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-
-                                        Forms\Components\DatePicker::make('tp_inception_date')
-                                            ->label('TP Inception Date')
-                                            ->format('Y-m-d'),
-
-                                        Forms\Components\DatePicker::make('tp_expiry_date')
-                                            ->label('TP Expiry Date')
-                                            ->minDate(fn(string $operation) => $operation === 'create' ? now() : null)
-                                            ->format('Y-m-d'),
-
-                                        Forms\Components\TextInput::make('idv')
-                                            ->label('IDV')
-                                            ->extraInputAttributes(['maxlength' => 9])
-                                            ->rules(['regex:/^[a-zA-Z0-9]+$/'])
-                                            ->placeholder('Enter IDV'),
-
-                                    ]),
-
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-
-                                        Forms\Components\Select::make('py_insurance_company_id')
-                                            ->label('PY Ins. Comp.')
-                                            ->relationship('insuranceCompany', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select PY Insurance Company'),
-
-                                        Forms\Components\TextInput::make('py_policy_number')
-                                            ->label('PY Policy No.')
-                                            ->placeholder('Enter PY Policy No.'),
-
-                                    ]),
-
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-
-                                        Forms\Components\TextInput::make('tarrif_rate')
-                                            ->label('Tariff Rate')
-                                            ->extraInputAttributes(['maxlength' => 6])
-                                            ->placeholder('Enter Tariff Rate'),
-
-                                        Forms\Components\TextInput::make('actual_tarrif')
-                                            ->label('Actual Tariff')
-                                            ->extraInputAttributes(['maxlength' => 6])
-                                            ->placeholder('Enter Actual Tariff'),
-
-                                        Forms\Components\Checkbox::make('third_party')
-                                            ->label('Third Party')
-                                            ->inline(false)
-
-                                    ]),
 
                                 Forms\Components\Grid::make(3)
                                     ->schema([
@@ -456,7 +351,7 @@ class CcResource extends Resource
 
                                     ]),
 
-                                Forms\Components\Grid::make(4)
+                                Forms\Components\Grid::make(3)
                                     ->schema([
 
                                         Forms\Components\TextInput::make('cc')
@@ -496,14 +391,6 @@ class CcResource extends Resource
                                                 'required' => 'Please select Fuel Type',
                                             ])
                                             ->required(),
-
-                                        Forms\Components\TextInput::make('seating_capacity')
-                                            ->label('Seating Capacity')
-                                            ->numeric()
-                                            ->maxValue(99)
-                                            ->minValue(1)
-                                            ->placeholder('Enter Capacity')
-
                                     ]),
 
                                 Fieldset::make('Registration Number')
@@ -543,17 +430,16 @@ class CcResource extends Resource
                                     ->columns(4)
                                     ->extraAttributes(['style' => 'max-width: 35%; margin-right: 60%;']),
 
-                                Forms\Components\Grid::make(3)
+                                Forms\Components\Grid::make(4)
                                     ->schema([
 
                                         Forms\Components\TextInput::make('engine_type')
                                             ->label('Engine No.')
                                             ->minLength(5)
                                             ->extraInputAttributes(['maxlength' => 25])
-                                            ->required()
                                             ->rules(['regex:/^[a-zA-Z0-9]+$/'])
                                             ->validationMessages([
-                                                'required' => 'Please enter Engine No.',
+                                                // 'required' => 'Please enter Engine No.',
                                                 'regex' => 'Only Enter letters and numbers.'
                                             ])
                                             ->placeholder('Enter Engine No.'),
@@ -562,21 +448,20 @@ class CcResource extends Resource
                                             ->label('Chasis')
                                             ->minLength(5)
                                             ->extraInputAttributes(['maxlength' => 25])
-                                            ->required()
+                                            // ->required()
                                             ->validationMessages([
-                                                'required' => 'Please enter Chasis',
+                                                // 'required' => 'Please enter Chasis',
                                                 'regex' => 'Only Enter letters and numbers.'
                                             ])
                                             ->placeholder('Enter Chasis'),
-
-                                        Forms\Components\Select::make('rto_id')
-                                            ->label('RTO')
-                                            ->relationship('rto', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
-                                            ->getOptionLabelFromRecordUsing(fn($record) => $record->full_name)
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select RTO'),
-
+                                        Forms\Components\TextInput::make('ncb')
+                                            ->label('NCB')
+                                            ->extraInputAttributes(['maxlength' => 25])
+                                            ->placeholder('Enter NCB'),
+                                        Forms\Components\TextInput::make('last_ncb')
+                                            ->label('Last NCB')
+                                            ->extraInputAttributes(['maxlength' => 25])
+                                            ->placeholder('Enter Last NCB'),
                                     ]),
 
                             ])->collapsible(),
@@ -588,270 +473,240 @@ class CcResource extends Resource
                                     ->schema([
 
                                         Forms\Components\TextInput::make('od')
-                                            ->label('OD')
+                                            ->label('OD Amount')
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Enter OD'),
+                                            ->placeholder('Enter OD Amount'),
 
-                                        Forms\Components\TextInput::make('add_on')
-                                            ->label('Add On')
+                                        Forms\Components\TextInput::make('rider')
+                                            ->label('Rider Amount')
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Enter Add On'),
+                                            ->placeholder('Enter Rider Amount'),
 
-                                        Forms\Components\TextInput::make('other')
-                                            ->label('Other')
+                                        Forms\Components\TextInput::make('commission')
+                                            ->label('Comission')
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Enter Other'),
+                                            ->placeholder('Enter Commission'),
 
                                     ]),
                                 Forms\Components\Grid::make(3)
                                     ->schema([
 
-                                        Forms\Components\TextInput::make('tp_premium')
-                                            ->label('TP Premium')
+                                        Forms\Components\TextInput::make('third_party_amount')
+                                            ->label('Third Party')
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Enter OD'),
+                                            ->placeholder('Enter Third Party'),
 
-                                        Forms\Components\Select::make('tp_tax')
-                                            ->label('TP Tax')
-                                            ->placeholder('Select TP Tax')
-                                            ->options([
-                                                12 => 12,
-                                                13 => 13,
-                                                18 => 18,
-                                                19 => 19,
-                                            ]),
-
-                                        Forms\Components\TextInput::make('tppd')
-                                            ->label('TPPD(-)')
+                                        Forms\Components\TextInput::make('net')
+                                            ->label('Net')
                                             ->prefix('₹')
                                             ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Enter Other'),
+                                            ->placeholder('Enter Third Party'),
 
-                                    ]),
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-
-                                        Forms\Components\TextInput::make('liab_cng')
-                                            ->label('Liab CNG')
-                                            ->numeric()
-                                            ->prefix('₹')
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Liab CNG'),
-
-                                        Forms\Components\TextInput::make('liab_passenger')
-                                            ->label('Liab Passenger')
-                                            ->numeric()
-                                            ->prefix('₹')
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Liab Passenger'),
-
-                                        Forms\Components\TextInput::make('liab_owner_driver')
-                                            ->label('Liab Owner Driver')
-                                            ->numeric()
-                                            ->prefix('₹')
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Liab Owner Driver'),
-
-                                    ]),
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-
-                                        Forms\Components\Select::make('tax')
-                                            ->label('Tax')
-                                            ->placeholder('Select Tax')
-                                            ->options([
-                                                "1.5" => 1.5,
-                                                "1.8" => 1.8,
-                                                "2.25" => 2.25,
-                                                "4.5" => 4.5,
-                                                "12.6" => 12.6,
-                                                "15" => 15,
-                                                "18" => 18,
-                                            ]),
-
-                                        Forms\Components\TextInput::make('tax_amount')
-                                            ->label('Tax Amount')
-                                            ->disabled()
-                                            ->prefix('₹')
-                                            ->dehydrated(true)
-                                            ->extraAttributes([
-                                                'x-data' => '{}',
-                                                'x-init' => 'Alpine.effect(() => {
-                                                    // Get field values
-                                                    const odPremium = parseInt($wire.get("data.od") || 0);
-                                                    const addOnPremium = parseInt($wire.get("data.add_on") || 0);
-                                                    const otherPremium = parseInt($wire.get("data.other") || 0);
-                                                    const liabCng = parseInt($wire.get("data.liab_cng") || 0);
-                                                    const liabOwnerDriver = parseInt($wire.get("data.liab_owner_driver") || 0);
-                                                    const liabPassenger = parseInt($wire.get("data.liab_passenger") || 0);
-                                                    
-                                                    const amount1 = odPremium + addOnPremium + otherPremium + liabCng + liabOwnerDriver + liabPassenger;
-
-                                                    const tpPremium = parseInt($wire.get("data.tp_premium") || 0);
-                                                    const tppd = parseInt($wire.get("data.tppd") || 0);
-                                                    const tpTax = parseInt($wire.get("data.tp_tax") || 0);
-
-                                                    const tpgsAmount = ((tpPremium -tppd) * tpTax) / 100;
-                                                    const sTax = $wire.get("data.tax") || 0;
-
-                                                    const serviceTax = ((amount1 * sTax) / 100) + tpgsAmount;
-
-                                                    const premiumAmount = amount1 + tpPremium + serviceTax - tppd;
-
-                                                    const formattedTaxAmount = serviceTax.toFixed(2);
-                                                    const formattedPremiumAmount = premiumAmount.toFixed(2);
-                                                    
-                                                    // Set the value
-                                                    $wire.set("data.tax_amount", formattedTaxAmount);
-                                                    $wire.set("data.total_premium", formattedPremiumAmount);
-                                                })'
-                                            ]),
-
-                                        Forms\Components\TextInput::make('total_premium')
-                                            ->label('Total Premium')
-                                            ->disabled()
-                                            ->prefix('₹')
-                                            ->dehydrated(true),
-                                    ]),
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('od_percentage')
-                                            ->label('OD%')
+                                        Forms\Components\TextInput::make('gst')
+                                            ->label('GST(%)')
                                             ->numeric()
                                             ->maxValue(100)
                                             ->minValue(1)
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                             ])
-                                            ->placeholder('OD(%)'),
+                                            ->placeholder('GST(%)'),
 
-                                        Forms\Components\TextInput::make('tp_percentage')
-                                            ->label('TP%')
+                                    ]),
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('total_amount')
+                                            ->label('Total Amount')
+                                            ->prefix('₹')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Enter Total Amount'),
+                                        Forms\Components\TextInput::make('paid_per_ca')
+                                            ->label('Paid % CA')
                                             ->numeric()
                                             ->maxValue(100)
                                             ->minValue(1)
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                             ])
-                                            ->placeholder('TP(%)'),
-
-                                        Forms\Components\TextInput::make('specific_amount')
-                                            ->label('Specific Amount')
-                                            ->numeric()
+                                            ->placeholder('Paid % CA'),
+                                        Forms\Components\TextInput::make('ca_amount')
+                                            ->label('CA')
                                             ->prefix('₹')
+                                            ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Specific Amount'),
-
+                                            ->placeholder('Enter CA'),
+                                        Forms\Components\TextInput::make('paid_per_tp')
+                                            ->label('Paid % TP')
+                                            ->numeric()
+                                            ->maxValue(100)
+                                            ->minValue(1)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                            ])
+                                            ->placeholder('Paid % TP'),
                                     ]),
-                                Forms\Components\CheckboxList::make('add_on_coverages')
-                                    ->label('Add On Coverages')
-                                    ->options([
-                                        'nil_dep' => 'Nil Dep.',
-                                        'consumable' => 'Consumable',
-                                        'engine_protector' => 'Engine Protector',
-                                        'tyre_cover' => 'Tyre Cover',
-                                        'ncb_protector' => 'Ncb Protector',
-                                        'r21' => 'R21',
-                                        'keycover' => 'Keycover',
-                                        'rsa' => 'RSA',
-                                        'personal_belongings' => 'Lose of Personal Belongings',
-                                        'spare_car' => 'Spare Car',
-                                    ])
-                                    ->columns(4),
-
-                            ])->collapsible(),
-
-                        // Payment Details
-                        Forms\Components\Section::make('Payment Details')
-                            ->schema([
                                 Forms\Components\Grid::make(3)
                                     ->schema([
 
-                                        Forms\Components\Select::make('payment_mode')
-                                            ->label('Payment Mode')
-                                            ->options([
-                                                'card' => 'Card',
-                                                'cheque' => 'Cheque',
-                                                'dd' => 'DD',
-                                                'neft' => 'NEFT',
-                                                'other' => 'OTHER',
-                                            ])
-                                            ->live()
-                                            ->placeholder('Select Payment Mode'),
-
-                                        Forms\Components\DatePicker::make('payment_date')
-                                            ->label('Payment Date')
-                                            ->format('Y-m-d'),
-
-                                        Forms\Components\TextInput::make('cheque_trans_number')
-                                            ->label('Other')
-                                            ->hidden(
-                                                fn(Forms\Get $get): bool =>
-                                                in_array($get('payment_mode'), ['other'])
-                                            )
-                                            ->placeholder('Enter Cheque/Trans Number'),
-
-                                    ]),
-
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\Select::make('bank_id')
-                                            ->label('Bank')
-                                            ->relationship(
-                                                'bank',
-                                                'name',
-                                                modifyQueryUsing: fn(Builder $query) => $query->where('is_active', true)
-                                            )
-                                            ->searchable()
-                                            ->preload()
-                                            ->hidden(
-                                                fn(Forms\Get $get): bool =>
-                                                in_array($get('payment_mode'), ['card', 'other'])
-                                            )
-                                            ->placeholder('Select Bank'),
-
-                                        Forms\Components\TextInput::make('payment_amount')
-                                            ->label('Payment Amount')
-                                            ->numeric()
+                                        Forms\Components\TextInput::make('tp_amount')
+                                            ->label('TP')
                                             ->prefix('₹')
+                                            ->numeric()
                                             ->extraInputAttributes([
                                                 'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
                                             ])
-                                            ->placeholder('Enter Payment Amount'),
-                                    ]),
+                                            ->placeholder('Enter TP'),
+                                        Forms\Components\TextInput::make('received_per_ca')
+                                            ->label('Received % CA')
+                                            ->numeric()
+                                            ->maxValue(100)
+                                            ->minValue(1)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                            ])
+                                            ->placeholder('Received % CA'),
+                                        Forms\Components\TextInput::make('received_per_tp')
+                                            ->label('Received % TP')
+                                            ->numeric()
+                                            ->maxValue(100)
+                                            ->minValue(1)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                            ])
+                                            ->placeholder('Received % TP'),
 
+                                    ]),
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('total_paid_amount')
+                                            ->label('Total Paid Amount')
+                                            ->prefix('₹')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Enter Total Paid Amount'),
+                                        Forms\Components\TextInput::make('total_received_payout')
+                                            ->label('Total Received Payout')
+                                            ->prefix('₹')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Enter Total Received Payout'),
+ 
+                                        Forms\Components\TextInput::make('profit')
+                                            ->label('Profit')
+                                            ->prefix('₹')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Enter Profit'),
+ 
+                                        Forms\Components\TextInput::make('sum_issured')
+                                            ->label('Sum Issured')
+                                            ->prefix('₹')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Enter Sum Issured'),
+ 
+
+                                    ]),
+                                // Forms\Components\Grid::make(3)
+                                //     ->schema([
+
+                                //         Forms\Components\Select::make('tax')
+                                //             ->label('Tax')
+                                //             ->placeholder('Select Tax')
+                                //             ->options([
+                                //                 "1.5" => 1.5,
+                                //                 "1.8" => 1.8,
+                                //                 "2.25" => 2.25,
+                                //                 "4.5" => 4.5,
+                                //                 "12.6" => 12.6,
+                                //                 "15" => 15,
+                                //                 "18" => 18,
+                                //             ]),
+
+                                //         Forms\Components\TextInput::make('tax_amount')
+                                //             ->label('Tax Amount')
+                                //             ->disabled()
+                                //             ->prefix('₹')
+                                //             ->dehydrated(true)
+                                //             ->extraAttributes([
+                                //                 'x-data' => '{}',
+                                //                 'x-init' => 'Alpine.effect(() => {
+                                //                     // Get field values
+                                //                     const odPremium = parseInt($wire.get("data.od") || 0);
+                                //                     const addOnPremium = parseInt($wire.get("data.add_on") || 0);
+                                //                     const otherPremium = parseInt($wire.get("data.other") || 0);
+                                //                     const liabCng = parseInt($wire.get("data.liab_cng") || 0);
+                                //                     const liabOwnerDriver = parseInt($wire.get("data.liab_owner_driver") || 0);
+                                //                     const liabPassenger = parseInt($wire.get("data.liab_passenger") || 0);
+                                                    
+                                //                     const amount1 = odPremium + addOnPremium + otherPremium + liabCng + liabOwnerDriver + liabPassenger;
+
+                                //                     const tpPremium = parseInt($wire.get("data.tp_premium") || 0);
+                                //                     const tppd = parseInt($wire.get("data.tppd") || 0);
+                                //                     const tpTax = parseInt($wire.get("data.tp_tax") || 0);
+
+                                //                     const tpgsAmount = ((tpPremium -tppd) * tpTax) / 100;
+                                //                     const sTax = $wire.get("data.tax") || 0;
+
+                                //                     const serviceTax = ((amount1 * sTax) / 100) + tpgsAmount;
+
+                                //                     const premiumAmount = amount1 + tpPremium + serviceTax - tppd;
+
+                                //                     const formattedTaxAmount = serviceTax.toFixed(2);
+                                //                     const formattedPremiumAmount = premiumAmount.toFixed(2);
+                                                    
+                                //                     // Set the value
+                                //                     $wire.set("data.tax_amount", formattedTaxAmount);
+                                //                     $wire.set("data.total_premium", formattedPremiumAmount);
+                                //                 })'
+                                //             ]),
+
+                                //         Forms\Components\TextInput::make('total_premium')
+                                //             ->label('Total Premium')
+                                //             ->disabled()
+                                //             ->prefix('₹')
+                                //             ->dehydrated(true),
+                                //     ]),
                             ])->collapsible(),
+
                         Forms\Components\Section::make('Documents')
                             ->schema([
                                 FileUpload::make('policy')
-                                    ->label('Policy')
+                                    ->label('Last Policy')
                                     ->disk('protected')
                                     ->directory('cc/policy/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
@@ -862,75 +717,10 @@ class CcResource extends Resource
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
                                     ),
-                                FileUpload::make('proposal_form')
-                                    ->label('Proposal Form')
+                                FileUpload::make('rc')
+                                    ->label('RC')
                                     ->disk('protected')
-                                    ->directory('cc/proposals/')
-                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                    ->maxSize(10240)
-                                    ->maxFiles(1)
-                                    ->previewable()
-                                    ->getUploadedFileNameForStorageUsing(
-                                        fn(TemporaryUploadedFile $file): string =>
-                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                    ),
-
-                                FileUpload::make('renewal_form')
-                                    ->label('Renewal Form')
-                                    ->disk('protected')
-                                    ->directory('cc/renewals/')
-                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                    ->maxSize(10240)
-                                    ->maxFiles(1)
-                                    ->previewable()
-                                    ->getUploadedFileNameForStorageUsing(
-                                        fn(TemporaryUploadedFile $file): string =>
-                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                    ),
-
-                                FileUpload::make('rc_book')
-                                    ->label('RC Book')
-                                    ->disk('protected')
-                                    ->directory('cc/rc_book/')
-                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                    ->maxSize(10240)
-                                    ->maxFiles(1)
-                                    ->previewable()
-                                    ->getUploadedFileNameForStorageUsing(
-                                        fn(TemporaryUploadedFile $file): string =>
-                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                    ),
-
-                                FileUpload::make('visiting_card')
-                                    ->label('Visiting Card')
-                                    ->disk('protected')
-                                    ->directory('cc/visiting_card/')
-                                    ->acceptedFileTypes(['image/*'])
-                                    ->maxSize(10240)
-                                    ->maxFiles(1)
-                                    ->previewable()
-                                    ->getUploadedFileNameForStorageUsing(
-                                        fn(TemporaryUploadedFile $file): string =>
-                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                    ),
-
-                                FileUpload::make('mandate')
-                                    ->label('Mandate')
-                                    ->disk('protected')
-                                    ->directory('cc/mandate/')
-                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                    ->maxSize(10240)
-                                    ->maxFiles(1)
-                                    ->previewable()
-                                    ->getUploadedFileNameForStorageUsing(
-                                        fn(TemporaryUploadedFile $file): string =>
-                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                    ),
-
-                                FileUpload::make('other_document')
-                                    ->label('Other')
-                                    ->disk('protected')
-                                    ->directory('cc/other_document/')
+                                    ->directory('cc/rc/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -945,6 +735,30 @@ class CcResource extends Resource
                                     ->disk('protected')
                                     ->directory('cc/pan_card/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                                FileUpload::make('aadhaar_front')
+                                    ->label('Aadhar Front Side')
+                                    ->disk('protected')
+                                    ->directory('entry/aadhaar_front/')
+                                    ->acceptedFileTypes(['image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->previewable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                                FileUpload::make('aadhaar_back')
+                                    ->label('Aadhar Back Side')
+                                    ->disk('protected')
+                                    ->directory('entry/aadhaar_back/')
+                                    ->acceptedFileTypes(['image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
                                     ->previewable()
@@ -1644,45 +1458,6 @@ class CcResource extends Resource
                             ])
                             ->collapsible(),
 
-                        // Payment Details
-                        Section::make('Payment Details')
-                            ->schema([
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('payment_mode')
-                                            ->label('Payment Mode')
-                                            ->badge()
-                                            ->formatStateUsing(fn($state) => ucfirst($state))
-                                            ->color(fn(string $state): string => match ($state) {
-                                                'card' => 'info',
-                                                'cheque' => 'warning',
-                                                'neft' => 'success',
-                                                'dd' => 'primary',
-                                                default => 'gray',
-                                            }),
-
-                                        TextEntry::make('payment_date')
-                                            ->label('Payment Date')
-                                            ->date(),
-
-                                        TextEntry::make('cheque_trans_number')
-                                            ->label('Cheque/Trans Number')
-                                            ->visible(fn($record) => !in_array($record->payment_mode, ['other'])),
-                                    ]),
-
-                                Grid::make(2)
-                                    ->schema([
-                                        TextEntry::make('bank.name')
-                                            ->label('Bank')
-                                            ->visible(fn($record) => !in_array($record->payment_mode, ['card', 'other'])),
-
-                                        TextEntry::make('payment_amount')
-                                            ->label('Payment Amount')
-                                            ->money('INR')
-                                            ->weight(FontWeight::Bold),
-                                    ]),
-                            ])
-                            ->collapsible(),
                         //Documents
                         Section::make('Documents')
                             ->schema([
@@ -1704,8 +1479,8 @@ class CcResource extends Resource
                                 ViewEntry::make('mandate')
                                     ->label('Mandate')
                                     ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('other_document')
-                                    ->label('Other')
+                                ViewEntry::make('aadhaar_front')
+                                    ->label('Aadhar ')
                                     ->view('filament.infolists.components.file-viewer'),
                                 ViewEntry::make('pan_card')
                                     ->label('PAN Card')
