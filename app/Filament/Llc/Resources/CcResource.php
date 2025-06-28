@@ -82,8 +82,6 @@ class CcResource extends Resource
                                             ->validationMessages([
                                                 'required' => 'Please select Broker',
                                             ])
-                                            ->disabledOn('edit')
-                                            ->live()
                                             ->columnSpan(1),
 
                                         Forms\Components\TextInput::make('posp')
@@ -251,8 +249,7 @@ class CcResource extends Resource
                                                 'Renwal' => 'Renwal',
                                                 'Rollover' => 'Rollover',
                                             ])
-                                            ->placeholder('Select Business')
-                                            ->live(),
+                                            ->placeholder('Select Business'),
 
                                         Forms\Components\Select::make('insurance_type')
                                             ->label('Type of Insurance')
@@ -266,6 +263,46 @@ class CcResource extends Resource
                                                 'Travel' => 'Travel',
                                             ])
                                             ->placeholder('Select Insurance Type')
+                                            ->validationMessages([
+                                                'required' => 'Please enter Type of Insurance',
+                                            ])
+                                            ->required(),
+                                    ]),
+
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+
+                                        Forms\Components\Select::make('insurance_company_name')
+                                            ->label('Insurance Company')
+                                            ->options([
+                                                'Digit' => 'Digit',
+                                                'Hdfc ' => 'Hdfc',
+                                                'Icici' => 'Icici',
+                                                'Tata' => 'Tata',
+                                                'United' => 'United',
+                                                'Sbi' => 'Sbi',
+                                                'Reliance' => 'Reliance',
+                                                'Bajaj' => 'Bajaj',
+                                                'New India' => 'New India',
+                                            ])
+                                            ->placeholder('Select Insurance Type')
+                                            ->validationMessages([
+                                                'required' => 'Please select Insurance Company',
+                                            ])
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('policy_number')
+                                            ->label('Policy No.')
+                                            ->placeholder('Enter Policy No.'),
+                                        Forms\Components\TextInput::make('sum_issured')
+                                            ->label('Sum Issured')
+                                            ->prefix('₹')
+                                            ->required()
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                            ])
+                                            ->placeholder('Enter Sum Issured'),
                                     ]),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
@@ -290,38 +327,6 @@ class CcResource extends Resource
                                             ->format('Y-m-d'),
                                     ]),
 
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-
-                                        Forms\Components\Select::make('insurance_company_name')
-                                            ->label('Insurance Company')
-                                            ->options([
-                                                'Digit' => 'Digit',
-                                                'Hdfc ' => 'Hdfc',
-                                                'Icici' => 'Icici',
-                                                'Tata' => 'Tata',
-                                                'United' => 'United',
-                                                'Sbi' => 'Sbi',
-                                                'Reliance' => 'Reliance',
-                                                'Bajaj' => 'Bajaj',
-                                                'New India' => 'New India',
-                                            ])
-                                            ->placeholder('Select Insurance Type')
-                                            ->validationMessages([
-                                                'required' => 'Please select Insurance Company',
-                                            ])
-                                            ->required(),
-
-                                        Forms\Components\TextInput::make('policy_number')
-                                            ->label('Policy No.')
-                                            ->placeholder('Enter Policy No.')
-                                            ->validationMessages([
-                                                'required' => 'Please enter Policy No',
-                                            ])
-                                            ->required(),
-
-                                    ]),
-
 
                                 Forms\Components\Grid::make(3)
                                     ->schema([
@@ -331,24 +336,23 @@ class CcResource extends Resource
                                             ->relationship('make', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                                             ->searchable()
                                             ->preload()
-                                            ->validationMessages([
-                                                'required' => 'Please select Make',
-                                            ])
-                                            ->placeholder('Select Make')
-                                            ->required(),
+                                            // ->validationMessages([
+                                            //     'required' => 'Please select Make',
+                                            // ])
+                                            ->placeholder('Select Make'),
+                                            // ->required(),
 
                                         Forms\Components\TextInput::make('vehicle_model')
                                             ->label('Vehicle Model')
-                                            ->placeholder('Enter Vehicle Model')
-                                            ->validationMessages([
-                                                'required' => 'Please select Model',
-                                            ])
-                                            ->required(),
+                                            ->placeholder('Enter Vehicle Model'),
+                                            // ->validationMessages([
+                                            //     'required' => 'Please select Model',
+                                            // ])
+                                            // ->required(),
 
                                         Forms\Components\TextInput::make('vehicle_sub_model')
                                             ->label('Vehicle Sub Model')
-                                            ->placeholder('Enter Vehicle Sub Model'),
-
+                                            ->placeholder('Enter Vehicle Sub Model'), 
                                     ]),
 
                                 Forms\Components\Grid::make(3)
@@ -375,22 +379,18 @@ class CcResource extends Resource
                                                 }
 
                                                 return $years;
-                                            })
-                                            ->validationMessages([
-                                                'required' => 'Please select YOM',
-                                            ])
-                                            ->required(),
+                                            }),
+                                            // ->validationMessages([
+                                            //     'required' => 'Please select YOM',
+                                            // ]),
+                                            // ->required(),
 
                                         Forms\Components\Select::make('fuel_type_id')
                                             ->label('Fuel Type')
                                             ->relationship('fuelType', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Select Fuel Type')
-                                            ->validationMessages([
-                                                'required' => 'Please select Fuel Type',
-                                            ])
-                                            ->required(),
+                                            ->placeholder('Select Fuel Type'),
                                     ]),
 
                                 Fieldset::make('Registration Number')
@@ -398,20 +398,12 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('registration_number_1')
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 2])
-                                            ->placeholder('GJ')
-                                            ->validationMessages([
-                                                'required' => 'Required',
-                                            ])
-                                            ->required(),
+                                            ->placeholder('GJ'),
 
                                         Forms\Components\TextInput::make('registration_number_2')
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 2])
-                                            ->placeholder('01')
-                                            ->validationMessages([
-                                                'required' => 'Required',
-                                            ])
-                                            ->required(),
+                                            ->placeholder('01'),
 
                                         Forms\Components\TextInput::make('registration_number_3')
                                             ->hiddenLabel()
@@ -421,11 +413,7 @@ class CcResource extends Resource
                                         Forms\Components\TextInput::make('registration_number_4')
                                             ->hiddenLabel()
                                             ->extraInputAttributes(['maxlength' => 4])
-                                            ->placeholder('1234')
-                                            ->validationMessages([
-                                                'required' => 'Required',
-                                            ])
-                                            ->required(),
+                                            ->placeholder('1234'),
                                     ])
                                     ->columns(4)
                                     ->extraAttributes(['style' => 'max-width: 35%; margin-right: 60%;']),
@@ -467,245 +455,295 @@ class CcResource extends Resource
                             ])->collapsible(),
 
                         // Premium Details
-                        Forms\Components\Section::make('Premium Details')
-                            ->schema([
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
+                            Forms\Components\Section::make('Premium Details')
+                                ->schema([
+                                    // STEP 1: Basic Premium Components
+                                    Forms\Components\Fieldset::make('Premium Components')
+                                        ->schema([
+                                            Forms\Components\Grid::make(3)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('od')
+                                                        ->label('OD Amount')
+                                                        ->prefix('₹')
+                                                        ->numeric()
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                        ])
+                                                        ->placeholder('Enter OD Amount'),
 
-                                        Forms\Components\TextInput::make('od')
-                                            ->label('OD Amount')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter OD Amount'),
+                                                    Forms\Components\TextInput::make('rider')
+                                                        ->label('Rider Amount')
+                                                        ->prefix('₹')
+                                                        ->numeric()
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                        ])
+                                                        ->placeholder('Enter Rider Amount'),
 
-                                        Forms\Components\TextInput::make('rider')
-                                            ->label('Rider Amount')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Rider Amount'),
+                                                    Forms\Components\TextInput::make('commission')
+                                                        ->label('Commission')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const odAmount = parseFloat($wire.get("data.od") || 0);
+                                                                const riderAmount = parseFloat($wire.get("data.rider") || 0);
+                                                                const commission = odAmount + riderAmount;
+                                                                const formattedCommission = commission.toFixed(2);
+                                                                $wire.set("data.commission", formattedCommission);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
+                                                ]),
+                                        ]),
 
-                                        Forms\Components\TextInput::make('commission')
-                                            ->label('Comission')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Commission'),
+                                    // STEP 2: Net Calculation
+                                    Forms\Components\Fieldset::make('Net Premium Calculation')
+                                        ->schema([
+                                            Forms\Components\Grid::make(4)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('third_party_amount')
+                                                        ->label('Third Party Amount')
+                                                        ->prefix('₹')
+                                                        ->numeric()
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                        ])
+                                                        ->placeholder('Enter Third Party Amount'),
 
-                                    ]),
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
+                                                    Forms\Components\TextInput::make('net')
+                                                        ->label('Net Amount')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const odAmount = parseFloat($wire.get("data.od") || 0);
+                                                                const riderAmount = parseFloat($wire.get("data.rider") || 0);
+                                                                const thirdPartyAmount = parseFloat($wire.get("data.third_party_amount") || 0);
+                                                                const total = odAmount + riderAmount + thirdPartyAmount;
+                                                                const formattedTotal = total.toFixed(2);
+                                                                $wire.set("data.net", formattedTotal);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
 
-                                        Forms\Components\TextInput::make('third_party_amount')
-                                            ->label('Third Party')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Third Party'),
+                                                    Forms\Components\TextInput::make('gst')
+                                                        ->label('GST (%)')
+                                                        ->numeric()
+                                                        ->maxValue(100)
+                                                        ->minValue(1)
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                        ])
+                                                        ->placeholder('Enter GST %'),
 
-                                        Forms\Components\TextInput::make('net')
-                                            ->label('Net')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Third Party'),
+                                                    Forms\Components\TextInput::make('total_amount')
+                                                        ->label('Total Amount (Inc. GST)')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const netAmount = parseFloat($wire.get("data.net") || 0);
+                                                                const gstPercent = parseFloat($wire.get("data.gst") || 0);
+                                                                const gstAmount = netAmount * (gstPercent / 100);
+                                                                const totalAmount = netAmount + gstAmount;
+                                                                const formattedTotal = totalAmount.toFixed(2);
+                                                                $wire.set("data.total_amount", formattedTotal);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
+                                                ]),
+                                        ]),
 
-                                        Forms\Components\TextInput::make('gst')
-                                            ->label('GST(%)')
-                                            ->numeric()
-                                            ->maxValue(100)
-                                            ->minValue(1)
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
-                                            ])
-                                            ->placeholder('GST(%)'),
+                                    // STEP 3: Commission Breakdown - What We Pay
+                                    Forms\Components\Fieldset::make('Commission Payout (What We Pay)')
+                                        ->schema([
+                                            Forms\Components\Grid::make(4)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('paid_per_ca')
+                                                        ->label('CA Rate (%)')
+                                                        ->numeric()
+                                                        ->maxValue(100)
+                                                        ->minValue(1)
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                        ])
+                                                        ->placeholder('Enter CA %'),
 
-                                    ]),
-                                Forms\Components\Grid::make(4)
-                                    ->schema([
+                                                    Forms\Components\TextInput::make('ca_amount')
+                                                        ->label('CA Amount')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.paid_per_ca") || 0);
+                                                                const commission = parseFloat($wire.get("data.commission") || 0);
+                                                                const caAmount = (paidPerCa / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.ca_amount", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
 
-                                        Forms\Components\TextInput::make('total_amount')
-                                            ->label('Total Amount')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Total Amount'),
-                                        Forms\Components\TextInput::make('paid_per_ca')
-                                            ->label('Paid % CA')
-                                            ->numeric()
-                                            ->maxValue(100)
-                                            ->minValue(1)
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
-                                            ])
-                                            ->placeholder('Paid % CA'),
-                                        Forms\Components\TextInput::make('ca_amount')
-                                            ->label('CA')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter CA'),
-                                        Forms\Components\TextInput::make('paid_per_tp')
-                                            ->label('Paid % TP')
-                                            ->numeric()
-                                            ->maxValue(100)
-                                            ->minValue(1)
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
-                                            ])
-                                            ->placeholder('Paid % TP'),
-                                    ]),
-                                Forms\Components\Grid::make(3)
-                                    ->schema([
+                                                    Forms\Components\TextInput::make('paid_per_tp')
+                                                        ->label('TP Rate (%)')
+                                                        ->numeric()
+                                                        ->maxValue(100)
+                                                        ->minValue(1)
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                        ])
+                                                        ->placeholder('Enter TP %'),
 
-                                        Forms\Components\TextInput::make('tp_amount')
-                                            ->label('TP')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter TP'),
-                                        Forms\Components\TextInput::make('received_per_ca')
-                                            ->label('Received % CA')
-                                            ->numeric()
-                                            ->maxValue(100)
-                                            ->minValue(1)
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
-                                            ])
-                                            ->placeholder('Received % CA'),
-                                        Forms\Components\TextInput::make('received_per_tp')
-                                            ->label('Received % TP')
-                                            ->numeric()
-                                            ->maxValue(100)
-                                            ->minValue(1)
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
-                                            ])
-                                            ->placeholder('Received % TP'),
+                                                    Forms\Components\TextInput::make('tp_amount')
+                                                        ->label('TP Amount')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerTp = parseFloat($wire.get("data.paid_per_tp") || 0);
+                                                                const commission = parseFloat($wire.get("data.third_party_amount") || 0);
+                                                                const caAmount = (paidPerTp / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.tp_amount", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
+                                                ]),
+                                        ]),
 
-                                    ]),
-                                Forms\Components\Grid::make(4)
-                                    ->schema([
+                                    // STEP 4: Commission Breakdown - What We Receive
+                                    Forms\Components\Fieldset::make('Commission Received (What We Get)')
+                                        ->schema([
+                                            Forms\Components\Grid::make(4)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('received_per_ca')
+                                                        ->label('CA Received Rate (%)')
+                                                        ->numeric()
+                                                        ->maxValue(100)
+                                                        ->minValue(1)
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                        ])
+                                                        ->placeholder('Enter Received CA %'),
 
-                                        Forms\Components\TextInput::make('total_paid_amount')
-                                            ->label('Total Paid Amount')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Total Paid Amount'),
-                                        Forms\Components\TextInput::make('total_received_payout')
-                                            ->label('Total Received Payout')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Total Received Payout'),
- 
-                                        Forms\Components\TextInput::make('profit')
-                                            ->label('Profit')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Profit'),
- 
-                                        Forms\Components\TextInput::make('sum_issured')
-                                            ->label('Sum Issured')
-                                            ->prefix('₹')
-                                            ->numeric()
-                                            ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
-                                            ])
-                                            ->placeholder('Enter Sum Issured'),
- 
+                                                    Forms\Components\TextInput::make('ca_received_amount')
+                                                        ->label('CA Received Amount')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.received_per_ca") || 0);
+                                                                const commission = parseFloat($wire.get("data.commission") || 0);
+                                                                const caAmount = (paidPerCa / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.ca_received_amount", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
 
-                                    ]),
-                                // Forms\Components\Grid::make(3)
-                                //     ->schema([
+                                                    Forms\Components\TextInput::make('received_per_tp')
+                                                        ->label('TP Received Rate (%)')
+                                                        ->numeric()
+                                                        ->maxValue(100)
+                                                        ->minValue(1)
+                                                        ->extraInputAttributes([
+                                                            'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                        ])
+                                                        ->placeholder('Enter Received TP %'),
 
-                                //         Forms\Components\Select::make('tax')
-                                //             ->label('Tax')
-                                //             ->placeholder('Select Tax')
-                                //             ->options([
-                                //                 "1.5" => 1.5,
-                                //                 "1.8" => 1.8,
-                                //                 "2.25" => 2.25,
-                                //                 "4.5" => 4.5,
-                                //                 "12.6" => 12.6,
-                                //                 "15" => 15,
-                                //                 "18" => 18,
-                                //             ]),
+                                                    Forms\Components\TextInput::make('tp_received_amount')
+                                                        ->label('TP Received Amount')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerTp = parseFloat($wire.get("data.received_per_tp") || 0);
+                                                                const commission = parseFloat($wire.get("data.third_party_amount") || 0);
+                                                                const caAmount = (paidPerTp / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.tp_received_amount", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
+                                                ]),
+                                        ]),
 
-                                //         Forms\Components\TextInput::make('tax_amount')
-                                //             ->label('Tax Amount')
-                                //             ->disabled()
-                                //             ->prefix('₹')
-                                //             ->dehydrated(true)
-                                //             ->extraAttributes([
-                                //                 'x-data' => '{}',
-                                //                 'x-init' => 'Alpine.effect(() => {
-                                //                     // Get field values
-                                //                     const odPremium = parseInt($wire.get("data.od") || 0);
-                                //                     const addOnPremium = parseInt($wire.get("data.add_on") || 0);
-                                //                     const otherPremium = parseInt($wire.get("data.other") || 0);
-                                //                     const liabCng = parseInt($wire.get("data.liab_cng") || 0);
-                                //                     const liabOwnerDriver = parseInt($wire.get("data.liab_owner_driver") || 0);
-                                //                     const liabPassenger = parseInt($wire.get("data.liab_passenger") || 0);
-                                                    
-                                //                     const amount1 = odPremium + addOnPremium + otherPremium + liabCng + liabOwnerDriver + liabPassenger;
+                                    // STEP 5: Final Summary
+                                    Forms\Components\Fieldset::make('Summary')
+                                        ->schema([
+                                            Forms\Components\Grid::make(3)
+                                                ->schema([
+                                                    Forms\Components\TextInput::make('total_paid_amount')
+                                                        ->label('Total Paid Out')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.ca_amount") || 0);
+                                                                const commission = parseFloat($wire.get("data.tp_amount") || 0);
+                                                                const caAmount = paidPerCa + commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.total_paid_amount", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
 
-                                //                     const tpPremium = parseInt($wire.get("data.tp_premium") || 0);
-                                //                     const tppd = parseInt($wire.get("data.tppd") || 0);
-                                //                     const tpTax = parseInt($wire.get("data.tp_tax") || 0);
+                                                    Forms\Components\TextInput::make('total_received_payout')
+                                                        ->label('Total Received')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.ca_received_amount") || 0);
+                                                                const commission = parseFloat($wire.get("data.tp_received_amount") || 0);
+                                                                const caAmount = paidPerCa + commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.total_received_payout", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
 
-                                //                     const tpgsAmount = ((tpPremium -tppd) * tpTax) / 100;
-                                //                     const sTax = $wire.get("data.tax") || 0;
-
-                                //                     const serviceTax = ((amount1 * sTax) / 100) + tpgsAmount;
-
-                                //                     const premiumAmount = amount1 + tpPremium + serviceTax - tppd;
-
-                                //                     const formattedTaxAmount = serviceTax.toFixed(2);
-                                //                     const formattedPremiumAmount = premiumAmount.toFixed(2);
-                                                    
-                                //                     // Set the value
-                                //                     $wire.set("data.tax_amount", formattedTaxAmount);
-                                //                     $wire.set("data.total_premium", formattedPremiumAmount);
-                                //                 })'
-                                //             ]),
-
-                                //         Forms\Components\TextInput::make('total_premium')
-                                //             ->label('Total Premium')
-                                //             ->disabled()
-                                //             ->prefix('₹')
-                                //             ->dehydrated(true),
-                                //     ]),
-                            ])->collapsible(),
-
+                                                    Forms\Components\TextInput::make('profit')
+                                                        ->label('Net Profit')
+                                                        ->prefix('₹')
+                                                        ->disabled()
+                                                        ->dehydrated(true)
+                                                        ->extraAttributes([
+                                                            'x-data' => '{}',
+                                                            'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.total_paid_amount") || 0);
+                                                                const commission = parseFloat($wire.get("data.total_received_payout") || 0);
+                                                                const caAmount = commission - paidPerCa;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.profit", formattedCaAmount);
+                                                            })'
+                                                        ])
+                                                        ->placeholder('Auto-calculated'),
+                                                ]),
+                                        ]),
+                                ])->collapsible(),
                         Forms\Components\Section::make('Documents')
                             ->schema([
-                                FileUpload::make('policy')
+                                FileUpload::make('last_policy')
                                     ->label('Last Policy')
                                     ->disk('protected')
                                     ->directory('cc/policy/')
@@ -774,19 +812,21 @@ class CcResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
-                TextColumn::make('proposal_type')
+                TextColumn::make('posp')
                     ->formatStateUsing(function (Cc $record): string {
                         return "
                             <div class='space-y-1'>
-                                <div class='font-medium'>{$record->proposal_type}</div>
+                                <div class='font-medium'>{$record->broker}</div>
                                 <div class='text-sm text-gray-500'>{$record->posp}</div>
+                                <div class='text-xs text-gray-500'>{$record->source} - {$record->business_type}</div>
                             </div>
                         ";
                     })
                     ->html()
                     ->label('Type')
-                    ->searchable(['proposal_type', 'posp']),
+                    ->searchable(['source', 'posp', 'broker', 'business_type']),
 
                 TextColumn::make('first_name')
                     ->formatStateUsing(function (Cc $record): string {
@@ -816,37 +856,41 @@ class CcResource extends Resource
                         ";
                     })
                     ->searchable(['engine_type', 'chasis', 'registration_number_1', 'registration_number_2', 'registration_number_3', 'registration_number_4'])
-                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->html(),
-                Tables\Columns\TextColumn::make('insuranceCompany.name')
+                Tables\Columns\TextColumn::make('insurance_company_name')
                     ->label('Insurance')
                     ->formatStateUsing(function (Cc $record): string {
                         return "
                             <div class='space-y-1'>
-                                <div class='font-medium'>{$record->insuranceCompany->name}</div>
-                                <div class='text-sm text-gray-500'>{$record->policy_number}</div>
-                                <div class='text-xs text-gray-500'>Issued on: {$record->policy_issue_date}</div>
+                                <div class='font-medium'>{$record->insurance_company_name}</div>
+                                <div class='text-sm text-gray-500'>{$record->insurance_type}</div>
+                                <div class='text-xs text-gray-500'>Policy: {$record->policy_number}</div>
                             </div>
                         ";
                     })
-                    ->searchable(['policy_number'])
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(['insurance_company_name', 'insurance_type', 'policy_number'])
+                    ->toggleable(isToggledHiddenByDefault: false)
                     ->html(),
-                TextColumn::make('total_premium')
-                    ->label('Total Premium')
+                TextColumn::make('sum_issured')
+                    ->label('Sum Issured')
                     ->formatStateUsing(function (Cc $record): string {
-                        $totalPremium = number_format($record->total_premium, 2);
+                        $sumIssured = number_format($record->sum_issured, 2);
+                        $thirdPartyAmount = number_format($record->third_party_amount, 2);
+                        $totalPaidAmount = number_format($record->total_paid_amount, 2);
                         return "
                             <div class='space-y-1'>
-                                <div class='font-medium'>₹{$totalPremium}</div>
+                                <div class='font-medium'>₹{$sumIssured}</div>
+                                <div class='text-sm text-gray-500'>Third Party Amount: ₹{$thirdPartyAmount}</div>
+                                <div class='text-xs text-gray-500'>Total Paid Out: ₹{$totalPaidAmount}</div>
                             </div>
                         ";
                     })
                     ->html()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Agent')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('user.name')
+                //     ->label('Agent')
+                //     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('dS M, Y')
                     ->sortable()
@@ -884,13 +928,13 @@ class CcResource extends Resource
 
                         return $indicators;
                     }),
-                SelectFilter::make('agent')
-                    ->label('Agent')
-                    ->relationship('user', 'name', function (Builder $query) {
-                        return $query->where('organisation_id', 1);
-                    })
-                    ->preload() // Preload options instead of lazy-loading
-                    ->searchable() // Add search capability for larger lists
+                // SelectFilter::make('agent')
+                //     ->label('Agent')
+                //     ->relationship('user', 'name', function (Builder $query) {
+                //         return $query->where('organisation_id', 1);
+                //     })
+                //     ->preload() // Preload options instead of lazy-loading
+                //     ->searchable() // Add search capability for larger lists
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -903,20 +947,20 @@ class CcResource extends Resource
                     ->action(function ($livewire) {
                         $query = $livewire->getFilteredTableQuery();
                         $query = $query->with([
-                            'user:id,name',
+                            // 'user:id,name',
                             'city:id,name',
-                            'previousInsurer:id,name',
-                            'insuranceCompany:id,name',
+                            // 'previousInsurer:id,name',
+                            // 'insuranceCompany:id,name',
                             'fuelType:id,name',
                             'make:id,name',
                             'product:id,name',
-                            'ncb:id,name',
+                            // 'ncb:id,name',
                             'salutation:id,name',
-                            'region:id,name',
-                            'businessLock:id,name',
-                            'productCategory:id,name',
-                            'rto:id,name',
-                            'bank:id,name',
+                            // 'region:id,name',
+                            // 'businessLock:id,name',
+                            // 'productCategory:id,name',
+                            // 'rto:id,name',
+                            // 'bank:id,name',
                         ]);
 
                         $records = $query->get();
@@ -931,90 +975,58 @@ class CcResource extends Resource
                         // Define CSV structure - field name mapping to record accessor
                         $csvStructure = [
                             'Sr. No.' => fn($row, $index) => $index + 1,
-                            'Agent' => fn($row) => optional($row->user)->name,
                             'Created At' => fn($row) => $row->created_at->format('Y-m-d'),
-                            'Proposal Type' => 'proposal_type',
-                            'Proposal type' => 'posp',
+                            'Broker Name' => 'broker',
+                            'Posp Name' => 'posp',
+                            'Source Name' => 'source',
                             'Client Name' => fn($row) => trim(optional($row->salutation)->name . ' ' . $row->first_name . ' ' . $row->middle_name . ' ' . $row->last_name),
+                            'Mobile No' => 'phone',
                             'Email' => 'email',
-                            'Mobile' => 'phone',
-                            'Address' => fn($row) => trim($row->address_1 . ' ' . $row->address_2 . ' ' . $row->address_3),
-                            'Pin Code' => 'zipcode',
-                            'Nominee Rel.' => 'relationship',
+                            'Address' => fn($row) => implode(', ', array_filter([
+                                $row->address_1,
+                                $row->address_2,
+                                $row->address_3,
+                                $row->city?->name,
+                                $row->zipcode
+                            ])),
                             'Nominee Name' => 'nominee_name',
                             'Nominee DOB' => 'nominee_dob',
-                            'Region' => fn($row) => optional($row->region)->name,
-                            'Business Lock' => fn($row) => optional($row->businessLock)->name,
-                            'Insurance Company' => fn($row) => optional($row->insuranceCompany)->name,
+                            'Nominee Relationship' => 'relationship',
+                            'Nature of Business' => 'business_type',
+                            'Type of Insurance' => 'insurance_type',
+                            'Risk Start Date' => 'risk_start_date',
+                            'Risk End Date' => 'risk_end_date',
                             'Policy No.' => 'policy_number',
-                            'Policy Issue Date' => 'policy_issue_date',
-                            'Product' => fn($row) => optional($row->product)->name,
-                            'Product Category' => fn($row) => optional($row->productCategory)->name,
-                            'Risk Category' => 'risk_category',
-                            'Inception Date' => 'inception_date',
-                            'Expiry Date' => 'expiry_date',
-                            'NCB' => fn($row) => optional($row->ncb)->name,
-                            'Code' => 'code',
-                            'TP Inception Date' => 'tp_inception_date',
-                            'TP Expiry Date' => 'tp_expiry_date',
-                            'IDV' => 'idv',
-                            'PY Ins. Comp.' => fn($row) => optional($row->previousInsurer)->name,
-                            'PY Policy No.' => 'py_policy_number',
-                            'Tariff Rate' => 'tarrif_rate',
-                            'Actual Tariff' => 'actual_tarrif',
-                            'Third Party' => fn($row) => ($row->third_party == 1) ? ('Yes') : ('No'),
+                            'Company Name' => 'insurance_company_name',
+                            'OD Amount' => fn($row) => $formatCurrency($row->od),
+                            'Rider Amount' => fn($row) => $formatCurrency($row->rider),
+                            'Commission Amount' => fn($row) => $formatCurrency($row->commission),
+                            'Third Party' => fn($row) => $formatCurrency($row->third_party_amount),
+                            'Net' => fn($row) => $formatCurrency($row->net),
+                            'Net' => fn($row) => $formatCurrency($row->net),
+                            'GST%' => 'gst',
+                            'Total Amount' => fn($row) => $formatCurrency($row->total_amount),
+                            'Paid % CA' => 'paid_per_ca',
+                            'CA Amount' => fn($row) => $formatCurrency($row->ca_amount),
+                            'Paid % TP' => 'paid_per_tp',
+                            'TP Amount' => fn($row) => $formatCurrency($row->tp_amount),
+                            'Received % CA' => 'received_per_ca',
+                            'Received CA Amount' => fn($row) => $formatCurrency($row->ca_received_amount),
+                            'Received  % TP' => 'received_per_tp',
+                            'Received  TP Amount' => fn($row) => $formatCurrency($row->tp_received_amount),
+                            'Total Paid Amount' => fn($row) => $formatCurrency($row->total_paid_amount),
+                            'Total Received Payout' => fn($row) => $formatCurrency($row->total_received_payout),
+                            'Profit' => fn($row) => $formatCurrency($row->profit),
+                            'Last NCB' => 'last_ncb',
+                            'Current NCB' => 'ncb',
+                            'TP Start Date' => 'tp_start_date',
+                            'TP End Date' => 'tp_end_date',
+                            'Sum Issured' => fn($row) => $formatCurrency($row->sum_issured),
+                            'Car No' => fn($row) => $row->registration_number,
                             'Make' => fn($row) => optional($row->make)->name,
-                            'Vehicle Model' => 'vehicle_model',
-                            'Vehicle Sub Model' => 'vehicle_sub_model',
-                            'CC' => 'cc',
-                            'YOM' => 'yom',
+                            'Model' => 'vehicle_model',
                             'Fuel Type' => fn($row) => optional($row->fuelType)->name,
-                            'Seating Capacity' => 'seating_capacity',
-                            'Registration Number' => fn($row) => trim($row->registration_number_1 . ' ' . $row->registration_number_2 . ' ' . $row->registration_number_3 . ' ' . $row->registration_number_4),
-                            'Engine No.' => 'engine_type',
-                            'Chasis' => 'chasis',
-                            'RTO' => fn($row) => optional($row->rto)->name,
-                            'OD' => fn($row) => $formatCurrency($row->od),
-                            'Add On' => fn($row) => $formatCurrency($row->add_on),
-                            'Other' => fn($row) => $formatCurrency($row->other),
-                            'TP Premium' => fn($row) => $formatCurrency($row->tp_premium),
-                            'TP Tax' => 'tp_tax',
-                            'TPPD(-)' => fn($row) => $formatCurrency($row->tppd),
-                            'Liab CNG' => fn($row) => $formatCurrency($row->liab_cng),
-                            'Liab Passenger' => fn($row) => $formatCurrency($row->liab_passenger),
-                            'Liab Owner Driver' => fn($row) => $formatCurrency($row->liab_owner_driver),
-                            'Tax' => 'tax',
-                            'Tax Amount' => fn($row) => $formatCurrency($row->tax_amount),
-                            'Total Premium' => fn($row) => $formatCurrency($row->total_premium),
-                            'OD%' => 'od_percentage',
-                            'TP%' => 'tp_percentage',
-                            'Specific Amount' => fn($row) => $formatCurrency($row->specific_amount),
-                            'Add On Coverages' => function ($row) {
-                                // Handle array to string conversion for add_on_coverages
-                                if (empty($row->add_on_coverages)) {
-                                    return '';
-                                }
-
-                                // If it's JSON, decode it
-                                if (is_string($row->add_on_coverages) && $decoded = json_decode($row->add_on_coverages, true)) {
-                                    $coverages = $decoded;
-                                } else {
-                                    // Assume it's already an array
-                                    $coverages = $row->add_on_coverages;
-                                }
-
-                                // Convert array to comma-separated string
-                                if (is_array($coverages)) {
-                                    return implode(', ', $coverages);
-                                }
-
-                                return (string) $row->add_on_coverages;
-                            },
-                            'Payment Mode' => 'payment_mode',
-                            'Payment Date' => 'payment_date',
-                            'Cheque/Trans Number' => 'cheque_trans_number',
-                            'Bank' => fn($row) => optional($row->bank)->name,
-                            'Payment Amount' => fn($row) => $formatCurrency($row->payment_amount),
+                            'CC' => 'cc',
                         ];
 
                         // Create CSV header
@@ -1078,27 +1090,14 @@ class CcResource extends Resource
                             ->schema([
                                 Grid::make(3)
                                     ->schema([
-                                        TextEntry::make('proposal_type')
-                                            ->label('Proposal type')
-                                            ->badge()
-                                            ->color(fn(string $state): string => match ($state) {
-                                                'Fresh' => 'success',
-                                                'Renewal' => 'warning',
-                                                default => 'gray',
-                                            }),
-
-                                        TextEntry::make('last_year_entry_no')
-                                            ->label('Last Year Entry No')
-                                            ->visible(fn($record) => $record->proposal_type === 'Renewal'),
+                                        TextEntry::make('broker')
+                                            ->label('Broker'),
 
                                         TextEntry::make('posp')
-                                            ->label('Product Posp')
-                                            ->badge()
-                                            ->color(fn(string $state): string => match ($state) {
-                                                'POSP' => 'success',
-                                                'Non POSP' => 'warning',
-                                                default => 'gray',
-                                            }),
+                                            ->label('Posp'),
+
+                                        TextEntry::make('source')
+                                            ->label('Source'),
                                     ]),
                             ])
                             ->collapsible(),
@@ -1175,18 +1174,17 @@ class CcResource extends Resource
                             ->schema([
                                 Grid::make(2)
                                     ->schema([
-                                        TextEntry::make('region.name')
-                                            ->label('Region')
+                                        TextEntry::make('business_type')
+                                            ->label('Nature of Business')
                                             ->badge(),
 
-                                        TextEntry::make('businessLock.name')
-                                            ->label('Business Lock')
+                                        TextEntry::make('insurance_type')
+                                            ->label('Type of Insurance')
                                             ->badge(),
                                     ]),
-
                                 Grid::make(3)
                                     ->schema([
-                                        TextEntry::make('insuranceCompany.name')
+                                        TextEntry::make('insurance_company_name')
                                             ->label('Insurance Company')
                                             ->weight(FontWeight::Bold),
 
@@ -1195,88 +1193,30 @@ class CcResource extends Resource
                                             ->copyable()
                                             ->badge()
                                             ->color('success'),
-
-                                        TextEntry::make('policy_issue_date')
-                                            ->label('Policy Issue Date')
-                                            ->date(),
-                                    ]),
-
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('product.name')
-                                            ->label('Product')
-                                            ->badge(),
-
-                                        TextEntry::make('productCategory.name')
-                                            ->label('Product Category')
-                                            ->badge(),
-
-                                        TextEntry::make('risk_category')
-                                            ->label('Risk Category'),
-                                    ]),
-
-                                Grid::make(4)
-                                    ->schema([
-                                        TextEntry::make('inception_date')
-                                            ->label('Inception Date')
-                                            ->date(),
-
-                                        TextEntry::make('expiry_date')
-                                            ->label('Expiry Date')
-                                            ->date()
-                                            ->color(
-                                                fn($state) =>
-                                                $state && \Carbon\Carbon::parse($state)->isPast()
-                                                    ? 'danger'
-                                                    : 'success'
-                                            ),
-
-                                        TextEntry::make('ncb.name')
-                                            ->label('NCB')
-                                            ->badge(),
-
-                                        TextEntry::make('code')
-                                            ->label('Code'),
-                                    ]),
-
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('tp_inception_date')
-                                            ->label('TP Inception Date')
-                                            ->date(),
-
-                                        TextEntry::make('tp_expiry_date')
-                                            ->label('TP Expiry Date')
-                                            ->date(),
-
-                                        TextEntry::make('idv')
-                                            ->label('IDV'),
+                                        TextEntry::make('sum_issured')
+                                                ->label('Sum Issured')
+                                                ->money('INR')
+                                                ->weight(FontWeight::Bold),
                                     ]),
 
                                 Grid::make(2)
                                     ->schema([
-                                        TextEntry::make('previousInsurer.name')
-                                            ->label('PY Ins. Comp.'),
-
-                                        TextEntry::make('py_policy_number')
-                                            ->label('PY Policy No.'),
+                                        TextEntry::make('risk_start_date')
+                                            ->label('Risk Start Date')
+                                            ->date(),
+                                        TextEntry::make('risk_end_date')
+                                            ->label('Risk End Date')
+                                            ->date(),
                                     ]),
-
-                                Grid::make(3)
+                                Grid::make(2)
                                     ->schema([
-                                        TextEntry::make('tarrif_rate')
-                                            ->label('Tariff Rate')
-                                            ->suffix('%'),
-
-                                        TextEntry::make('actual_tarrif')
-                                            ->label('Actual Tariff')
-                                            ->suffix('%'),
-
-                                        IconEntry::make('third_party')
-                                            ->label('Third Party')
-                                            ->boolean(),
+                                        TextEntry::make('tp_start_date')
+                                            ->label('TP Start Date')
+                                            ->date(),
+                                        TextEntry::make('tp_end_date')
+                                            ->label('TP End Date')
+                                            ->date(),
                                     ]),
-
                                 // Vehicle Details
                                 Section::make('Vehicle Details')
                                     ->schema([
@@ -1293,7 +1233,7 @@ class CcResource extends Resource
                                                     ->label('Vehicle Sub Model'),
                                             ]),
 
-                                        Grid::make(4)
+                                        Grid::make(3)
                                             ->schema([
                                                 TextEntry::make('cc')
                                                     ->label('CC'),
@@ -1305,9 +1245,6 @@ class CcResource extends Resource
                                                 TextEntry::make('fuelType.name')
                                                     ->label('Fuel Type')
                                                     ->badge(),
-
-                                                TextEntry::make('seating_capacity')
-                                                    ->label('Seating Capacity'),
                                             ]),
 
                                         TextEntry::make('registration_number')
@@ -1325,7 +1262,7 @@ class CcResource extends Resource
                                             ->color('primary')
                                             ->copyable(),
 
-                                        Grid::make(3)
+                                        Grid::make(4)
                                             ->schema([
                                                 TextEntry::make('engine_type')
                                                     ->label('Engine No.')
@@ -1334,9 +1271,10 @@ class CcResource extends Resource
                                                 TextEntry::make('chasis')
                                                     ->label('Chasis')
                                                     ->copyable(),
-
-                                                TextEntry::make('rto.full_name')
-                                                    ->label('RTO'),
+                                                TextEntry::make('ncb')
+                                                    ->label('NCB'),
+                                                TextEntry::make('last_ncb')
+                                                    ->label('Last NCB'),
                                             ]),
                                     ])
                                     ->collapsible(),
@@ -1344,143 +1282,144 @@ class CcResource extends Resource
                             ->collapsible(),
 
                         // Premium Details
-                        Section::make('Premium Details')
-                            ->schema([
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('od')
-                                            ->label('OD')
-                                            ->money('INR'),
+                            Section::make('Premium Details')
+                                ->schema([
+                                    // Premium Components
+                                    Section::make('Premium Components')
+                                        ->schema([
+                                            Grid::make(3)
+                                                ->schema([
+                                                    TextEntry::make('od')
+                                                        ->label('OD Amount')
+                                                        ->money('INR'),
 
-                                        TextEntry::make('add_on')
-                                            ->label('Add On')
-                                            ->money('INR'),
+                                                    TextEntry::make('rider')
+                                                        ->label('Rider Amount')
+                                                        ->money('INR'),
 
-                                        TextEntry::make('other')
-                                            ->label('Other')
-                                            ->money('INR'),
-                                    ]),
+                                                    TextEntry::make('commission')
+                                                        ->label('Commission')
+                                                        ->money('INR')
+                                                        ->weight(FontWeight::Bold)
+                                                        ->color('primary'),
+                                                ]),
+                                        ]),
 
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('tp_premium')
-                                            ->label('TP Premium')
-                                            ->money('INR'),
+                                    // Net Premium Calculation
+                                    Section::make('Net Premium Calculation')
+                                        ->schema([
+                                            Grid::make(4)
+                                                ->schema([
+                                                    TextEntry::make('third_party_amount')
+                                                        ->label('Third Party Amount')
+                                                        ->money('INR'),
 
-                                        TextEntry::make('tp_tax')
-                                            ->label('TP Tax')
-                                            ->suffix('%'),
+                                                    TextEntry::make('net')
+                                                        ->label('Net Amount')
+                                                        ->money('INR')
+                                                        ->weight(FontWeight::Bold),
 
-                                        TextEntry::make('tppd')
-                                            ->label('TPPD(-)')
-                                            ->money('INR'),
-                                    ]),
+                                                    TextEntry::make('gst')
+                                                        ->label('GST')
+                                                        ->suffix('%'),
 
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('liab_cng')
-                                            ->label('Liab CNG')
-                                            ->money('INR'),
+                                                    TextEntry::make('total_amount')
+                                                        ->label('Total Amount (Inc. GST)')
+                                                        ->money('INR')
+                                                        ->weight(FontWeight::Bold)
+                                                        ->size('lg')
+                                                        ->color('success'),
+                                                ]),
+                                        ]),
 
-                                        TextEntry::make('liab_passenger')
-                                            ->label('Liab Passenger')
-                                            ->money('INR'),
+                                    // Commission Payout (What We Pay)
+                                    Section::make('Commission Payout (What We Pay)')
+                                        ->schema([
+                                            Grid::make(4)
+                                                ->schema([
+                                                    TextEntry::make('paid_per_ca')
+                                                        ->label('CA Rate')
+                                                        ->suffix('%'),
 
-                                        TextEntry::make('liab_owner_driver')
-                                            ->label('Liab Owner Driver')
-                                            ->money('INR'),
-                                    ]),
+                                                    TextEntry::make('ca_amount')
+                                                        ->label('CA Amount')
+                                                        ->money('INR'),
 
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('tax')
-                                            ->label('Tax')
-                                            ->suffix('%'),
+                                                    TextEntry::make('paid_per_tp')
+                                                        ->label('TP Rate')
+                                                        ->suffix('%'),
 
-                                        TextEntry::make('tax_amount')
-                                            ->label('Tax Amount')
-                                            ->money('INR'),
+                                                    TextEntry::make('tp_amount')
+                                                        ->label('TP Amount')
+                                                        ->money('INR'),
+                                                ]),
+                                        ]),
 
-                                        TextEntry::make('total_premium')
-                                            ->label('Total Premium')
-                                            ->money('INR')
-                                            ->weight(FontWeight::Bold)
-                                            ->size('lg')
-                                            ->color('success'),
-                                    ]),
+                                    // Commission Received (What We Get)
+                                    Section::make('Commission Received (What We Get)')
+                                        ->schema([
+                                            Grid::make(4)
+                                                ->schema([
+                                                    TextEntry::make('received_per_ca')
+                                                        ->label('CA Received Rate')
+                                                        ->suffix('%'),
 
-                                Grid::make(3)
-                                    ->schema([
-                                        TextEntry::make('od_percentage')
-                                            ->label('OD%')
-                                            ->suffix('%'),
+                                                    TextEntry::make('ca_received_amount')
+                                                        ->label('CA Received Amount')
+                                                        ->money('INR'),
 
-                                        TextEntry::make('tp_percentage')
-                                            ->label('TP%')
-                                            ->suffix('%'),
+                                                    TextEntry::make('received_per_tp')
+                                                        ->label('TP Received Rate')
+                                                        ->suffix('%'),
 
-                                        TextEntry::make('specific_amount')
-                                            ->label('Specific Amount')
-                                            ->money('INR'),
-                                    ]),
+                                                    TextEntry::make('tp_received_amount')
+                                                        ->label('TP Received Amount')
+                                                        ->money('INR'),
+                                                ]),
+                                        ]),
 
-                                TextEntry::make('add_on_coverages')
-                                    ->label('Add On Coverages')
-                                    ->formatStateUsing(function ($state) {
-                                        if (!$state) return 'None';
+                                    // Summary
+                                    Section::make('Summary')
+                                        ->schema([
+                                            Grid::make(3)
+                                                ->schema([
+                                                    TextEntry::make('total_paid_amount')
+                                                        ->label('Total Paid Out')
+                                                        ->money('INR')
+                                                        ->weight(FontWeight::Bold)
+                                                        ->color('danger'),
 
-                                        $labels = [
-                                            'nil_dep' => 'Nil Dep.',
-                                            'consumable' => 'Consumable',
-                                            'engine_protector' => 'Engine Protector',
-                                            'tyre_cover' => 'Tyre Cover',
-                                            'ncb_protector' => 'Ncb Protector',
-                                            'r21' => 'R21',
-                                            'keycover' => 'Keycover',
-                                            'rsa' => 'RSA',
-                                            'personal_belongings' => 'Lose of Personal Belongings',
-                                            'spare_car' => 'Spare Car',
-                                        ];
+                                                    TextEntry::make('total_received_payout')
+                                                        ->label('Total Received')
+                                                        ->money('INR')
+                                                        ->weight(FontWeight::Bold)
+                                                        ->color('success'),
 
-                                        // Convert array to string
-                                        if (is_array($state)) {
-                                            $formattedLabels = collect($state)
-                                                ->map(fn($item) => $labels[$item] ?? $item)
-                                                ->toArray();
+                                                    TextEntry::make('profit')
+                                                        ->label('Net Profit')
+                                                        ->money('INR')
+                                                        ->weight(FontWeight::Bold)
+                                                        ->size('lg')
+                                                        ->color(fn ($state) => $state >= 0 ? 'success' : 'danger'),
+                                                ]),
+                                        ]),
+                                ])
+                                ->collapsible(),
 
-                                            return implode(', ', $formattedLabels);
-                                        }
-
-                                        return $state;
-                                    })
-                                    ->badge()
-                                    ->separator(', '),
-                            ])
-                            ->collapsible(),
-
-                        //Documents
+                        // //Documents
                         Section::make('Documents')
                             ->schema([
-                                ViewEntry::make('policy')
-                                    ->label('Proposal Form')
+                                ViewEntry::make('last_policy')
+                                    ->label('Last Policy')
                                     ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('proposal_form')
-                                    ->label('Proposal Form')
-                                    ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('renewal_form')
-                                    ->label('Renewal Form')
-                                    ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('rc_book')
-                                    ->label('RC Book')
-                                    ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('visiting_card')
-                                    ->label('Visiting Card')
-                                    ->view('filament.infolists.components.file-viewer'),
-                                ViewEntry::make('mandate')
-                                    ->label('Mandate')
+                                ViewEntry::make('rc')
+                                    ->label('RC')
                                     ->view('filament.infolists.components.file-viewer'),
                                 ViewEntry::make('aadhaar_front')
-                                    ->label('Aadhar ')
+                                    ->label('Aadhar Front')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('aadhaar_back')
+                                    ->label('Aadhar Back')
                                     ->view('filament.infolists.components.file-viewer'),
                                 ViewEntry::make('pan_card')
                                     ->label('PAN Card')

@@ -4,7 +4,7 @@
             Hello, {{ auth()->user()->name }}!
         </h2>
         <p class="mt-2 text-gray-600 dark:text-white">
-            Welcome to {{ config('app.name') }}.
+            Welcome!
         </p>
     </div>
 </x-filament-panels::page>

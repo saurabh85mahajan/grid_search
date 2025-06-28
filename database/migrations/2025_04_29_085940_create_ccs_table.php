@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id')->index();
 
-            $table->integer('broker');
+            $table->string('broker');
 
             // $table->string('proposal_type')->nullable();
             // $table->string('last_year_entry_no')->nullable();
@@ -103,7 +103,9 @@ return new class extends Migration
             $table->decimal('paid_per_tp', 10, 2)->nullable();
             $table->decimal('tp_amount', 10, 2)->nullable();
             $table->decimal('received_per_ca', 10, 2)->nullable();
+            $table->decimal('ca_received_amount', 10, 2)->nullable();
             $table->decimal('received_per_tp', 10, 2)->nullable();
+            $table->decimal('tp_received_amount', 10, 2)->nullable();
             $table->decimal('total_paid_amount', 10, 2)->nullable();
             $table->decimal('total_received_payout', 10, 2)->nullable();
             $table->decimal('profit', 10, 2)->nullable();
