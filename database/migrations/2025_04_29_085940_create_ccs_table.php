@@ -134,6 +134,7 @@ return new class extends Migration
             // $table->integer('bank_id')->nullable();
             // $table->decimal('payment_amount', 10, 2)->nullable();
             
+            $table->string('policy')->nullable();
             $table->string('last_policy')->nullable();
             // $table->string('proposal_form')->nullable();
             // $table->string('renewal_form')->nullable();

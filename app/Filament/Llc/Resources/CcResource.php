@@ -443,7 +443,7 @@ class CcResource extends Resource
                                             ])
                                             ->placeholder('Enter Chasis'),
                                         Forms\Components\TextInput::make('ncb')
-                                            ->label('NCB')
+                                            ->label('Current NCB')
                                             ->extraInputAttributes(['maxlength' => 25])
                                             ->placeholder('Enter NCB'),
                                         Forms\Components\TextInput::make('last_ncb')
@@ -743,6 +743,19 @@ class CcResource extends Resource
                                 ])->collapsible(),
                         Forms\Components\Section::make('Documents')
                             ->schema([
+                                FileUpload::make('policy')
+                                    ->label('Current Policy')
+                                    ->disk('protected')
+                                    ->directory('cc/policy/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()    
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
                                 FileUpload::make('last_policy')
                                     ->label('Last Policy')
                                     ->disk('protected')
@@ -750,7 +763,8 @@ class CcResource extends Resource
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
-                                    ->previewable()
+                                    ->downloadable()
+                                    ->openable()    
                                     ->getUploadedFileNameForStorageUsing(
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
@@ -762,7 +776,8 @@ class CcResource extends Resource
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
-                                    ->previewable()
+                                    ->downloadable()
+                                    ->openable()    
                                     ->getUploadedFileNameForStorageUsing(
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
@@ -775,7 +790,8 @@ class CcResource extends Resource
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
-                                    ->previewable()
+                                    ->downloadable()
+                                    ->openable()    
                                     ->getUploadedFileNameForStorageUsing(
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
@@ -787,7 +803,8 @@ class CcResource extends Resource
                                     ->acceptedFileTypes(['image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
-                                    ->previewable()
+                                    ->downloadable()
+                                    ->openable()    
                                     ->getUploadedFileNameForStorageUsing(
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
@@ -799,7 +816,8 @@ class CcResource extends Resource
                                     ->acceptedFileTypes(['image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
-                                    ->previewable()
+                                    ->downloadable()
+                                    ->openable()    
                                     ->getUploadedFileNameForStorageUsing(
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
@@ -1272,7 +1290,7 @@ class CcResource extends Resource
                                                     ->label('Chasis')
                                                     ->copyable(),
                                                 TextEntry::make('ncb')
-                                                    ->label('NCB'),
+                                                    ->label('Current NCB'),
                                                 TextEntry::make('last_ncb')
                                                     ->label('Last NCB'),
                                             ]),
@@ -1409,6 +1427,9 @@ class CcResource extends Resource
                         // //Documents
                         Section::make('Documents')
                             ->schema([
+                                ViewEntry::make('policy')
+                                    ->label('Current Policy')
+                                    ->view('filament.infolists.components.file-viewer'),
                                 ViewEntry::make('last_policy')
                                     ->label('Last Policy')
                                     ->view('filament.infolists.components.file-viewer'),

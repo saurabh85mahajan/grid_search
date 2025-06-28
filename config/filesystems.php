@@ -62,6 +62,7 @@ return [
         'protected' => [
             'driver' => 'local',
             'root' => storage_path('app/protected'),
+            'url' => env('APP_URL').'/protected-file',
             'visibility' => 'private',
             'throw' => false,
         ],
