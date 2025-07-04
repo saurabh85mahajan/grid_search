@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cc;
 use App\Models\Entry;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -39,34 +38,6 @@ class DevDbSeeder extends Seeder
             'organisation_id' => 1,
             'is_organisation_admin' => true,
         ]);
-
-        // $managers = User::factory()->count(2)->sequence(
-        //     ['name' => 'Manager One'],
-        //     ['name' => 'Manager Two']
-        // )->create([
-        //     'is_manager' => 1,
-        //     'organisation_id' => 1,
-        // ]);
-
-        // $subordinates = collect();
-        // $employeeCounter = 1;
-
-        // $managers->each(function ($manager) use ($subordinates, &$employeeCounter) {
-        //     $managerSubordinates = User::factory()->count(3)->sequence(function ($sequence) use (&$employeeCounter) {
-        //         return ['name' => 'Employee ' . $employeeCounter++];
-        //     })->create([
-        //         'is_manager' => 0,
-        //         'manager_id' => $manager->id,
-        //         'organisation_id' => 1,
-        //     ]);
-        //     $subordinates->push(...$managerSubordinates);
-        // });
-
-        // Cc::factory()->count(10)->create([
-        //     'user_id' => function () use ($subordinates) {
-        //         return $subordinates->random()->id;
-        //     }
-        // ]);
 
         $managers = User::factory()->count(2)->sequence(
             ['name' => 'Manager One'],
