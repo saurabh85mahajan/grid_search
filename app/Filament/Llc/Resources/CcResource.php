@@ -76,7 +76,9 @@ class CcResource extends Resource
                                                 'Certigo' => 'Certigo',
                                                 'Alligeance' => 'Alligeance',
                                                 'Arham' => 'Arham',
-                                                'Ankush Aman Sahil' => 'Ankush Aman Sahil',
+                                                'Ankush' => 'Ankush',
+                                                'Aman' => 'Aman',
+                                                'Sahil' => 'Sahil',
                                             ])
                                             ->placeholder('Select Broker')
                                             ->required()
