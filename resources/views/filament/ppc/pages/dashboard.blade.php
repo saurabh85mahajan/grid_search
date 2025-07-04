@@ -4,7 +4,15 @@
             Hello, {{ auth()->user()->name }}!
         </h2>
         <p class="mt-2 text-gray-600 dark:text-white">
-            Welcome!
+            Welcome to your Dashboard!
         </p>
+        <x-filament::section>
+            <div class="text-sm text-gray-500 mt-2">
+                For any bug or suggestion, please email <a href="mailto:saurabh85mahajan@gmail.com" class="text-primary-600 underline">saurabh85mahajan@gmail.com</a>.
+                Do include your registered email in subject.
+            </div>
+        </x-filament::section>
+
+
     </div>
 </x-filament-panels::page>
