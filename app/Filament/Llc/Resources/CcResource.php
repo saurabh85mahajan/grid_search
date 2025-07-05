@@ -264,6 +264,7 @@ class CcResource extends Resource
                                                 'Life' => 'Life',
                                                 'Fire' => 'Fire',
                                                 'Travel' => 'Travel',
+                                                'WC' => 'WC',
                                             ])
                                             ->placeholder('Select Insurance Type')
                                             ->validationMessages([
