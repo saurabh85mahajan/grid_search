@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Get;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Infolist;
@@ -55,6 +56,8 @@ class CcResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $nonVehicleInsuranceTypes = ['WC', 'Health', 'Marine', 'Life', 'Fire', 'Travel'];
+
         return $form
             ->schema([
                 // Client Details Card
@@ -270,6 +273,7 @@ class CcResource extends Resource
                                             ->validationMessages([
                                                 'required' => 'Please enter Type of Insurance',
                                             ])
+                                            ->live()
                                             ->required(),
                                     ]),
 
@@ -334,30 +338,22 @@ class CcResource extends Resource
 
                                 Forms\Components\Grid::make(3)
                                     ->schema([
-
                                         Forms\Components\Select::make('make_id')
                                             ->label('Make')
                                             ->relationship('make', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
                                             ->searchable()
                                             ->preload()
-                                            // ->validationMessages([
-                                            //     'required' => 'Please select Make',
-                                            // ])
                                             ->placeholder('Select Make'),
-                                            // ->required(),
-
                                         Forms\Components\TextInput::make('vehicle_model')
                                             ->label('Vehicle Model')
                                             ->placeholder('Enter Vehicle Model'),
-                                            // ->validationMessages([
-                                            //     'required' => 'Please select Model',
-                                            // ])
-                                            // ->required(),
-
                                         Forms\Components\TextInput::make('vehicle_sub_model')
                                             ->label('Vehicle Sub Model')
                                             ->placeholder('Enter Vehicle Sub Model'), 
-                                    ]),
+                                    ])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
 
                                 Forms\Components\Grid::make(3)
                                     ->schema([
@@ -395,7 +391,10 @@ class CcResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Select Fuel Type'),
-                                    ]),
+                                    ])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
 
                                 Fieldset::make('Registration Number')
                                     ->schema([
@@ -420,7 +419,10 @@ class CcResource extends Resource
                                             ->placeholder('1234'),
                                     ])
                                     ->columns(4)
-                                    ->extraAttributes(['style' => 'max-width: 35%; margin-right: 60%;']),
+                                    ->extraAttributes(['style' => 'max-width: 35%; margin-right: 60%;'])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
 
                                 Forms\Components\Grid::make(4)
                                     ->schema([
@@ -454,7 +456,10 @@ class CcResource extends Resource
                                             ->label('Last NCB')
                                             ->extraInputAttributes(['maxlength' => 25])
                                             ->placeholder('Enter Last NCB'),
-                                    ]),
+                                    ])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
 
                             ])->collapsible(),
 
@@ -772,7 +777,10 @@ class CcResource extends Resource
                                     ->getUploadedFileNameForStorageUsing(
                                         fn(TemporaryUploadedFile $file): string =>
                                         time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
-                                    ),
+                                    )
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
                                 FileUpload::make('rc')
                                     ->label('RC')
                                     ->disk('protected')
