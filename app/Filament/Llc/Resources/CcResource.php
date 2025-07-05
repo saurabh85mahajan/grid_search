@@ -6,6 +6,7 @@ use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\User;
 use App\Models\ProductCategory;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -73,16 +74,7 @@ class CcResource extends Resource
                                             ->dehydrated(fn($state, $record) => $record === null),
                                         Forms\Components\Select::make('broker')
                                             ->label('Broker Name')
-                                            ->options([
-                                                'Robinhood' => 'Robinhood',
-                                                'Landmark ' => 'Landmark',
-                                                'Certigo' => 'Certigo',
-                                                'Alligeance' => 'Alligeance',
-                                                'Arham' => 'Arham',
-                                                'Ankush' => 'Ankush',
-                                                'Aman' => 'Aman',
-                                                'Sahil' => 'Sahil',
-                                            ])
+                                            ->options(fn() => Setting::getSelectOptions('brokers_1'))
                                             ->placeholder('Select Broker')
                                             ->required()
                                             ->validationMessages([
@@ -259,16 +251,7 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('insurance_type')
                                             ->label('Type of Insurance')
-                                            ->options([
-                                                'Motor' => 'Motor',
-                                                'Health ' => 'Health',
-                                                'Marine' => 'Marine',
-                                                '2 Wheeler' => '2 Wheeler',
-                                                'Life' => 'Life',
-                                                'Fire' => 'Fire',
-                                                'Travel' => 'Travel',
-                                                'WC' => 'WC',
-                                            ])
+                                            ->options(fn() => Setting::getSelectOptions('insurance_type_1'))
                                             ->placeholder('Select Insurance Type')
                                             ->validationMessages([
                                                 'required' => 'Please enter Type of Insurance',
@@ -282,17 +265,7 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('insurance_company_name')
                                             ->label('Insurance Company')
-                                            ->options([
-                                                'Digit' => 'Digit',
-                                                'Hdfc ' => 'Hdfc',
-                                                'Icici' => 'Icici',
-                                                'Tata' => 'Tata',
-                                                'United' => 'United',
-                                                'Sbi' => 'Sbi',
-                                                'Reliance' => 'Reliance',
-                                                'Bajaj' => 'Bajaj',
-                                                'New India' => 'New India',
-                                            ])
+                                            ->options(fn() => Setting::getSelectOptions('insurance_companies_1'))
                                             ->placeholder('Select Insurance Type')
                                             ->validationMessages([
                                                 'required' => 'Please select Insurance Company',
