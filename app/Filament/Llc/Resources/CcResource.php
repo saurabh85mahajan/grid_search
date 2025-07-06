@@ -280,8 +280,12 @@ class CcResource extends Resource
                                             ->prefix('₹')
                                             ->required()
                                             ->numeric()
+                                            ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
                                             ->extraInputAttributes([
-                                                'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                            ])
+                                             ->validationMessages([
+                                                'max' => 'Amount cannot exceed ₹9,999,999,999,999',
                                             ])
                                             ->placeholder('Enter Sum Issured'),
                                     ]),
@@ -448,8 +452,12 @@ class CcResource extends Resource
                                                         ->label('OD Amount')
                                                         ->prefix('₹')
                                                         ->numeric()
+                                                        ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
                                                         ->extraInputAttributes([
-                                                            'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                            'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                                        ])
+                                                        ->validationMessages([
+                                                            'max' => 'Amount cannot exceed ₹9,999,999,999,999',
                                                         ])
                                                         ->placeholder('Enter OD Amount'),
 
@@ -457,8 +465,12 @@ class CcResource extends Resource
                                                         ->label('Rider Amount')
                                                         ->prefix('₹')
                                                         ->numeric()
+                                                        ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
                                                         ->extraInputAttributes([
-                                                            'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                            'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                                        ])
+                                                        ->validationMessages([
+                                                            'max' => 'Amount cannot exceed ₹9,999,999,999,999',
                                                         ])
                                                         ->placeholder('Enter Rider Amount'),
 
@@ -490,8 +502,12 @@ class CcResource extends Resource
                                                         ->label('Third Party Amount')
                                                         ->prefix('₹')
                                                         ->numeric()
+                                                        ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
                                                         ->extraInputAttributes([
-                                                            'oninput' => 'if(this.value.length > 10) this.value = this.value.slice(0, 10);'
+                                                            'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                                        ])
+                                                        ->validationMessages([
+                                                            'max' => 'Amount cannot exceed ₹9,999,999,999,999',
                                                         ])
                                                         ->placeholder('Enter Third Party Amount'),
 
