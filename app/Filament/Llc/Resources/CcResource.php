@@ -57,6 +57,7 @@ class CcResource extends Resource
 
     public static function form(Form $form): Form
     {
+        //Dp make sure to change this in Infolist.
         $nonVehicleInsuranceTypes = ['WC', 'Health', 'Marine', 'Life', 'Fire', 'Travel'];
 
         return $form
@@ -1296,6 +1297,10 @@ class CcResource extends Resource
                                                     ->label('Last NCB'),
                                             ]),
                                     ])
+                                    ->visible(function ($record) {
+                                        $nonVehicleInsuranceTypes = ['WC', 'Health', 'Marine', 'Life', 'Fire'];
+                                        return !in_array($record->insurance_type, $nonVehicleInsuranceTypes);
+                                    })
                                     ->collapsible(),
                             ])
                             ->collapsible(),
