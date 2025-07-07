@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserPasswordResource extends Resource
 {
@@ -85,6 +86,13 @@ class UserPasswordResource extends Resource
                     ->label('Updated At')
                     ->dateTime()
                     ->sortable(),
+				Tables\Columns\TextColumn::make('is_active')
+                ->label('Impersonate')
+				->visible(fn () => Auth::user()?->isAdmin() ?? false)
+				->formatStateUsing(fn ($state, $record) => 
+                    '<a href="' . route('impersonate.start', $record->id) . '" target="_blank">Login</a>'
+                )
+                ->html(),
             ])
             ->filters([
                 //
