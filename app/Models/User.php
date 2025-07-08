@@ -110,6 +110,6 @@ class User extends Authenticatable implements FilamentUser
 	
 	public function isAdmin()
 	{
-		return $this->id === 1; //for now 1 denotes to superAdmin
+		return is_null($this->organisation_id);
 	}
 }

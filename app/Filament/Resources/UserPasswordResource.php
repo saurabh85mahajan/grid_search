@@ -25,6 +25,8 @@ class UserPasswordResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Users';
 
+    protected static ?string $navigationGroup = 'System';
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -49,8 +51,8 @@ class UserPasswordResource extends Resource
                     ->required()
                     ->minLength(8)
                     ->label('New Password')
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->dehydrated(fn ($state) => filled($state))
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->dehydrated(fn($state) => filled($state))
                     ->placeholder('Enter new password')
                     ->helperText('Minimum 8 characters required'),
                 Forms\Components\TextInput::make('password_confirmation')
@@ -86,13 +88,6 @@ class UserPasswordResource extends Resource
                     ->label('Updated At')
                     ->dateTime()
                     ->sortable(),
-				Tables\Columns\TextColumn::make('is_active')
-                ->label('Impersonate')
-				->visible(fn () => Auth::user()?->isAdmin() ?? false)
-				->formatStateUsing(fn ($state, $record) => 
-                    '<a href="' . route('impersonate.start', $record->id) . '" target="_blank">Login</a>'
-                )
-                ->html(),
             ])
             ->filters([
                 //
@@ -101,6 +96,11 @@ class UserPasswordResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->label('Change Password')
                     ->icon('heroicon-m-key'),
+                Tables\Actions\Action::make('impersonate')
+                    ->label('Login')
+                    ->icon('heroicon-m-user-circle')
+                    ->url(fn($record) => route('impersonate.start', $record->id))
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

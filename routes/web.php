@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Session;
-use App\Models\User;
 use App\Http\Controllers\ImpersonateController;
 
 Route::get('/', function () {
@@ -30,6 +28,5 @@ Route::get('/protected-file/{path}', function ($path) {
 })->where('path', '.*')->middleware('auth');
 
 Route::middleware(['web'])->group(function () {
-    Route::get('/remote-aidesk/account-manager/impersonate/{user}', [ImpersonateController::class, 'start'])->name('impersonate.start');
-    Route::get('/remote-aidesk/account-manager/impersonate/leave', [ImpersonateController::class, 'stop'])->name('impersonate.stop');
+    Route::get('/remote-aidesk/account-manager/impersonate/{user}', ImpersonateController::class)->name('impersonate.start');
 });

@@ -1,43 +1,37 @@
 <?php
 
-// app/Http/Controllers/ImpersonationController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use App\Models\User;
 
 class ImpersonateController extends Controller
 {
-    public function start(User $user)
+    public function __invoke(User $user)
     {
-        
-		if($user->organisation_id == 1){
-			$organisation = 'llc';
-		}else{
-			$organisation = 'ppc';
-		}
-		
-		// Only allow impersonation if current user is admin and not already impersonating
-        
-		if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'You are not authorized to impersonate users.');
-        }
+        abort_unless(auth()->user()->isAdmin(), 401);
 
-        $adminId = Auth::id();
-		
+        $redirectUrl = $this->getRedirectUrl($user->organisation_id);
+
         Auth::logout();
-		
-		session()->flush();
-		
-		Auth::guard('web')->login($user);
-		
-		Session::put('impersonate_original_id', $adminId);
-		
-		session()->save();
-		
-        return redirect("/{$organisation}/dashboard")->with('message', "Now impersonating {$user->name}");
+
+        session()->flush();
+
+        Auth::guard('web')->login($user);
+
+        session()->save();
+
+        return redirect($redirectUrl);
     }
 
+    private function getRedirectUrl($organisationId)
+    {
+        if ($organisationId == 1) {
+            return '/llc/dashboard';
+        } elseif ($organisationId == 2) {
+            return '/ppc/dashboard';
+        }
+
+        return '/dashboard';
+    }
 }
