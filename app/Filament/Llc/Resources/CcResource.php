@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Support\Enums\FontWeight;
+use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -909,9 +910,10 @@ class CcResource extends Resource
 
                 TextColumn::make('first_name')
                     ->formatStateUsing(function (Cc $record): string {
+                        $trimmedName = Str::limit($record->first_name . ' ' . $record->last_name, 20);
                         return "
                             <div class='space-y-1'>
-                                <div class='font-medium'>{$record->first_name} {$record->last_name}</div>
+                                <div class='font-medium'>{$trimmedName }</div>
                                 <div class='text-sm text-gray-500'>{$record->phone}</div>
                                 <div class='text-xs text-gray-500'>{$record->city->name}, {$record->zipcode}</div>
                             </div>
@@ -954,13 +956,13 @@ class CcResource extends Resource
                 TextColumn::make('sum_issured')
                     ->label('Sum Issured')
                     ->formatStateUsing(function (Cc $record): string {
-                        $sumIssured = number_format($record->sum_issured, 2);
-                        $thirdPartyAmount = number_format($record->third_party_amount, 2);
-                        $totalPaidAmount = number_format($record->total_paid_amount, 2);
+                        $sumIssured = Number::format($record->sum_issured, locale: 'en_IN');
+                        $thirdPartyAmount = Number::format($record->third_party_amount, locale: 'en_IN');
+                        $totalPaidAmount = Number::format($record->total_paid_amount, locale: 'en_IN');
                         return "
                             <div class='space-y-1'>
                                 <div class='font-medium'>₹{$sumIssured}</div>
-                                <div class='text-sm text-gray-500'>Third Party Amount: ₹{$thirdPartyAmount}</div>
+                                <div class='text-sm text-gray-500'>TP Amount: ₹{$thirdPartyAmount}</div>
                                 <div class='text-xs text-gray-500'>Total Paid Out: ₹{$totalPaidAmount}</div>
                             </div>
                         ";
