@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -594,7 +595,10 @@ class CcResource extends Resource
                                                     ->label('GST (%)')
                                                     ->numeric()
                                                     ->maxValue(100)
-                                                    ->minValue(1)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
                                                     ->extraInputAttributes([
                                                         'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                                     ])
@@ -629,7 +633,10 @@ class CcResource extends Resource
                                                     ->label('CA Rate (%)')
                                                     ->numeric()
                                                     ->maxValue(100)
-                                                    ->minValue(1)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
                                                     ->extraInputAttributes([
                                                         'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                                     ])
@@ -656,7 +663,10 @@ class CcResource extends Resource
                                                     ->label('TP Rate (%)')
                                                     ->numeric()
                                                     ->maxValue(100)
-                                                    ->minValue(1)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
                                                     ->extraInputAttributes([
                                                         'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                                     ])
@@ -690,7 +700,10 @@ class CcResource extends Resource
                                                     ->label('CA Received Rate (%)')
                                                     ->numeric()
                                                     ->maxValue(100)
-                                                    ->minValue(1)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
                                                     ->extraInputAttributes([
                                                         'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                                     ])
@@ -717,7 +730,10 @@ class CcResource extends Resource
                                                     ->label('TP Received Rate (%)')
                                                     ->numeric()
                                                     ->maxValue(100)
-                                                    ->minValue(1)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
                                                     ->extraInputAttributes([
                                                         'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
                                                     ])
@@ -956,9 +972,9 @@ class CcResource extends Resource
                 TextColumn::make('sum_issured')
                     ->label('Sum Issured')
                     ->formatStateUsing(function (Cc $record): string {
-                        $sumIssured = number_format($record->sum_issured, 0);
-                        $thirdPartyAmount = number_format($record->third_party_amount, 0);
-                        $totalPaidAmount = number_format($record->total_paid_amount, 0);
+                        $sumIssured = is_null($record->sum_issured) ? 0 : Number::format($record->sum_issured, 0, locale: 'en_IN');
+                        $thirdPartyAmount = is_null($record->third_party_amount) ? 0 : Number::format($record->third_party_amount, 0, locale: 'en_IN');
+                        $totalPaidAmount = is_null($record->total_paid_amount) ? 0 : Number::format($record->total_paid_amount, 0, locale: 'en_IN');
                         return "
                             <div class='space-y-1'>
                                 <div class='font-medium'>₹{$sumIssured}</div>
@@ -969,9 +985,9 @@ class CcResource extends Resource
                     })
                     ->html()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('user.name')
-                //     ->label('Agent')
-                //     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Agent')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('dS M, Y')
                     ->sortable()
@@ -1009,13 +1025,13 @@ class CcResource extends Resource
 
                         return $indicators;
                     }),
-                // SelectFilter::make('agent')
-                //     ->label('Agent')
-                //     ->relationship('user', 'name', function (Builder $query) {
-                //         return $query->where('organisation_id', 1);
-                //     })
-                //     ->preload() // Preload options instead of lazy-loading
-                //     ->searchable() // Add search capability for larger lists
+                SelectFilter::make('agent')
+                    ->label('Agent')
+                    ->relationship('user', 'name', function (Builder $query) {
+                        return $query->where('organisation_id', 1);
+                    })
+                    ->preload() // Preload options instead of lazy-loading
+                    ->searchable() // Add search capability for larger lists
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
