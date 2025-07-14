@@ -956,9 +956,9 @@ class CcResource extends Resource
                 TextColumn::make('sum_issured')
                     ->label('Sum Issured')
                     ->formatStateUsing(function (Cc $record): string {
-                        $sumIssured = Number::format($record->sum_issured, locale: 'en_IN');
-                        $thirdPartyAmount = Number::format($record->third_party_amount, locale: 'en_IN');
-                        $totalPaidAmount = Number::format($record->total_paid_amount, locale: 'en_IN');
+                        $sumIssured = number_format($record->sum_issured, 0);
+                        $thirdPartyAmount = number_format($record->third_party_amount, 0);
+                        $totalPaidAmount = number_format($record->total_paid_amount, 0);
                         return "
                             <div class='space-y-1'>
                                 <div class='font-medium'>₹{$sumIssured}</div>
