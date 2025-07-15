@@ -130,7 +130,7 @@ class CcResource extends Resource
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
                     // ->visible(fn ($livewire) => !$livewire->getRecord())
-                    ->hidden()
+                    ->visible(fn () => request()->has('pdf') && request()->get('pdf') == '1')
                     ->modal()
                     ->modalHeading('Upload Insurance Document')
                     ->modalDescription('Upload a PDF insurance document and we will try to extract and populate maximum details')
@@ -1652,8 +1652,9 @@ class CcResource extends Resource
     public static function parsePdfContent(string $filePath): ?array
     {
         try {
-            // $text = \Spatie\PdfToText\Pdf::getText($filePath);
-            $text = self::extractTextWithOCR($filePath);
+            $text = \Spatie\PdfToText\Pdf::getText($filePath);
+
+            Log::info('PDF Text Extracted', ['text' => $text]);
             
             return self::extractDataFromText($text);
         } catch (\Exception $e) {
@@ -1661,37 +1662,6 @@ class CcResource extends Resource
             return null;
         }
     }
-
-    private static function extractTextWithOCR(string $filePath): string
-    {
-        $imagick = new \Imagick();
-        $imagick->setResolution(200, 200);
-        $imagick->readImage($filePath); // reads all pages
-
-        $pages = $imagick->getNumberImages();
-        $text = '';
-
-        foreach (range(0, $pages - 1) as $i) {
-            $imagick->readImage($filePath . "[$i]");
-            $imagick->setImageFormat('jpeg');
-
-            $tempImagePath = storage_path("app/temp_page_$i.jpg");
-            $imagick->writeImage($tempImagePath);
-
-            // Run OCR using Tesseract
-            $pageText = shell_exec("tesseract \"$tempImagePath\" stdout");
-
-            if ($pageText) {
-                $text .= "\n\n" . $pageText;
-            }
-
-            // Cleanup
-            unlink($tempImagePath);
-        }
-
-        return $text;
-    }
-
 
     // Extract structured data from PDF text
     private static function extractDataFromText(string $text): array
@@ -1769,6 +1739,8 @@ class CcResource extends Resource
             $data['address'] = 'VP PANCHMUKHI COLONY ' . trim($matches[1]);
             $data['pincode'] = $matches[2];
         }
+
+        Log::info('PDF Data Extracted', ['data' => $data]);
         
         return $data;
     }
