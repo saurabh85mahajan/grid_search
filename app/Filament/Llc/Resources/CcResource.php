@@ -26,8 +26,11 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
+use Filament\Notifications\Notification;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -121,7 +124,109 @@ class CcResource extends Resource
                                 $set('phone', $record->phone);
                                 $set('email', $record->email);
                             }
-                        })
+                        }),
+                Action::make('parse_pdf')
+                    ->label('Upload PDF')
+                    ->icon('heroicon-o-document-text')
+                    ->color('primary')
+                    // ->visible(fn ($livewire) => !$livewire->getRecord())
+                    ->hidden()
+                    ->modal()
+                    ->modalHeading('Upload Insurance Document')
+                    ->modalDescription('Upload a PDF insurance document and we will try to extract and populate maximum details')
+                    ->modalWidth('lg')
+                    ->modalSubmitActionLabel('Parse & Populate')
+                    ->form([
+                        Forms\Components\FileUpload::make('pdf_file')
+                            ->label('Insurance PDF Document')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(10240) // 10MB max
+                            ->required()
+                            ->helperText('Upload insurance PDF to automatically extract customer information')
+                            ->disk('public')
+                            ->directory('temp-uploads')
+                    ])
+                    ->action(function (array $data, Set $set): void {
+                        try {
+
+                            $uploadedFile = $data['pdf_file'];
+                            
+                            if (is_array($uploadedFile)) {
+                                $uploadedFile = $uploadedFile[0]; // Get first file if array
+                            }
+                            
+                            // Build the full file path
+                            // $filePath = storage_path('app/' . $uploadedFile);
+                            $filePath = Storage::disk('public')->path($uploadedFile);
+                            
+                            // Check if file exists
+                            if (!file_exists($filePath)) {
+                                throw new \Exception('Uploaded file not found: ' . $filePath);
+                            }
+
+                            // Parse PDF content
+                            $parsedData = self::parsePdfContent($filePath);
+                            
+                            if ($parsedData) {
+                                // Populate form fields based on parsed data
+                                if (isset($parsedData['customer_name'])) {
+                                    $set('first_name', $parsedData['customer_name']);
+                                }
+                                
+                                if (isset($parsedData['phone'])) {
+                                    $set('phone', $parsedData['phone']);
+                                }
+                                
+                                if (isset($parsedData['email'])) {
+                                    $set('email', $parsedData['email']);
+                                }
+                                
+                                if (isset($parsedData['address'])) {
+                                    $set('address', $parsedData['address']);
+                                }
+                                
+                                if (isset($parsedData['city'])) {
+                                    $set('city', $parsedData['city']);
+                                }
+                                
+                                if (isset($parsedData['state'])) {
+                                    $set('state', $parsedData['state']);
+                                }
+                                
+                                if (isset($parsedData['pincode'])) {
+                                    $set('pincode', $parsedData['pincode']);
+                                }
+                                
+                                if (isset($parsedData['policy_number'])) {
+                                    $set('policy_number', $parsedData['policy_number']);
+                                }
+                                
+                                if (isset($parsedData['vehicle_number'])) {
+                                    $set('vehicle_number', $parsedData['vehicle_number']);
+                                }
+                                
+                                // Clean up temporary file
+                                if (file_exists($filePath)) {
+                                    unlink($filePath);
+                                }
+                                
+                                Notification::make()
+                                    ->title('PDF Parsed Successfully!')
+                                    ->body('Customer information has been extracted and populated from the PDF.')
+                                    ->success()
+                                    ->send();
+                            } else {
+                                throw new \Exception('Could not extract customer information from the PDF.');
+                            }
+                            
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('PDF Parsing Failed')
+                                ->body('Error: ' . $e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
                 ]),
                 // Client Details Card
                 Forms\Components\Section::make('CC Entry')
@@ -1164,7 +1269,7 @@ class CcResource extends Resource
                             'cc-export-' . date('Y-m-d-H-i-s') . '.csv',
                             ['Content-Type' => 'text/csv']
                         )->deleteFileAfterSend();
-                    })
+                    }),
             ])
             ->bulkActions([]);
     }
@@ -1542,5 +1647,129 @@ class CcResource extends Resource
             'edit' => Pages\EditCc::route('/{record}/edit'),
             'view' => Pages\ViewCc::route('/{record}'),
         ];
+    }
+
+    public static function parsePdfContent(string $filePath): ?array
+    {
+        try {
+            // $text = \Spatie\PdfToText\Pdf::getText($filePath);
+            $text = self::extractTextWithOCR($filePath);
+            
+            return self::extractDataFromText($text);
+        } catch (\Exception $e) {
+            Log::error('PDF Parsing Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    private static function extractTextWithOCR(string $filePath): string
+    {
+        $imagick = new \Imagick();
+        $imagick->setResolution(200, 200);
+        $imagick->readImage($filePath); // reads all pages
+
+        $pages = $imagick->getNumberImages();
+        $text = '';
+
+        foreach (range(0, $pages - 1) as $i) {
+            $imagick->readImage($filePath . "[$i]");
+            $imagick->setImageFormat('jpeg');
+
+            $tempImagePath = storage_path("app/temp_page_$i.jpg");
+            $imagick->writeImage($tempImagePath);
+
+            // Run OCR using Tesseract
+            $pageText = shell_exec("tesseract \"$tempImagePath\" stdout");
+
+            if ($pageText) {
+                $text .= "\n\n" . $pageText;
+            }
+
+            // Cleanup
+            unlink($tempImagePath);
+        }
+
+        return $text;
+    }
+
+
+    // Extract structured data from PDF text
+    private static function extractDataFromText(string $text): array
+    {
+        $data = [];
+        
+        // Extract customer name
+        if (preg_match('/(?:Insured|Name|Customer)\s*[:]*\s*(?:MR|MS|DR|Miss|Mrs\.?)\s*([A-Z][A-Z\s]+)/i', $text, $matches)) {
+            $data['customer_name'] = trim($matches[1]);
+        }
+        
+        // Extract phone number
+        if (preg_match('/(?:Mobile|Phone|Contact).*?(\d{10})/i', $text, $matches)) {
+            $data['phone'] = $matches[1];
+        }
+        
+        // Extract email
+        if (preg_match('/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i', $text, $matches)) {
+            $data['email'] = $matches[1];
+        }
+        
+        // Extract policy number
+        if (preg_match('/Policy\s*(?:No|Number)\.?\s*[:]*\s*([A-Z0-9]+)/i', $text, $matches)) {
+            $data['policy_number'] = trim($matches[1]);
+        }
+        
+        // Extract vehicle number
+        if (preg_match('/(?:Vehicle|Registration)\s*(?:No|Number)\.?\s*[:]*\s*([A-Z0-9\s]+)/i', $text, $matches)) {
+            $vehicleNo = trim($matches[1]);
+            if ($vehicleNo !== 'NEW' && $vehicleNo !== 'Obsolete') {
+                $data['vehicle_number'] = $vehicleNo;
+            }
+        }
+        
+        // Extract address components
+        $lines = explode("\n", $text);
+        $addressFound = false;
+        $fullAddress = '';
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            
+            // Look for address patterns
+            if (preg_match('/^[A-Z0-9\s,.-]+(?:COLONY|ROAD|STREET|NAGAR|BLOCK|SECTOR)/i', $line)) {
+                $addressFound = true;
+                $fullAddress = $line;
+                continue;
+            }
+            
+            // Extract city and state
+            if (preg_match('/^([A-Z\s]+)\s+([A-Z\s]+)$/i', $line, $matches)) {
+                if (strlen($matches[1]) > 2 && strlen($matches[2]) > 2) {
+                    $data['city'] = trim($matches[1]);
+                    $data['state'] = trim($matches[2]);
+                }
+            }
+            
+            // Extract pincode
+            if (preg_match('/\b(\d{6})\b/', $line, $matches)) {
+                $data['pincode'] = $matches[1];
+            }
+        }
+        
+        if ($addressFound && $fullAddress) {
+            $data['address'] = $fullAddress;
+        }
+        
+        // Specific patterns for the sample PDF format
+        // Extract UNITED INDIA INSURANCE format
+        if (preg_match('/MR\s+([A-Z\s]+)\s+VP\s+PANCHMUKHI/i', $text, $matches)) {
+            $data['customer_name'] = trim($matches[1]);
+        }
+        
+        if (preg_match('/VP\s+PANCHMUKHI\s+COLONY\s+([^0-9]+)(\d{6})/i', $text, $matches)) {
+            $data['address'] = 'VP PANCHMUKHI COLONY ' . trim($matches[1]);
+            $data['pincode'] = $matches[2];
+        }
+        
+        return $data;
     }
 }

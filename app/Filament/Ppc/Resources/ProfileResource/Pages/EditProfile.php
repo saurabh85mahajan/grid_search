@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\PPc\Resources\ProfileResource\Pages;
+namespace App\Filament\Ppc\Resources\ProfileResource\Pages;
 
 use App\Filament\PPc\Resources\ProfileResource;
 use Filament\Resources\Pages\EditRecord;
