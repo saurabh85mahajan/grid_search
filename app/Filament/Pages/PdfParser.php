@@ -44,7 +44,7 @@ class PdfParser extends Page implements HasForms
                             ->label('Type of Insurance')
                             ->options([
                                 'Digit' => 'Digit',
-                                'United ' => 'United Insurance',
+                                'United' => 'United Insurance',
                             ])
                             ->placeholder('Select Insurance Type')
                             ->validationMessages([
@@ -66,7 +66,7 @@ class PdfParser extends Page implements HasForms
                 // Show extracted data section only when data is available
                 Forms\Components\Section::make('Extracted Information')
                     ->description('Information extracted from the uploaded PDF')
-                    ->visible(fn () => $this->showExtractedData && !empty($this->extractedData))
+                    ->visible(fn() => $this->showExtractedData && !empty($this->extractedData))
                     ->schema($this->getExtractedDataFields()),
             ])
             ->statePath('data');
@@ -235,7 +235,6 @@ class PdfParser extends Page implements HasForms
             } else {
                 throw new \Exception('Could not extract customer information from the PDF.');
             }
-
         } catch (\Exception $e) {
             $this->showExtractedData = false;
             $this->extractedData = [];
@@ -275,7 +274,7 @@ class PdfParser extends Page implements HasForms
                 ->color('gray')
                 ->icon('heroicon-o-arrow-path')
                 ->action('resetForm')
-                ->visible(fn () => $this->showExtractedData),
+                ->visible(fn() => $this->showExtractedData),
         ];
     }
 
@@ -285,19 +284,17 @@ class PdfParser extends Page implements HasForms
             $text = \Spatie\PdfToText\Pdf::getText($filePath);
 
             switch ($insuranceType) {
-                case 'united': 
-                                $extractor = new UnitedInsuranceExtractor();
-                                break;
-                case 'digit': 
-                                $extractor = new DigitExtractor();
-                                break;
+                case 'United':
+                    $extractor = new UnitedInsuranceExtractor();
+                    break;
+                case 'Digit':
+                    $extractor = new DigitExtractor();
+                    break;
                 default:
                     throw new \Exception('This Insurance Company is not yet supported');
-                    
             }
 
             return $extractor->extractData($text);
-			
         } catch (\Exception $e) {
             Log::error('PDF Parsing Error: ' . $e->getMessage());
             return null;
