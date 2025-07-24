@@ -64,10 +64,11 @@ class PdfParser extends Page implements HasForms
                     ]),
 
                 // Show extracted data section only when data is available
-                Forms\Components\Section::make('Extracted Information')
-                    ->description('Information extracted from the uploaded PDF')
-                    ->visible(fn() => $this->showExtractedData && !empty($this->extractedData))
-                    ->schema($this->getExtractedDataFields()),
+                Forms\Components\Placeholder::make('Extracted Information')
+                    ->label('Debug Output')
+                    ->content(function () {
+                        return '<pre>' . print_r($this->extractedData, true) . '</pre>';
+                    })
             ])
             ->statePath('data');
     }
