@@ -12,6 +12,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class PdfParser extends Page implements HasForms
 {
@@ -73,13 +74,14 @@ class PdfParser extends Page implements HasForms
                     }),
 
                 Forms\Components\Placeholder::make('Extracted Information')
-                    ->label('Debug Output')
+                    ->label('Parsed Text')
                     ->content(function () {
-                        return '<pre style="white-space: pre-wrap; word-wrap: break-word;">' 
+                        $html = '<div style="white-space: pre-wrap; word-wrap: break-word;">' 
                             . htmlspecialchars($this->parsedText) 
-                            . '</pre>';
+                            . '</div>';
+
+                        return new HtmlString($html);
                     })
-                    ->html()
             ])
             ->statePath('data');
     }
@@ -185,6 +187,7 @@ class PdfParser extends Page implements HasForms
     public function resetForm(): void
     {
         $this->showExtractedData = false;
+        $this->parsedText = '';
         $this->extractedData = [];
         $this->form->fill();
 
@@ -206,7 +209,7 @@ class PdfParser extends Page implements HasForms
 
             Forms\Components\Actions\Action::make('text')
                 ->label('Get PDF Text')
-                ->color('secondary')
+                ->color('primary')
                 ->icon('heroicon-o-document-magnifying-glass')
                 ->action('parseTextOnly'),
 
