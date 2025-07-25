@@ -28,6 +28,8 @@ class PdfParser extends Page implements HasForms
     public ?array $extractedData = [];
     public bool $showExtractedData = false;
 
+    public $parsedText; 
+
     public function mount(): void
     {
         $this->form->fill();
@@ -68,133 +70,15 @@ class PdfParser extends Page implements HasForms
                     ->label('Debug Output')
                     ->content(function () {
                         return '<pre>' . print_r($this->extractedData, true) . '</pre>';
+                    }),
+
+                Forms\Components\Placeholder::make('Extracted Information')
+                    ->label('Debug Output')
+                    ->content(function () {
+                        return '<pre>' . print_r($this->parsedText, true) . '</pre>';
                     })
             ])
             ->statePath('data');
-    }
-
-    protected function getExtractedDataFields(): array
-    {
-        if (empty($this->extractedData)) {
-            return [];
-        }
-
-        return [
-            Forms\Components\Grid::make(2)
-                ->schema([
-                    // Customer Information
-                    Forms\Components\Fieldset::make('Customer Information')
-                        ->schema([
-                            Forms\Components\TextInput::make('salutation_id')
-                                ->label('Salutation')
-                                ->default($this->extractedData['name_prefix'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('first_name')
-                                ->label('First Name')
-                                ->default($this->extractedData['first_name'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('middle_name')
-                                ->label('Middle Name')
-                                ->default($this->extractedData['middle_name'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('last_name')
-                                ->label('Last Name')
-                                ->default($this->extractedData['last_name'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('phone')
-                                ->label('Phone')
-                                ->default($this->extractedData['phone'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('email')
-                                ->label('Email')
-                                ->default($this->extractedData['email'] ?? '')
-                                ->readOnly(),
-                        ]),
-
-                    // Address Information
-                    Forms\Components\Fieldset::make('Address Information')
-                        ->schema([
-                            Forms\Components\Textarea::make('address_1')
-                                ->label('Address')
-                                ->default($this->extractedData['address'] ?? '')
-                                ->readOnly()
-                                ->rows(2),
-                            Forms\Components\TextInput::make('city_id')
-                                ->label('City')
-                                ->default($this->extractedData['city'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('state')
-                                ->label('State')
-                                ->default($this->extractedData['state'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('zipcode')
-                                ->label('Pincode')
-                                ->default($this->extractedData['pincode'] ?? '')
-                                ->readOnly(),
-                        ]),
-                ]),
-
-            Forms\Components\Grid::make(2)
-                ->schema([
-                    // Vehicle Information
-                    Forms\Components\Fieldset::make('Vehicle Information')
-                        ->schema([
-                            Forms\Components\TextInput::make('make_id')
-                                ->label('Make')
-                                ->default($this->extractedData['make'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('vehicle_model')
-                                ->label('Model')
-                                ->default($this->extractedData['model'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('vehicle_sub_model')
-                                ->label('Sub Model')
-                                ->default($this->extractedData['sub_model'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('engine_type')
-                                ->label('Engine No')
-                                ->default($this->extractedData['engineNo'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('chasis')
-                                ->label('Chassis No')
-                                ->default($this->extractedData['chassisNo'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('cc')
-                                ->label('CC')
-                                ->default($this->extractedData['cc'] ?? '')
-                                ->readOnly(),
-                        ]),
-
-                    // Policy Information
-                    Forms\Components\Fieldset::make('Policy Information')
-                        ->schema([
-                            Forms\Components\TextInput::make('policy_number')
-                                ->label('Policy Number')
-                                ->default($this->extractedData['policy_number'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\TextInput::make('sum_issured')
-                                ->label('Sum Insured')
-                                ->default($this->extractedData['sum_insured'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\DatePicker::make('risk_start_date')
-                                ->label('Risk Start Date')
-                                ->default($this->extractedData['risk_start_date'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\DatePicker::make('risk_end_date')
-                                ->label('Risk End Date')
-                                ->default($this->extractedData['risk_end_date'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\DatePicker::make('tp_start_date')
-                                ->label('TP Start Date')
-                                ->default($this->extractedData['tp_start_date'] ?? '')
-                                ->readOnly(),
-                            Forms\Components\DatePicker::make('tp_end_date')
-                                ->label('TP End Date')
-                                ->default($this->extractedData['tp_end_date'] ?? '')
-                                ->readOnly(),
-                        ]),
-                ]),
-        ];
     }
 
     public function parsePdf(): void
@@ -248,6 +132,53 @@ class PdfParser extends Page implements HasForms
         }
     }
 
+    public function parseTextOnly(): void
+    {
+        try {
+            $data = $this->form->getState();
+            $uploadedFile = $data['pdf_file'];
+            $insuranceType = $data['insurance_type'];
+
+            if (is_array($uploadedFile)) {
+                $uploadedFile = $uploadedFile[0]; // Get first file if array
+            }
+
+            // Build the full file path
+            $filePath = Storage::disk('public')->path($uploadedFile);
+
+            // Check if file exists
+            if (!file_exists($filePath)) {
+                throw new \Exception('Uploaded file not found: ' . $filePath);
+            }
+
+            // Parse PDF content - you'll need to implement this method
+            $text = \Spatie\PdfToText\Pdf::getText($filePath);
+
+            if ($text) {
+                $this->parsedText = $text;
+
+                // Clean up temporary file
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+
+                Notification::make()
+                    ->title('PDF Text Parsed Successfully!')
+                    ->body('PDF Text Parsed Successfully!')
+                    ->success()
+                    ->send();
+            } else {
+                throw new \Exception('Could not parse PDF Text.');
+            }
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title('PDF Text Not Parsing Failed')
+                ->body('Error: ' . $e->getMessage())
+                ->danger()
+                ->send();
+        }
+    }
+
     public function resetForm(): void
     {
         $this->showExtractedData = false;
@@ -269,6 +200,12 @@ class PdfParser extends Page implements HasForms
                 ->color('primary')
                 ->icon('heroicon-o-document-magnifying-glass')
                 ->action('parsePdf'),
+
+            Forms\Components\Actions\Action::make('text')
+                ->label('Get PDF Text')
+                ->color('secondary')
+                ->icon('heroicon-o-document-magnifying-glass')
+                ->action('parseTextOnly'),
 
             Forms\Components\Actions\Action::make('reset')
                 ->label('Reset')
