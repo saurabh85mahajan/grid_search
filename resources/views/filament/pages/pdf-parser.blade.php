@@ -13,8 +13,9 @@
 
                 <div class="mt-6 flex gap-3">
                     {{ $this->getFormActions()[0] }}
+                    {{ $this->getFormActions()[1] }}
                     @if($this->showExtractedData)
-                        {{ $this->getFormActions()[1] }}
+                        {{ $this->getFormActions()[2] }}
                     @endif
                 </div>
             </form>
