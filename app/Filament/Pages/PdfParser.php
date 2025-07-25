@@ -79,6 +79,7 @@ class PdfParser extends Page implements HasForms
                             . htmlspecialchars($this->parsedText) 
                             . '</pre>';
                     })
+                    ->html()
             ])
             ->statePath('data');
     }
