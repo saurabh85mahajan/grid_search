@@ -75,7 +75,9 @@ class PdfParser extends Page implements HasForms
                 Forms\Components\Placeholder::make('Extracted Information')
                     ->label('Debug Output')
                     ->content(function () {
-                        return '<pre>' . print_r($this->parsedText, true) . '</pre>';
+                        return '<pre style="white-space: pre-wrap; word-wrap: break-word;">' 
+                            . htmlspecialchars($this->parsedText) 
+                            . '</pre>';
                     })
             ])
             ->statePath('data');
