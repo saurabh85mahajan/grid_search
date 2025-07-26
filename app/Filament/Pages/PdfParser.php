@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Services\DigitExtractor;
+use App\Services\IciciExtractor;
 use App\Services\UnitedInsuranceExtractor;
 use Filament\Pages\Page;
 use Filament\Forms;
@@ -38,6 +39,12 @@ class PdfParser extends Page implements HasForms
 
     public function form(Form $form): Form
     {
+//         $text = <<<HTML
+// HTML;
+        // $extractor = new IciciExtractor();
+        // $r= $extractor->extractData($text);
+        // dd($r);
+
         return $form
             ->schema([
                 Forms\Components\Section::make('Upload PDF Document')
@@ -233,6 +240,9 @@ class PdfParser extends Page implements HasForms
                     break;
                 case 'Digit':
                     $extractor = new DigitExtractor();
+                    break;
+                case 'Icici':
+                    $extractor = new IciciExtractor();
                     break;
                 default:
                     throw new \Exception('This Insurance Company is not yet supported');
