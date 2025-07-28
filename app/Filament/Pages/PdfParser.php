@@ -55,6 +55,7 @@ class PdfParser extends Page implements HasForms
                             ->options([
                                 'Digit' => 'Digit',
                                 'United' => 'United Insurance',
+                                'Icici' => 'Icici Insurance',
                             ])
                             ->placeholder('Select Insurance Type')
                             ->validationMessages([
