@@ -82,8 +82,6 @@ class UnitedInsuranceExtractor
             // State
             $data['state'] = trim($matches[5]);
         }
-
-        Log::info('PDF Text Extracted', ['customer data' => $data]);
     }
 
     private function extractPolicyNumber($text, &$data)
