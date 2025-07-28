@@ -301,19 +301,19 @@ class TataExtractor
         }
     }
 
-private function convertDateFormat($dateString)
-{
-    try {
-        // Convert "26 Jul '25" to "2025-07-26" format
-        $date = DateTime::createFromFormat('j M \'y', $dateString);
-        if ($date) {
-            return $date->format('Y-m-d');
+    private function convertDateFormat($dateString)
+    {
+        try {
+            // Convert "26 Jul '25" to "2025-07-26" format
+            $date = DateTime::createFromFormat('j M \'y', $dateString);
+            if ($date) {
+                return $date->format('Y-m-d');
+            }
+        } catch (\Exception $e) {
+            // Return original if conversion fails
+            return $dateString;
         }
-    } catch (\Exception $e) {
-        // Return original if conversion fails
+        
         return $dateString;
     }
-    
-    return $dateString;
-}
 }
