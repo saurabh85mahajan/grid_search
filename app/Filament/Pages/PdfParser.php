@@ -232,7 +232,8 @@ class PdfParser extends Page implements HasForms
     protected function parsePdfContent(string $filePath, $insuranceType): ?array
     {
         try {
-            $text = \Spatie\PdfToText\Pdf::getText($filePath);
+            // $text = \Spatie\PdfToText\Pdf::getText($filePath);
+            $text = \Spatie\PdfToText\Pdf::getText($filePath, null, ['layout']);
 
             switch ($insuranceType) {
                 case 'United':
