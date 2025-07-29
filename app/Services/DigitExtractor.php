@@ -8,6 +8,14 @@ class DigitExtractor
 {
     public function extractData($text)
     {
+        
+        $aiResponse = $this->getAiResponse($text);
+
+        if (is_null($aiResponse)) {
+            $extractFrom = $text;
+        } else {
+            $extractFrom = $aiResponse;
+        }
         $data = [];
 
         if (str_contains($text, 'Private Car')) {
@@ -17,24 +25,22 @@ class DigitExtractor
             $data['insurance_type'] = '2 Wheeler';
         }
 
-        $this->extractCustomerInfo($text, $data);
-        //Leave out partner name and email
-        // $this->extractCustomerAddress($text, $data);
-        $this->extractPolicyNumber($text, $data);
-        $this->extractAgentInfo($text, $data);
-        $this->extractPolicyDates($text, $data);
-        $this->extractVehicleInfo($text, $data);
-        $this->extractSumInsured($text, $data);
-        // $this->extractPremiumInfo($text, $data);
+        dump($extractFrom);
+
+        $this->extractCustomerInfo($extractFrom, $data);
+        $this->extractCustomerAddress($extractFrom, $data);
+        $this->extractPolicyNumber($extractFrom, $data);
+        $this->extractPolicyDates($extractFrom, $data);
+        $this->extractVehicleInfo($extractFrom, $data);
+        dd($data);
+        $this->extractSumInsured($extractFrom, $data);
 
         return $data;
     }
 
     private function extractCustomerInfo($text, &$data)
     {
-        // Extract customer name from "YOUR DETAILS" section
-
-        $pattern = '/Name\s*:\s*\n\s*[^\n]*\n\s*([^\n]+)/i';
+        $pattern = '/Insured\s+Name\*{0,2}\s*:\s*([^\n\r]+)/i';
         if (preg_match($pattern, $text, $matches)) {
             $customerName = trim($matches[1]);
 
@@ -51,8 +57,7 @@ class DigitExtractor
 
     private function extractCustomerAddress($text, &$data)
     {
-
-        $pattern = '/Address for Communication\s*:\s*(.+)/i';
+        $pattern = '/Insured\s+Full\s+Address\*{0,2}\s*:\s*([^\n\r]+)/i';
 
         if (preg_match($pattern, $text, $matches)) {
             $addressText = trim($matches[1]);
@@ -76,13 +81,25 @@ class DigitExtractor
 
         // Extract pincode first (6 digits at the end)
         $pincode = '';
-        if (preg_match('/\b(\d{6})\b/', $addressText, $pincodeMatch)) {
-            $pincode = $pincodeMatch[1];
-            $data['pincode'] = $pincode;
 
-            // Remove pincode from address text
-            $addressText = preg_replace('/\s*-?\s*\b' . preg_quote($pincode, '/') . '\b\s*/', '', $addressText);
-            $addressText = trim($addressText, ' ,');
+        if (preg_match('/(?:^|[^0-9])(\d{6})(?:[^0-9]|$)/', $addressText, $pincodeMatches)) {
+            // Get all 6-digit numbers
+            preg_match_all('/(?:^|[^0-9])(\d{6})(?:[^0-9]|$)/', $addressText, $allPincodes);
+            
+            // Prefer the one that looks more like a pincode (not part of other numbers)
+            foreach ($allPincodes[1] as $potentialPincode) {
+                // Check if it's a valid Indian pincode pattern (starts with 1-9)
+                if (preg_match('/^[1-9]\d{5}$/', $potentialPincode)) {
+                    $pincode = $potentialPincode;
+                    break;
+                }
+            }
+            
+            if ($pincode) {
+                $data['pincode'] = $pincode;
+                // Remove the pincode and any surrounding dashes/spaces
+                $addressText = preg_replace('/[-\s]*' . preg_quote($pincode, '/') . '[-\s]*/', '', $addressText);
+            }
         }
 
         $addressText = preg_replace('/,?\s*India\s*$/i', '', $addressText);
@@ -155,14 +172,10 @@ class DigitExtractor
 
     private function extractPolicyNumber($text, &$data)
     {
-        // Extract policy number from multiple possible patterns
-        if (preg_match('/Policy\s+No[:\.]?\s*([A-Z0-9]+)/i', $text, $matches)) {
-            $data['policy_number'] = trim($matches[1]);
-        } elseif (preg_match('/Policy\s+Number[:\.]?\s*([A-Z0-9\/\s]+)/i', $text, $matches)) {
-            $policyNumber = trim($matches[1]);
-            // Extract the main policy number (before any slash)
-            $policyParts = explode('/', $policyNumber);
-            $data['policy_number'] = trim($policyParts[0]);
+        $pattern = '/Policy\s+Number\*{0,2}\s*:\s*([^\/\n\r]+)/i';
+
+        if (preg_match($pattern, $text, $matches)) {
+           $data['policy_number'] = trim($matches[1]);
         }
     }
 
@@ -176,29 +189,28 @@ class DigitExtractor
 
     private function extractPolicyDates($text, &$data)
     {
-        // Extract Own Damage Cover dates
-        if (preg_match('/Own\s+Damage\s+Cover.*?From\s+(\d{2}-\w{3}-\d{4}).*?To\s+(\d{2}-\w{3}-\d{4})/is', $text, $matches)) {
+        if (preg_match('/Risk\s+From\s+Date\*{0,2}\s*:\s*(\d{2}-\w{3}-\d{4})/i', $text, $matches)) {
             $data['risk_start_date'] = $this->convertDateFormat($matches[1]);
-            $data['risk_end_date'] = $this->convertDateFormat($matches[2]);
+        }
+        
+        if (preg_match('/Risk\s+To\s+Date\*{0,2}\s*:\s*(\d{2}-\w{3}-\d{4})/i', $text, $matches)) {
+            $data['risk_end_date'] = $this->convertDateFormat($matches[1]);
         }
 
-        // Extract Third Party Liability dates
-        if (preg_match('/Third\s+Party\s+Liability.*?From\s+(\d{2}-\w{3}-\d{4}).*?To\s+(\d{2}-\w{3}-\d{4})/is', $text, $matches)) {
+        // Extract Third Party From Date and Third Party To Date
+        if (preg_match('/Third\s+Party\s+From\s+Date\*{0,2}\s*:\s*(\d{2}-\w{3}-\d{4})/i', $text, $matches)) {
             $data['tp_start_date'] = $this->convertDateFormat($matches[1]);
-            $data['tp_end_date'] = $this->convertDateFormat($matches[2]);
         }
-
-        // Extract PA Owner-Driver dates if different
-        if (preg_match('/PA\s+Owner-Driver.*?From\s+(\d{2}-\w{3}-\d{4}).*?To\s+(\d{2}-\w{3}-\d{4})/is', $text, $matches)) {
-            $data['pa_start_date'] = $this->convertDateFormat($matches[1]);
-            $data['pa_end_date'] = $this->convertDateFormat($matches[2]);
+        
+        if (preg_match('/Third\s+Party\s+To\s+Date\*{0,2}\s*:\s*(\d{2}-\w{3}-\d{4})/i', $text, $matches)) {
+            $data['tp_end_date'] = $this->convertDateFormat($matches[1]);
         }
     }
 
     private function extractVehicleInfo($text, &$data)
     {
         // Extract registration number
-        if (preg_match('/Registration\s+Number[:\.]?\s*([A-Z0-9\s]+?)(?=\n|\r|$)/i', $text, $matches)) {
+        if (preg_match('/Registration\s+Number\*{0,2}\s*:\s*([A-Z0-9\s]+?)(?=\n|\r|$)/i', $text, $matches)) {
             $data['vehicle_number'] = trim($matches[1]);
         }
 
@@ -404,5 +416,48 @@ class DigitExtractor
             $middleParts = array_slice($remainingParts, 1, $remainingCount - 2);
             $data['middle_name'] = implode(' ', $middleParts);
         }
+    }
+
+    private function getAiResponse($text)
+    {
+        $ai = app(Ai::class);
+
+        //todo improve
+        $filteredText = substr($text, 0, 4000);
+    $systemInstruction = <<<PROMPT
+You are a data extraction bot. Return ONLY exact values. No explanation. Use this format:
+
+**Policy & Insured Details**
+* **Insured Type**: 
+* **Insured Name**: 
+* **Insured Full Address**: 
+* **Insured Mobile**: 
+* **Insured Email**: 
+* **Policy Number**: 
+* **Risk From Date**: 
+* **Risk To Date**: 
+* **Third Party From Date**: 
+* **Third Party To Date**: 
+* **Sum Issured**:
+
+**Vehicle Details**
+* **Registration Number**: 
+* **Make**: 
+* **Model/Variant**: 
+* **Fuel Type**: 
+* **Year of Registration**: 
+* **Engine Number**: 
+* **Chassis Number**: 
+* **Cubic Capacity**: 
+* **Vehicle IDV**: 
+
+Use 'Not Found' if value is missing.
+PROMPT;
+
+    $userPrompt = "Extract the details from the following:\n\n" . $filteredText;
+    
+        $result = $ai->ask($systemInstruction, $userPrompt);
+
+        return $result;
     }
 }
