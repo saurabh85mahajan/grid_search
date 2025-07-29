@@ -11,8 +11,8 @@ class IciciExtractor
     public function extractData($text)
     {
         $data = [];
-		
-		$this->extractCustomerInfo($text, $data);
+
+        $this->extractCustomerInfo($text, $data);
 
         if (empty($data)) {
             if (str_contains($text, 'we have your car covered')) {
@@ -26,26 +26,23 @@ class IciciExtractor
                 $data['insurance_type'] = 'Motor';
                 return $data;
             } else if (str_contains($text, 'ICICI Lombard Health Care')) {
-                
-				$data['insurance_type'] = 'Health';
-				
-				$this->extractPolicyHolderDetails($text, $data);
-				
-				$this->extractPolicyDetails($text, $data);
-				
-				$this->extractPremiumDetails($text, $data);
-				
-				$this->extractNomineeDetails($text, $data);
-				
-				$this->extractInsuredDetails($text, $data);
-				
-				$this->extractAgentDetails($text, $data);
-                
-				return $data;
-				
-            }else{
-				
-			}
+
+                $data['insurance_type'] = 'Health';
+
+                $this->extractPolicyHolderDetails($text, $data);
+
+                $this->extractPolicyDetails($text, $data);
+
+                $this->extractPremiumDetails($text, $data);
+
+                $this->extractNomineeDetails($text, $data);
+
+                $this->extractInsuredDetails($text, $data);
+
+                $this->extractAgentDetails($text, $data);
+
+                return $data;
+            }
         }
 
         $data['insurance_type'] = '2 Wheeler';
@@ -77,7 +74,7 @@ class IciciExtractor
     {
         // Pattern to match "Partner Name" followed by the name
         $pattern = '/Partner\s+Name\s*\n\s*([A-Z\s]+?)\s*\n\s*([A-Z\s]+?)(?=\s*\n)/i';
-        
+
         if (preg_match($pattern, $text, $matches)) {
             $partnerName = trim($matches[1]);
             $data['partner_name'] = $partnerName;
@@ -113,14 +110,14 @@ class IciciExtractor
     private function extractPartnerAddress($text, &$data)
     {
         $pattern = '/Partner\s+Code\s*\n\s*((?:\d+[^,]*(?:,\s*[^,\n]+)*))(?=\s*\n\s*[A-Z0-9]{8,}|\s*$)/s';
-        
+
         if (preg_match($pattern, $text, $matches)) {
             $addressText = trim($matches[1]);
-            
+
             // Clean up the address - remove extra whitespace and normalize
             $addressText = preg_replace('/\s+/', ' ', $addressText);
             $addressText = trim($addressText);
-            
+
             // Parse the address into components
             $this->parseAddressComponents($addressText, $data);
         }
@@ -416,14 +413,14 @@ class IciciExtractor
             if (preg_match($ccPattern, $text, $ccMatches)) {
                 $cc = trim($ccMatches[1]);
             }
-            
+
             // Extract YOM from Mfg Yr section
             $yomPattern = '/Mfg\s+Yr\s*\n(?:.*?\n)*?(\d{4})(?=\s*\n|\s*$)/is';
             $yom = null;
             if (preg_match($yomPattern, $text, $yomMatches)) {
                 $yom = trim($yomMatches[1]);
             }
-        
+
             $data['cc'] = $cc;
             $data['yom'] = $yom;
         }
@@ -442,16 +439,16 @@ class IciciExtractor
             $make = trim($makeMatches[1]);
             $data['make'] = $make;
         }
-        
+
         // Extract Model and Sub_model (Type of Body section)
         $modelPattern = '/Model\s*\n\s*Type\s+of\s+Body\s*\n\s*([A-Z\s\.]+?)\s*\n\s*([A-Z\s]+?)(?=\s*\n|\s*$)/is';
         if (preg_match($modelPattern, $text, $modelMatches)) {
             $model = trim($modelMatches[1]);
             $subModel = trim($modelMatches[2]);
-            
+
             // Clean up model (remove trailing dot if present)
             $model = rtrim($model, '.');
-            
+
             $data['model'] = $model;
             $data['sub_model'] = $subModel;
         }
@@ -461,7 +458,7 @@ class IciciExtractor
             $engineNumber = trim($engineMatches[1]);
             $data['engine_number'] = $engineNumber;
         }
-        
+
         // Extract Chassis Number
         $chassisPattern = '/Chassis\s+No\.\s*\n\s*([A-Z0-9]+)(?=\s*\n|\s*$)/i';
         if (preg_match($chassisPattern, $text, $chassisMatches)) {
@@ -470,225 +467,225 @@ class IciciExtractor
         }
 
         $pattern = '/CC\/KW\s*\n\s*Mfg\s+Yr\s*\n\s*Seating\s+Capacity\s*\n\s*(\d+)\s*\n\s*(\d{4})/i';
-        
+
         if (preg_match($pattern, $text, $matches)) {
             $cc = trim($matches[1]);
             $yom = trim($matches[2]);
-            
+
             $data['cc'] = $cc;
             $data['yom'] = $yom;
         }
     }
 
-    private function extractPolicyHolderDetails($text, &$data){
-		$pattern = '/(?<=Policyholder Details)(.*?)(?=Family member\/Close relatives\/Associated with PEPs)/s';
-		preg_match($pattern, $text, $matches);
+    private function extractPolicyHolderDetails($text, &$data)
+    {
+        $pattern = '/(?<=Policyholder Details)(.*?)(?=Family member\/Close relatives\/Associated with PEPs)/s';
+        preg_match($pattern, $text, $matches);
 
-		if (isset($matches[0])) {
-			
-			$text = preg_replace("/\r\n|\r/", "\n", $matches[0]);
-			
-			// Match name: assume it's the first non-empty line after "0 Name"
-			preg_match('/0 Name\s*\n\s*([^\n]+)/', $text, $matches_name);
+        if (isset($matches[0])) {
 
-			// Match email: standard email pattern
-			preg_match('/Email ID Invoice Number\s*\n\s*([^\s]+)/', $text, $matches_email);
+            $text = preg_replace("/\r\n|\r/", "\n", $matches[0]);
 
-			// Match phone number with asterisks
-			preg_match('/Mobile Number\s*(\d{2}\*+\d{2})/', $text, $matches_phone);
+            // Match name: assume it's the first non-empty line after "0 Name"
+            preg_match('/0 Name\s*\n\s*([^\n]+)/', $text, $matches_name);
 
-			// Match address: between "Address" and "GSTIN Number"
-			preg_match('/Address\s*(.*?)\s*GSTIN Number/s', $text, $matches_address);
+            // Match email: standard email pattern
+            preg_match('/Email ID Invoice Number\s*\n\s*([^\s]+)/', $text, $matches_email);
 
-			// Display the results
-			
-			$data['customer_name'] = $matches_name[1] ? $matches_name[1] : '';
-			
-			$this->processNameComponents(trim($data['customer_name']), $data);
-			
-			$data['email'] = $matches_email[1] ? $matches_email[1] : '';
-			
-			$data['mobile_no'] = $matches_phone[1] ? $matches_phone[1] : '';
-			
-			$addressText = $matches_address[1] ? $matches_address[1] : '';
-			
-			$this->parseAddressComponents(trim($addressText), $data);
-			
-		}
-	}
-	
-	private function extractAgentDetails($text, &$data){
-		
-		if (preg_match('/Agent Details(.*?)The stamp duty of/s', $text, $matches)) {
-			
-			$block = trim($matches[1]);
+            // Match phone number with asterisks
+            preg_match('/Mobile Number\s*(\d{2}\*+\d{2})/', $text, $matches_phone);
 
-			// Step 2: Split into non-empty lines
-			$lines = array_values(array_filter(array_map('trim', explode("\n", $block))));
+            // Match address: between "Address" and "GSTIN Number"
+            preg_match('/Address\s*(.*?)\s*GSTIN Number/s', $text, $matches_address);
 
-			// Step 3: Chunk into key-value pairs
-			$pairs = array_chunk($lines, 2);
+            // Display the results
 
-			// Step 4: Convert to associative array with cleaned keys
-			$fields = array_reduce($pairs, function ($carry, $pair) {
-			if (count($pair) === 2) {
-			[$fieldName, $value] = $pair;
+            $data['customer_name'] = $matches_name[1] ? $matches_name[1] : '';
 
-			// Clean key: lowercase, remove spaces, slashes, dots, and non-alphabet characters
-			$key = strtolower($fieldName);
-			$key = str_replace([' ', '/', '.', '-'], '', $key);
-			$key = preg_replace('/[^a-z]/', '', $key);
+            $this->processNameComponents(trim($data['customer_name']), $data);
 
-			$carry[$key] = $value;
-			}
-			return $carry;
-			}, []);
+            $data['email'] = $matches_email[1] ? $matches_email[1] : '';
 
-			foreach($fields as $agentField => $value){
-				$data[$agentField] = $value;
-				if($agentField == 'agentname'){
-					$data['agent_name'] = $data['agentname'];
-				}
-			}
-			unset($data['agentname']);
-			unset($data['agentcode']);
-			unset($data['mobilenumber']);
-			unset($data['gstinregno']);
-			unset($data['hsnsaccode']);
-		}
-	}
-	
-	private function extractInsuredDetails($text, &$data){
-		
-		if (preg_match('/Insured Details(.*?)\*Your Sum Insured value/s', $text, $matches)) {
-		
-			$insuredDetails = trim($matches[1]);
+            $data['mobile_no'] = $matches_phone[1] ? $matches_phone[1] : '';
 
-			$insuredDetails = preg_replace('/\s+/', ' ', $insuredDetails);
+            $addressText = $matches_address[1] ? $matches_address[1] : '';
 
-			// Extract Date of Birth and Age
-			if (preg_match('/([A-Z][a-z]+ \d{1,2}, \d{4}) (\d{1,3})/', $insuredDetails, $dobAgeMatch)) {
-				$data['insured_dob'] = $dobAgeMatch[1];
-				$data['insured_age'] = $dobAgeMatch[2];
-			}
+            $this->parseAddressComponents(trim($addressText), $data);
+        }
+    }
 
-			// Extract Sum Insured: look for a large number (6+ digits)
-			if (preg_match('/\b(\d{6,})\b/', $insuredDetails, $sumInsuredMatch)) {
-				$data['sum_insured'] = $sumInsuredMatch[1];
-			}
-		}
-	}
-	
-	private function extractNomineeDetails($text, &$data){
-		
-		$pattern = '/Nominee Details(.*?)Insured Details/s';
+    private function extractAgentDetails($text, &$data)
+    {
 
-		preg_match($pattern, $text, $matches);
+        if (preg_match('/Agent Details(.*?)The stamp duty of/s', $text, $matches)) {
 
-		if (isset($matches[1])) {
-			
-			$nomineeDetails = trim($matches[1]);
-			
-			$text = preg_replace("/\r\n|\r/", "\n", $nomineeDetails);
+            $block = trim($matches[1]);
 
-			// Extract Nominee Name
-			preg_match('/Nominee Name\s+(.*)/', $text, $match_nominee);
+            // Step 2: Split into non-empty lines
+            $lines = array_values(array_filter(array_map('trim', explode("\n", $block))));
 
-			// Extract Relationship
-			preg_match('/Relationship with Policyholder\s+(.*)/', $text, $match_relationship);
+            // Step 3: Chunk into key-value pairs
+            $pairs = array_chunk($lines, 2);
 
-			// Extract Date of Birth
-			preg_match('/Date of Birth\s+([A-Za-z]+\s+\d{2}\s+\d{4})/', $text, $match_dob);
+            // Step 4: Convert to associative array with cleaned keys
+            $fields = array_reduce($pairs, function ($carry, $pair) {
+                if (count($pair) === 2) {
+                    [$fieldName, $value] = $pair;
 
-			// Extract Appointee Name (if any name is present after the label)
-			preg_match('/Appointee Name\s*(.*)/', $text, $match_appointee);
+                    // Clean key: lowercase, remove spaces, slashes, dots, and non-alphabet characters
+                    $key = strtolower($fieldName);
+                    $key = str_replace([' ', '/', '.', '-'], '', $key);
+                    $key = preg_replace('/[^a-z]/', '', $key);
 
-			// Output Results
-			$data['nominee'] = $match_nominee[1] ?? '';
-			
-			$data['nominee_relationship'] = $match_relationship[1] ?? '';
-			
-			$data['nominee_dob'] = $match_dob[1] ?? '';
-			
-			$data['appointee'] = trim($match_appointee[1]) !== '' ? $match_appointee[1] : '';
-			
-		}
-		
-	}
-	
-	private function extractPremiumDetails($text, &$data){
-		
-		$pattern = '/Premium Details\s+Basic Premium(.*?)Nominee Details/s';
+                    $carry[$key] = $value;
+                }
+                return $carry;
+            }, []);
 
-		preg_match($pattern, $text, $matches);
+            foreach ($fields as $agentField => $value) {
+                $data[$agentField] = $value;
+                if ($agentField == 'agentname') {
+                    $data['agent_name'] = $data['agentname'];
+                }
+            }
+            unset($data['agentname']);
+            unset($data['agentcode']);
+            unset($data['mobilenumber']);
+            unset($data['gstinregno']);
+            unset($data['hsnsaccode']);
+        }
+    }
 
-		if (isset($matches[1])) {
-			
-			$preminumDetails = trim($matches[1]);
-			
-			preg_match('/\(\)\s*([\d,]+\.\d{2})/', $preminumDetails, $basic);
-			
-			preg_match('/Total Tax Payable\s*\(\)\s*([\d,]+\.\d{2})/', $preminumDetails, $tax);
-			
-			preg_match('/Total Premium\s*\(\)\s*([\d,]+\.\d{2})/', $preminumDetails, $total);
+    private function extractInsuredDetails($text, &$data)
+    {
 
-			$data['basic_premium'] = str_replace(',', '', $basic[1]) ?? '';
-			$data['total_tax_payable'] = str_replace(',', '', $tax[1]) ?? '';
-			$data['total_premium'] = str_replace(',', '', $total[1]) ?? '';
-		
-		}
+        if (preg_match('/Insured Details(.*?)\*Your Sum Insured value/s', $text, $matches)) {
 
-		
-	}
-	
-	private function extractPolicyDetails($text, &$data){
-		
-		$pattern = '/Policy Details\s+Product Name(.*?)Premium Details\s+Basic Premium/s';
+            $insuredDetails = trim($matches[1]);
 
-		preg_match($pattern, $text, $matches);
+            $insuredDetails = preg_replace('/\s+/', ' ', $insuredDetails);
 
-		if($matches[1]){
-			
-			$text = preg_replace("/\r\n|\r/", "\n", $matches[1]);
-			$lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
+            // Extract Date of Birth and Age
+            if (preg_match('/([A-Z][a-z]+ \d{1,2}, \d{4}) (\d{1,3})/', $insuredDetails, $dobAgeMatch)) {
+                $data['insured_dob'] = $dobAgeMatch[1];
+                $data['insured_age'] = $dobAgeMatch[2];
+            }
 
-			// Extract the second line (contains policy data)
-			$line1 = isset($lines[1]) ? preg_split('/\s+/', $lines[1]) : [];
-			$line2 = isset($lines[3]) ? preg_split('/\s+/', $lines[3]) : [];
+            // Extract Sum Insured: look for a large number (6+ digits)
+            if (preg_match('/\b(\d{6,})\b/', $insuredDetails, $sumInsuredMatch)) {
+                $data['sum_insured'] = $sumInsuredMatch[1];
+            }
+        }
+    }
 
-			// Parse values
-			$data['policy_number'] = ($data['policy_number'] = $line1[1] ?? $data['policy_number'] = null);
-			
-			$data['risk_start_date'] = implode(' ', array_slice($line1, 2, 5)); 
-			
-			$rsd_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_start_date']);
+    private function extractNomineeDetails($text, &$data)
+    {
 
-			if ($rsd_date) {
-				$data['risk_start_date'] = $rsd_date->format('Y-m-d');
-			} else {
-				$data['risk_start_date'] = '';
-			}
-			
-			//$data['policyTenure'] = $line1[7] ?? null;
-			
-			// Line 2
-			$data['risk_end_date'] = implode(' ', array_slice($line2, 0, 5));
-			
-			$red_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_end_date']);
+        $pattern = '/Nominee Details(.*?)Insured Details/s';
 
-			if ($red_date) {
-				$data['risk_end_date'] = $red_date->format('Y-m-d');
-			} else {
-				$data['risk_end_date'] = '';
-			}
-			
-			//$data['policyType'] = $line2[5] ?? null;
-			
-			//$data['paymentFrequency'] = $line2[6] ?? null;
-			
-		}
-	}
-	
+        preg_match($pattern, $text, $matches);
+
+        if (isset($matches[1])) {
+
+            $nomineeDetails = trim($matches[1]);
+
+            $text = preg_replace("/\r\n|\r/", "\n", $nomineeDetails);
+
+            // Extract Nominee Name
+            preg_match('/Nominee Name\s+(.*)/', $text, $match_nominee);
+
+            // Extract Relationship
+            preg_match('/Relationship with Policyholder\s+(.*)/', $text, $match_relationship);
+
+            // Extract Date of Birth
+            preg_match('/Date of Birth\s+([A-Za-z]+\s+\d{2}\s+\d{4})/', $text, $match_dob);
+
+            // Extract Appointee Name (if any name is present after the label)
+            preg_match('/Appointee Name\s*(.*)/', $text, $match_appointee);
+
+            // Output Results
+            $data['nominee'] = $match_nominee[1] ?? '';
+
+            $data['nominee_relationship'] = $match_relationship[1] ?? '';
+
+            $data['nominee_dob'] = $match_dob[1] ?? '';
+
+            $data['appointee'] = trim($match_appointee[1]) !== '' ? $match_appointee[1] : '';
+        }
+    }
+
+    private function extractPremiumDetails($text, &$data)
+    {
+
+        $pattern = '/Premium Details\s+Basic Premium(.*?)Nominee Details/s';
+
+        preg_match($pattern, $text, $matches);
+
+        if (isset($matches[1])) {
+
+            $preminumDetails = trim($matches[1]);
+
+            preg_match('/\(\)\s*([\d,]+\.\d{2})/', $preminumDetails, $basic);
+
+            preg_match('/Total Tax Payable\s*\(\)\s*([\d,]+\.\d{2})/', $preminumDetails, $tax);
+
+            preg_match('/Total Premium\s*\(\)\s*([\d,]+\.\d{2})/', $preminumDetails, $total);
+
+            $data['basic_premium'] = str_replace(',', '', $basic[1]) ?? '';
+            $data['total_tax_payable'] = str_replace(',', '', $tax[1]) ?? '';
+            $data['total_premium'] = str_replace(',', '', $total[1]) ?? '';
+        }
+    }
+
+    private function extractPolicyDetails($text, &$data)
+    {
+
+        $pattern = '/Policy Details\s+Product Name(.*?)Premium Details\s+Basic Premium/s';
+
+        preg_match($pattern, $text, $matches);
+
+        if ($matches[1]) {
+
+            $text = preg_replace("/\r\n|\r/", "\n", $matches[1]);
+            $lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
+
+            // Extract the second line (contains policy data)
+            $line1 = isset($lines[1]) ? preg_split('/\s+/', $lines[1]) : [];
+            $line2 = isset($lines[3]) ? preg_split('/\s+/', $lines[3]) : [];
+
+            // Parse values
+            $data['policy_number'] = ($data['policy_number'] = $line1[1] ?? $data['policy_number'] = null);
+
+            $data['risk_start_date'] = implode(' ', array_slice($line1, 2, 5));
+
+            $rsd_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_start_date']);
+
+            if ($rsd_date) {
+                $data['risk_start_date'] = $rsd_date->format('Y-m-d');
+            } else {
+                $data['risk_start_date'] = '';
+            }
+
+            //$data['policyTenure'] = $line1[7] ?? null;
+
+            // Line 2
+            $data['risk_end_date'] = implode(' ', array_slice($line2, 0, 5));
+
+            $red_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_end_date']);
+
+            if ($red_date) {
+                $data['risk_end_date'] = $red_date->format('Y-m-d');
+            } else {
+                $data['risk_end_date'] = '';
+            }
+
+            //$data['policyType'] = $line2[5] ?? null;
+
+            //$data['paymentFrequency'] = $line2[6] ?? null;
+
+        }
+    }
+
     private function extractSumInsured($text, &$data)
     {
         $pattern = '/Vehicle\s+IDV\s*(?:\([^)]*\))?\s*:?\s*([\d,]+(?:\.\d{2})?)/i';
@@ -776,7 +773,7 @@ class IciciExtractor
             // Return original if conversion fails
             return $dateString;
         }
-        
+
         return $dateString;
     }
 }
