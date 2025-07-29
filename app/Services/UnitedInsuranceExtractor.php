@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class UnitedInsuranceExtractor
 {
+    use ExtractorConcern;
 
     public function extractData($text)
     {
@@ -37,74 +37,12 @@ class UnitedInsuranceExtractor
             $customerName = trim($matches[1]);
             $data['customer_name'] = $customerName;
 
-            // Parse name parts - remove "MR" prefix
-            //$nameWithoutPrefix = trim(str_replace('MR ', '', $customerName));
-
-            $nameParts = explode(' ', $data['customer_name']);
-
-            $data['name_prefix'] = $nameParts[0] ?? '';
-
-            if ($data['name_prefix']) {
-                $salutationId = DB::table('salutations')->where('name', $data['name_prefix'])->orWhere('name', $data['name_prefix'] . '.')->value('id');
-                $data['name_prefix'] = $salutationId;
-            }
-
-            $data['first_name'] = $nameParts[1] ?? '';
-
-            if (count($nameParts) == 3) {
-                $data['middle_name'] = '';
-                $data['last_name'] = $nameParts[2];
-            } elseif (count($nameParts) == 4) {
-                $data['middle_name'] = $nameParts[2];
-                $data['last_name'] = $nameParts[3];
-            } elseif (count($nameParts) > 4) {
-                $data['middle_name'] = implode(' ', array_slice($nameParts, 1, -1));
-                $data['last_name'] = $nameParts[count($nameParts) - 1];
-            } else {
-                $data['middle_name'] = '';
-                $data['last_name'] = '';
-            }
+            $this->processNameComponents($customerName, $data);
 
             // Address - clean up any extra whitespace
-            $data['address'] = trim(preg_replace('/\s+/', ' ', $matches[2]));
-			
-			if($data['address']){
-				$address = $data['address'];
-				do {
-					$new_address = preg_replace('/\b(\w+)\s+\1\b/i', '$1', $address);
-				} while ($new_address !== $address && $address = $new_address);
+            $addressText = trim(preg_replace('/\s+/', ' ', $matches[2]));
 
-				$words = preg_split('/\s+/', trim($address));
-				$wordCount = count($words);
-				
-				if ($wordCount >= 3) {
-					$part1 = implode(' ', array_slice($words, 0, $wordCount - 2));
-					$part2 = $words[$wordCount - 2];
-					$part3 = $words[$wordCount - 1];
-				} else {
-					// If less than 3 words, assign as available
-					$part1 = $words[0] ?? '';
-					$part2 = $words[1] ?? '';
-					$part3 = $words[2] ?? '';
-				}
-				$data['address_1'] = $part1;
-				$data['address_2'] = $part2;
-				$data['address_3'] = $part3;
-			}
-
-            // Pincode
-            $data['pincode'] = trim($matches[3]);
-
-            // City
-            $data['city'] = trim($matches[4]);
-
-            if ($data['city']) {
-                $cityId = DB::table('cities')->where('name', $data['city'])->value('id');
-                $data['city'] = $cityId;
-            }
-
-            // State
-            $data['state'] = trim($matches[5]);
+            $this->parseAddressComponents($addressText, $data);
         }
     }
 
@@ -189,31 +127,6 @@ class UnitedInsuranceExtractor
         // Extract Sum Insured from the specific "Total Value" pattern
         if (preg_match('/Total\s*\n\s*Value\s*\n\s*(\d+)/s', $text, $matches)) {
             $data['sum_insured'] = trim($matches[1]);
-        }
-    }
-
-    private function extractPremiumInfo($text, &$data)
-    {
-        // Extract Premium details
-        if (preg_match('/Premium:\s*(\d+\.?\d*)/i', $text, $matches)) {
-            $data['basic_premium'] = $matches[1];
-        }
-
-        if (preg_match('/IGST\(\d+%\):\s*(\d+\.?\d*)/i', $text, $matches)) {
-            $data['gst_amount'] = $matches[1];
-        }
-
-        if (preg_match('/Total\(Rounded\s+off\):\s*(\d+\.?\d*)/i', $text, $matches)) {
-            $data['total_premium'] = $matches[1];
-        }
-
-        // Extract Receipt Information
-        if (preg_match('/Receipt\s+Number\s*[:]*\s*([A-Z0-9]+)/i', $text, $matches)) {
-            $data['receipt_number'] = trim($matches[1]);
-        }
-
-        if (preg_match('/Receipt\s+Date:\s*(\d{2}\/\d{2}\/\d{4})/i', $text, $matches)) {
-            $data['receipt_date'] = $matches[1];
         }
     }
 }
