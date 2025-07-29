@@ -67,6 +67,30 @@ class UnitedInsuranceExtractor
 
             // Address - clean up any extra whitespace
             $data['address'] = trim(preg_replace('/\s+/', ' ', $matches[2]));
+			
+			if($data['address']){
+				$address = $data['address'];
+				do {
+					$new_address = preg_replace('/\b(\w+)\s+\1\b/i', '$1', $address);
+				} while ($new_address !== $address && $address = $new_address);
+
+				$words = preg_split('/\s+/', trim($address));
+				$wordCount = count($words);
+				
+				if ($wordCount >= 3) {
+					$part1 = implode(' ', array_slice($words, 0, $wordCount - 2));
+					$part2 = $words[$wordCount - 2];
+					$part3 = $words[$wordCount - 1];
+				} else {
+					// If less than 3 words, assign as available
+					$part1 = $words[0] ?? '';
+					$part2 = $words[1] ?? '';
+					$part3 = $words[2] ?? '';
+				}
+				$data['address_1'] = $part1;
+				$data['address_2'] = $part2;
+				$data['address_3'] = $part3;
+			}
 
             // Pincode
             $data['pincode'] = trim($matches[3]);

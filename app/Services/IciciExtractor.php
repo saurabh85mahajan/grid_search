@@ -424,6 +424,17 @@ class IciciExtractor
             $data['cc'] = $cc;
             $data['yom'] = $yom;
         }
+		
+		if ($vehicleNumber) {
+			
+			if (preg_match('/^([A-Z]{2})(\d{1,2})([A-Z]{1,2})(\d{4})$/', $vehicleNumber, $matches)) {
+				$data['registration_number_1'] = "{$matches[1]}";
+				$data['registration_number_2'] = "{$matches[2]}";
+				$data['registration_number_3'] = "{$matches[3]}";
+				$data['registration_number_4'] = "{$matches[4]}";
+			}
+		}
+		
     }
 
     private function extractPartnerVehicle($text, &$data)
