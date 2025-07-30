@@ -108,14 +108,7 @@ class DigitExtractor
         // Extract registration number
         if (preg_match('/Registration\s+Number\*{0,2}\s*:\s*([A-Z0-9\s]+?)(?=\n|\r|$)/i', $text, $matches)) {
             $data['vehicle_number'] = trim($matches[1]);
-			if (preg_match('/^([A-Z]{2})(\d{2})([A-Z]{1,2})(\d{4})$/', $data['vehicle_number'], $parts)) {
-						
-				$data['registration_number_1'] = "{$parts[1]}";
-				$data['registration_number_2'] = "{$parts[2]}";
-				$data['registration_number_3'] = "{$parts[3]}";
-				$data['registration_number_4'] = "{$parts[4]}";
-				
-			}
+            $this->processRegistrationNumber($data);
         }
 
         if (preg_match('/Make\*{0,2}\s*:\s*([^\n\r]+)/i', $text, $matches)) {

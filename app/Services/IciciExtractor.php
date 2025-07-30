@@ -299,20 +299,20 @@ class IciciExtractor
                     $makeModelParts = explode('/', $makeModel, 2);
                     $make = trim($makeModelParts[0] ?? '');
                     $model = trim($makeModelParts[1] ?? '');
-					
-					$pos = strpos($model, ' ');
-					if ($pos !== false) {
-						$model = substr($model, 0, $pos);
-						$sub_model = substr($model, $pos + 1);
-					} else {
-						$model = $model;
-						$sub_model = '';
-					}
+
+                    $pos = strpos($model, ' ');
+                    if ($pos !== false) {
+                        $model = substr($model, 0, $pos);
+                        $sub_model = substr($model, $pos + 1);
+                    } else {
+                        $model = $model;
+                        $sub_model = '';
+                    }
 
                     $r = [
                         'make' => $make,
                         'model' => $model,
-                        'sub_model' => $sub_model
+                        'sub_model' => $sub_model,
                         'vehicle_number' => $vehicleNumber,
                         'engine_number' => $engineNumber,
                         'chassis_number' => $chassisNumber
@@ -347,14 +347,8 @@ class IciciExtractor
             $data['yom'] = $yom;
         }
 
-        if ($vehicleNumber) {
-
-            if (preg_match('/^([A-Z]{2})(\d{1,2})([A-Z]{1,2})(\d{4})$/', $vehicleNumber, $matches)) {
-                $data['registration_number_1'] = "{$matches[1]}";
-                $data['registration_number_2'] = "{$matches[2]}";
-                $data['registration_number_3'] = "{$matches[3]}";
-                $data['registration_number_4'] = "{$matches[4]}";
-            }
+        if (!empty($data['vehicle_number'])) {
+            $this->processRegistrationNumber($data);
         }
     }
 

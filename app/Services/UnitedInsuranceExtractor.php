@@ -87,16 +87,12 @@ class UnitedInsuranceExtractor
 
     private function extractVehicleInfo($text, &$data)
     {
-        if (preg_match('/VEHICLE\s+NO\.?\s*:\s*([^\n\r]+)/i', $text, $matches)) {
+        if (preg_match('/VEHICLE\s+NO\.?\s*[:]*\s*(NEW|[A-Z0-9\s]+)/i', $text, $matches)) {
+            // if (preg_match('/VEHICLE\s+NO\.?\s*:\s*([^\n\r]+)/i', $text, $matches)) {
             $vehicleNumber = trim($matches[1]);
             if (strtolower(trim($vehicleNumber)) != 'new') {
                 $data['vehicle_number'] = $vehicleNumber;
-                if (preg_match('/^([A-Z]{2})(\d{1,2})([A-Z]{1,2})(\d{4})$/', $vehicleNumber, $matches)) {
-                    $data['registration_number_1'] = "{$matches[1]}";
-                    $data['registration_number_2'] = "{$matches[2]}";
-                    $data['registration_number_3'] = "{$matches[3]}";
-                    $data['registration_number_4'] = "{$matches[4]}";
-                }
+                $this->processRegistrationNumber($data);
             }
         }
 
@@ -134,33 +130,6 @@ class UnitedInsuranceExtractor
                 $data['yom'] = $matches[1];
             }
         }
-		
-		if (preg_match('/VEHICLE\s+NO\.?\s*[:]*\s*(NEW|[A-Z0-9\s]+)/i', $text, $matches)) {
-            
-			$regNo = trim($matches[1]);
-            
-			if ($regNo === 'NEW') {
-                $data['registration_number'] = 'APPLIED FOR';
-            }else{
-				
-				if ($regNo) {
-					if (preg_match('/([A-Z]{2}\d{2}[A-Z]{1,2}\d{4})/', $regNo, $match)) {
-						
-						$vehicleNumber = $match[1];
-						
-						if (preg_match('/^([A-Z]{2})(\d{2})([A-Z]{1,2})(\d{4})$/', $vehicleNumber, $parts)) {
-						
-							$data['registration_number_1'] = "{$parts[1]}";
-							$data['registration_number_2'] = "{$parts[2]}";
-							$data['registration_number_3'] = "{$parts[3]}";
-							$data['registration_number_4'] = "{$parts[4]}";
-							
-						}
-					}
-				}
-			}
-        }
-		
     }
 
     private function extractSumInsured($text, &$data)
