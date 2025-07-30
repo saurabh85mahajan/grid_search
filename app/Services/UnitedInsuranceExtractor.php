@@ -101,11 +101,6 @@ class UnitedInsuranceExtractor
             $data['chassis_number'] = $matches[2];
             $data['make']      = $matches[3];
 
-            if ($data['make']) {
-                $makeId = DB::table('makes')->where('name', $data['make'])->value('id');
-                $data['make'] = $makeId;
-            }
-
             $data['model'] = $matches[4] . (isset($matches[5]) ? ' ' . $matches[5] : '');
 
             if (preg_match('/\b\d+\b/', $data['model'], $matches)) {
