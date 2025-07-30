@@ -167,4 +167,11 @@ trait ExtractorConcern
             }
         }
     }
+
+    private function cleanData($data)
+    {
+        return array_filter($data, function($value) {
+            return !in_array(strtolower(trim($value)), ['not found', '', null]);
+        });
+    }
 }

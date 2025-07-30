@@ -3,12 +3,11 @@
 namespace App\Services;
 
 use DateTime;
-use Illuminate\Support\Facades\DB;
 
 class IciciExtractor
 {
 
-        use ExtractorConcern;
+    use ExtractorConcern;
 
     public function extractData($text)
     {
@@ -26,23 +25,20 @@ class IciciExtractor
                 $this->extractSumInsured($text, $data);
 
                 $data['insurance_type'] = 'Motor';
+                $data = $this->cleanData($data);
                 return $data;
             } else if (str_contains($text, 'ICICI Lombard Health Care')) {
 
                 $data['insurance_type'] = 'Health';
 
                 $this->extractPolicyHolderDetails($text, $data);
-
                 $this->extractPolicyDetails($text, $data);
-
                 $this->extractPremiumDetails($text, $data);
-
                 $this->extractNomineeDetails($text, $data);
-
                 $this->extractInsuredDetails($text, $data);
-
                 $this->extractAgentDetails($text, $data);
 
+                $data = $this->cleanData($data);
                 return $data;
             }
         }
@@ -56,7 +52,7 @@ class IciciExtractor
         $this->extractPolicyDates($text, $data);
         $this->extractVehicleInfo($text, $data);
         $this->extractSumInsured($text, $data);
-
+        $data = $this->cleanData($data);
         return $data;
     }
 

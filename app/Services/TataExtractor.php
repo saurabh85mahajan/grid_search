@@ -25,6 +25,9 @@ class TataExtractor
             $this->extractPolicyDates($text, $data);
             $this->extractVehicleInfo($text, $data);
             $this->extractSumInsured($text, $data);
+
+            $data = $this->cleanData($data);
+            return $data;
         }
 
         return $data;
