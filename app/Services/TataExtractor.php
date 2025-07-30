@@ -120,6 +120,14 @@ class TataExtractor
         $pattern = '/Registration\s+no\s*:\s*([A-Z]{2}\s+\d{2}\s+[A-Z]{1,2}\s+\d{1,4})/i';
         if (preg_match($pattern, $text, $matches)) {
             $data['vehicle_number'] = trim($matches[1]);
+			if (preg_match('/^([A-Z]{2})(\d{2})([A-Z]{1,2})(\d{4})$/', $data['vehicle_number'], $parts)) {
+						
+				$data['registration_number_1'] = "{$parts[1]}";
+				$data['registration_number_2'] = "{$parts[2]}";
+				$data['registration_number_3'] = "{$parts[3]}";
+				$data['registration_number_4'] = "{$parts[4]}";
+				
+			}
         }
 
         $pattern = '/Engine\s+Number\/Battery\s+Number\s*:\s*([^\/]+)/i';

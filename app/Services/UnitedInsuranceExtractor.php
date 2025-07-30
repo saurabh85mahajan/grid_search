@@ -87,8 +87,8 @@ class UnitedInsuranceExtractor
     private function extractVehicleInfo($text, &$data)
     {
         if (preg_match('/Engine\s*No\.\s*Chassis\s*No\.\s*Make\/\s*Model\s*([\w\d]+)\s+([\w\d]+)\s+([A-Z]+)\s*\/\s*([A-Z0-9 ]+)\s*[\r\n]+([A-Z0-9 ]+)\s*Year of/i', $text, $matches)) {
-            $data['engineNo']  = $matches[1];
-            $data['chassisNo'] = $matches[2];
+            $data['engine_number']  = $matches[1];
+            $data['chassis_number'] = $matches[2];
             $data['make']      = $matches[3];
 
             if ($data['make']) {
@@ -120,6 +120,33 @@ class UnitedInsuranceExtractor
                 $data['yom'] = $matches[1];
             }
         }
+		
+		if (preg_match('/VEHICLE\s+NO\.?\s*[:]*\s*(NEW|[A-Z0-9\s]+)/i', $text, $matches)) {
+            
+			$regNo = trim($matches[1]);
+            
+			if ($regNo === 'NEW') {
+                $data['registration_number'] = 'APPLIED FOR';
+            }else{
+				
+				if ($regNo) {
+					if (preg_match('/([A-Z]{2}\d{2}[A-Z]{1,2}\d{4})/', $regNo, $match)) {
+						
+						$vehicleNumber = $match[1];
+						
+						if (preg_match('/^([A-Z]{2})(\d{2})([A-Z]{1,2})(\d{4})$/', $vehicleNumber, $parts)) {
+						
+							$data['registration_number_1'] = "{$parts[1]}";
+							$data['registration_number_2'] = "{$parts[2]}";
+							$data['registration_number_3'] = "{$parts[3]}";
+							$data['registration_number_4'] = "{$parts[4]}";
+							
+						}
+					}
+				}
+			}
+        }
+		
     }
 
     private function extractSumInsured($text, &$data)

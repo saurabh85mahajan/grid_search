@@ -303,11 +303,20 @@ class IciciExtractor
                     $makeModelParts = explode('/', $makeModel, 2);
                     $make = trim($makeModelParts[0] ?? '');
                     $model = trim($makeModelParts[1] ?? '');
+					
+					$pos = strpos($model, ' ');
+					if ($pos !== false) {
+						$model = substr($model, 0, $pos);
+						$sub_model = substr($model, $pos + 1);
+					} else {
+						$model = $model;
+						$sub_model = '';
+					}
 
                     $r = [
                         'make' => $make,
                         'model' => $model,
-                        'sub_model' => '', //todo
+                        'sub_model' => $sub_model
                         'vehicle_number' => $vehicleNumber,
                         'engine_number' => $engineNumber,
                         'chassis_number' => $chassisNumber
