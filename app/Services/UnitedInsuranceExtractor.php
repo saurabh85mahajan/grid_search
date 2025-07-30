@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class UnitedInsuranceExtractor
 {
+    use ExtractorConcern;
 
     public function extractData($text)
     {
@@ -24,6 +24,7 @@ class UnitedInsuranceExtractor
 
         $this->extractSumInsured($text, $data);
 
+        $data = $this->cleanData($data);
         return $data;
     }
 
@@ -37,50 +38,12 @@ class UnitedInsuranceExtractor
             $customerName = trim($matches[1]);
             $data['customer_name'] = $customerName;
 
-            // Parse name parts - remove "MR" prefix
-            //$nameWithoutPrefix = trim(str_replace('MR ', '', $customerName));
-
-            $nameParts = explode(' ', $data['customer_name']);
-
-            $data['name_prefix'] = $nameParts[0] ?? '';
-
-            if ($data['name_prefix']) {
-                $salutationId = DB::table('salutations')->where('name', $data['name_prefix'])->orWhere('name', $data['name_prefix'] . '.')->value('id');
-                $data['name_prefix'] = $salutationId;
-            }
-
-            $data['first_name'] = $nameParts[1] ?? '';
-
-            if (count($nameParts) == 3) {
-                $data['middle_name'] = '';
-                $data['last_name'] = $nameParts[2];
-            } elseif (count($nameParts) == 4) {
-                $data['middle_name'] = $nameParts[2];
-                $data['last_name'] = $nameParts[3];
-            } elseif (count($nameParts) > 4) {
-                $data['middle_name'] = implode(' ', array_slice($nameParts, 1, -1));
-                $data['last_name'] = $nameParts[count($nameParts) - 1];
-            } else {
-                $data['middle_name'] = '';
-                $data['last_name'] = '';
-            }
+            $this->processNameComponents($customerName, $data);
 
             // Address - clean up any extra whitespace
-            $data['address'] = trim(preg_replace('/\s+/', ' ', $matches[2]));
+            $addressText = trim(preg_replace('/\s+/', ' ', $matches[2]));
 
-            // Pincode
-            $data['pincode'] = trim($matches[3]);
-
-            // City
-            $data['city'] = trim($matches[4]);
-
-            if ($data['city']) {
-                $cityId = DB::table('cities')->where('name', $data['city'])->value('id');
-                $data['city'] = $cityId;
-            }
-
-            // State
-            $data['state'] = trim($matches[5]);
+            $this->parseAddressComponents($addressText, $data);
         }
     }
 
@@ -124,9 +87,18 @@ class UnitedInsuranceExtractor
 
     private function extractVehicleInfo($text, &$data)
     {
+        if (preg_match('/VEHICLE\s+NO\.?\s*[:]*\s*(NEW|[A-Z0-9\s]+)/i', $text, $matches)) {
+            // if (preg_match('/VEHICLE\s+NO\.?\s*:\s*([^\n\r]+)/i', $text, $matches)) {
+            $vehicleNumber = trim($matches[1]);
+            if (strtolower(trim($vehicleNumber)) != 'new') {
+                $data['vehicle_number'] = $vehicleNumber;
+                $this->processRegistrationNumber($data);
+            }
+        }
+
         if (preg_match('/Engine\s*No\.\s*Chassis\s*No\.\s*Make\/\s*Model\s*([\w\d]+)\s+([\w\d]+)\s+([A-Z]+)\s*\/\s*([A-Z0-9 ]+)\s*[\r\n]+([A-Z0-9 ]+)\s*Year of/i', $text, $matches)) {
-            $data['engineNo']  = $matches[1];
-            $data['chassisNo'] = $matches[2];
+            $data['engine_number']  = $matches[1];
+            $data['chassis_number'] = $matches[2];
             $data['make']      = $matches[3];
 
             if ($data['make']) {
@@ -134,7 +106,7 @@ class UnitedInsuranceExtractor
                 $data['make'] = $makeId;
             }
 
-            $data['model']     = $matches[4] . (isset($matches[5]) ? ' ' . $matches[5] : '');
+            $data['model'] = $matches[4] . (isset($matches[5]) ? ' ' . $matches[5] : '');
 
             if (preg_match('/\b\d+\b/', $data['model'], $matches)) {
                 $data['cc'] = $matches[0] ?? '';
@@ -165,31 +137,6 @@ class UnitedInsuranceExtractor
         // Extract Sum Insured from the specific "Total Value" pattern
         if (preg_match('/Total\s*\n\s*Value\s*\n\s*(\d+)/s', $text, $matches)) {
             $data['sum_insured'] = trim($matches[1]);
-        }
-    }
-
-    private function extractPremiumInfo($text, &$data)
-    {
-        // Extract Premium details
-        if (preg_match('/Premium:\s*(\d+\.?\d*)/i', $text, $matches)) {
-            $data['basic_premium'] = $matches[1];
-        }
-
-        if (preg_match('/IGST\(\d+%\):\s*(\d+\.?\d*)/i', $text, $matches)) {
-            $data['gst_amount'] = $matches[1];
-        }
-
-        if (preg_match('/Total\(Rounded\s+off\):\s*(\d+\.?\d*)/i', $text, $matches)) {
-            $data['total_premium'] = $matches[1];
-        }
-
-        // Extract Receipt Information
-        if (preg_match('/Receipt\s+Number\s*[:]*\s*([A-Z0-9]+)/i', $text, $matches)) {
-            $data['receipt_number'] = trim($matches[1]);
-        }
-
-        if (preg_match('/Receipt\s+Date:\s*(\d{2}\/\d{2}\/\d{4})/i', $text, $matches)) {
-            $data['receipt_date'] = $matches[1];
         }
     }
 }

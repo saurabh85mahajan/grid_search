@@ -3,10 +3,11 @@
 namespace App\Services;
 
 use DateTime;
-use Illuminate\Support\Facades\DB;
 
 class TataExtractor
 {
+
+    use ExtractorConcern;
 
     public function extractData($text)
     {
@@ -23,8 +24,15 @@ class TataExtractor
             $this->extractPolicyDates($text, $data);
             $this->extractVehicleInfo($text, $data);
             $this->extractSumInsured($text, $data);
+        } else if (str_contains($text, 'Your health is secured with TATA')) {
+            $data['insurance_type'] = 'Health';
+            $this->extractHealthCustomerInfo($text, $data);
+            $this->extractHealthAgentName($text, $data);
+            $this->extractHealthSumInsured($text, $data);
+            $this->extractHealthPolicyDetails($text, $data);
         }
 
+        $data = $this->cleanData($data);
         return $data;
     }
 
@@ -43,7 +51,7 @@ class TataExtractor
     private function extractCustomerAddress($text, &$data)
     {
 
-       $pattern = '/Address for Communication\s*:\s*(.+)/i';
+        $pattern = '/Address for Communication\s*:\s*(.+)/i';
 
         if (preg_match($pattern, $text, $matches)) {
             $addressText = trim($matches[1]);
@@ -53,94 +61,6 @@ class TataExtractor
             $addressText = trim($addressText);
 
             $this->parseAddressComponents($addressText, $data);
-        }
-    }
-
-    private function parseAddressComponents($addressText, &$data)
-    {
-        // Initialize address components
-        $data['address_1'] = '';
-        $data['address_2'] = '';
-        $data['address_3'] = '';
-        $data['city'] = '';
-        $data['pincode'] = '';
-
-        // Extract pincode first (6 digits at the end)
-        $pincode = '';
-        if (preg_match('/\b(\d{6})\b/', $addressText, $pincodeMatch)) {
-            $pincode = $pincodeMatch[1];
-            $data['pincode'] = $pincode;
-
-            // Remove pincode from address text
-            $addressText = preg_replace('/\s*-?\s*\b' . preg_quote($pincode, '/') . '\b\s*/', '', $addressText);
-            $addressText = trim($addressText, ' ,');
-        }
-
-        $addressText = preg_replace('/,?\s*India\s*$/i', '', $addressText);
-        $addressText = trim($addressText, ' ,');
-
-        // // Remove state from the end (but don't store it)
-        $statePattern = '/,?\s*(GUJARAT|MAHARASHTRA|DELHI|UTTAR PRADESH|RAJASTHAN|KARNATAKA|TAMIL NADU|WEST BENGAL|ANDHRA PRADESH|TELANGANA|KERALA|MADHYA PRADESH|BIHAR|ODISHA|PUNJAB|HARYANA|JHARKHAND|ASSAM|CHHATTISGARH|UTTARAKHAND|HIMACHAL PRADESH|TRIPURA|MEGHALAYA|MANIPUR|NAGALAND|GOA|ARUNACHAL PRADESH|MIZORAM|SIKKIM|JAMMU AND KASHMIR|LADAKH)\s*$/i';
-
-        if (preg_match($statePattern, $addressText, $stateMatch)) {
-            // Remove state from address
-            $addressText = preg_replace($statePattern, '', $addressText);
-            $addressText = trim($addressText, ' ,');
-        }
-
-        // Extract city - look for common Indian city names in the address
-        $city = '';
-
-        $addressParts = explode(',', $addressText);
-        $addressParts = array_map('trim', $addressParts);
-        $addressParts = array_filter($addressParts, function ($part) {
-            return !empty($part);
-        });
-
-        if (count($addressParts) > 0) {
-            // Look at the last part and try to find a city-like word
-            $lastPart = $addressParts[count($addressParts) - 1];
-
-            // Split the last part into words
-            $words = explode(' ', $lastPart);
-            $words = array_map('trim', $words);
-            $words = array_reverse($words);
-
-            foreach ($words as $word) {
-                if (strlen($word) > 3 && ctype_alpha($word)) {
-                    $city = $word;
-                    break;
-                }
-            }
-        }
-
-        $data['city'] = $city;
-
-        // Split address into parts (keep everything including city)
-        $addressParts = explode(',', $addressText);
-        $addressParts = array_map('trim', $addressParts);
-        $addressParts = array_filter($addressParts, function ($part) {
-            return !empty($part);
-        });
-        $addressParts = array_values($addressParts);
-
-        // Assign address parts to address_1, address_2, address_3
-        if (count($addressParts) > 0) {
-            $data['address_1'] = $addressParts[0];
-        }
-        if (count($addressParts) > 1) {
-            $data['address_2'] = $addressParts[1];
-        }
-        if (count($addressParts) > 2) {
-            $data['address_3'] = implode(', ', array_slice($addressParts, 2));
-        }
-
-        // Database lookup for city ID
-        if (!empty($data['city'])) {
-            $cityId = DB::table('cities')->where('name', $data['city'])->value('id');
-            if ($cityId) {
-                $data['city'] = $cityId;
-            }
         }
     }
 
@@ -181,22 +101,22 @@ class TataExtractor
     private function extractPolicyDates($text, &$data)
     {
         $odPattern = '/OD\s+cover\s+period\s*:\s*(\d{1,2}\s+\w{3}\s+\'\d{2})\s*\([^)]+\)\s*to\s*(\d{1,2}\s+\w{3}\s+\'\d{2})\s*\([^)]+\)/i';
-        
+
         // Pattern for TP cover period  
         $tpPattern = '/TP\s+cover\s+period\s*:\s*(\d{1,2}\s+\w{3}\s+\'\d{2})\s*\([^)]+\)\s*to\s*(\d{1,2}\s+\w{3}\s+\'\d{2})\s*\([^)]+\)/i';
-        
+
         // Extract OD dates
         if (preg_match($odPattern, $text, $odMatches)) {
             $data['risk_start_date'] = $this->convertDateFormat(trim($odMatches[1]));
             $data['risk_end_date'] = $this->convertDateFormat(trim($odMatches[2]));
         }
-        
+
         // Extract TP dates
         if (preg_match($tpPattern, $text, $tpMatches)) {
             $data['tp_start_date'] = $this->convertDateFormat(trim($tpMatches[1]));
             $data['tp_end_date'] = $this->convertDateFormat(trim($tpMatches[2]));
         }
-        
+
         return $data;
     }
 
@@ -206,6 +126,7 @@ class TataExtractor
         $pattern = '/Registration\s+no\s*:\s*([A-Z]{2}\s+\d{2}\s+[A-Z]{1,2}\s+\d{1,4})/i';
         if (preg_match($pattern, $text, $matches)) {
             $data['vehicle_number'] = trim($matches[1]);
+            $this->processRegistrationNumber($data);
         }
 
         $pattern = '/Engine\s+Number\/Battery\s+Number\s*:\s*([^\/]+)/i';
@@ -239,65 +160,80 @@ class TataExtractor
         }
     }
 
-    private function processNameComponents($name, &$data)
+    private function extractHealthAgentName($text, &$data)
     {
-        // Parse name parts
-        $nameParts = array_filter(explode(' ', $name), function ($part) {
-            return trim($part) !== '';
-        });
 
-        // Reset array keys after filtering
-        $nameParts = array_values($nameParts);
+        $texts = preg_replace('/\s+/', ' ', $text);
 
-        // Common prefixes
-        $prefixes = ['MR', 'MRS', 'MS', 'MISS'];
-
-        $startIndex = 0;
-
-        // Check if first part is a prefix
-        if (!empty($nameParts) && in_array(strtoupper($nameParts[0]), $prefixes)) {
-            $data['name_prefix'] = strtoupper($nameParts[0]);
-            $startIndex = 1;
-
-            // Look up salutation ID in database
-            if ($data['name_prefix']) {
-                $salutationId = DB::table('salutations')
-                    ->where('name', $data['name_prefix'])
-                    ->orWhere('name', $data['name_prefix'] . '.')
-                    ->value('id');
-                $data['name_prefix'] = $salutationId;
-            }
-        } else {
-            $data['name_prefix'] = null;
+        if (preg_match('/Intermediary Name\s+Intermediary Code\s+Intermediary Contact No\.\s+([a-zA-Z\s]+)\s+(\d{10})\s+(\d{10})/', $text, $matches)) {
+            $data['agent_name'] = trim($matches[1]);
         }
+    }
 
-        // Get remaining name parts after prefix
-        $remainingParts = array_slice($nameParts, $startIndex);
-        $remainingCount = count($remainingParts);
+    private function extractHealthPolicyDetails($text, &$data)
+    {
 
-        // Parse based on number of remaining parts
-        if ($remainingCount == 0) {
-            $data['first_name'] = '';
-            $data['middle_name'] = '';
-            $data['last_name'] = '';
-        } elseif ($remainingCount == 1) {
-            // Only first name
-            $data['first_name'] = $remainingParts[0];
-            $data['middle_name'] = '';
-            $data['last_name'] = '';
-        } elseif ($remainingCount == 2) {
-            // First name and last name
-            $data['first_name'] = $remainingParts[0];
-            $data['middle_name'] = '';
-            $data['last_name'] = $remainingParts[1];
-        } else {
-            // First name, middle name(s), and last name
-            $data['first_name'] = $remainingParts[0];
-            $data['last_name'] = $remainingParts[$remainingCount - 1];
+        $cleanText = preg_replace('/\s+/', ' ', $text);
 
-            // Middle names (everything between first and last)
-            $middleParts = array_slice($remainingParts, 1, $remainingCount - 2);
-            $data['middle_name'] = implode(' ', $middleParts);
+        // Extract values using regex
+        // preg_match('/Gross Premium \(₹\)\s*(\d+)/', $cleanText, $m1);
+        // preg_match('/Issuing Office\s*([A-Z]+)/i', $cleanText, $m2);
+        preg_match('/From:(\d{2}\/\d{2}\/\d{4})\s+\d{2}:\d{2}\s+To:(\d{2}\/\d{2}\/\d{4})/', $cleanText, $m3);
+        // preg_match('/Product Name\s*(TATA AIG.*?)(?=\s+Proposal No)/i', $cleanText, $m4);
+        // preg_match('/Proposal No\.\s*([A-Z0-9\/]+)/', $cleanText, $m5);
+        // preg_match('/Plan Type\s*([A-Za-z]+)/', $cleanText, $m6);
+        // preg_match('/Premium Payment Zone\s*(Zone [A-Z])/', $cleanText, $m7);
+        // preg_match('/Business Type\s*([A-Za-z ]+)/', $cleanText, $m8);
+        // preg_match('/Policy Tenure\s*([0-9]+ year)/', $cleanText, $m9);
+
+        // $data['premium_amount'] = $m1[1] ?? '';
+        $risk_start_date = $m3[1] ?? '';
+        $date = DateTime::createFromFormat('d/m/Y', $risk_start_date);
+        if ($date) {
+            $data['risk_start_date'] = $date->format('Y-m-d');
+        }
+        $risk_end_date = $m3[2] ?? '';
+        $date = DateTime::createFromFormat('d/m/Y', $risk_end_date);
+        if ($date) {
+            $data['risk_end_date'] = $date->format('Y-m-d');
+        }
+    }
+
+    private function extractHealthSumInsured($text, &$data)
+    {
+        if (preg_match('/Sum Insured \(₹\)#\s*(.*?)\s*Cumulative/s', $text, $matches)) {
+            $sumInsuredRaw = trim($matches[1]);
+            $data['sum_insured'] = str_replace(',', '', $sumInsuredRaw);
+        }
+    }
+
+    private function extractHealthCustomerInfo($text, &$data)
+    {
+        if (preg_match('/Policy Schedule(.*?)Gross Premium/s', $text, $matches)) {
+            $block = trim($matches[1]);
+
+            // Remove line breaks to make regex simpler
+            $flatText = preg_replace('/\s+/', ' ', $block);
+
+            // Step 2: Extract details
+            preg_match('/Policy No\.\s*(\d{10})/', $flatText, $m1);
+            $policyNumber = $m1[1] ?? 'Not found';
+
+            preg_match('/Name\s+([A-Za-z]+)/', $flatText, $m2);
+            $name = $m2[1] ?? 'Not found';
+
+            preg_match('/Permanent Address\s+(.*?)\s+(\d{6})/', $flatText, $m3);
+            $address = isset($m3[1], $m3[2]) ? $m3[1] . ' ' . $m3[2] : 'Not found';
+
+            // Get the last 10-digit number (assumed to be contact number)
+            preg_match_all('/\b\d{10}\b/', $flatText, $m4);
+            $contactNumber = end($m4[0]) ?? 'Not found';
+
+            // Output
+            $data['policy_number'] = $policyNumber;
+            $data['customer_name'] = $name;
+            $this->parseAddressComponents($address, $data);
+            $data['mobile_no'] = $contactNumber;
         }
     }
 
@@ -313,7 +249,7 @@ class TataExtractor
             // Return original if conversion fails
             return $dateString;
         }
-        
+
         return $dateString;
     }
 }

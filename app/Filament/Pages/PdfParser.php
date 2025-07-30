@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Services\DigitExtractor;
 use App\Services\IciciExtractor;
+use App\Services\TataExtractor;
 use App\Services\UnitedInsuranceExtractor;
 use Filament\Pages\Page;
 use Filament\Forms;
@@ -55,6 +56,8 @@ class PdfParser extends Page implements HasForms
                             ->options([
                                 'Digit' => 'Digit',
                                 'United' => 'United Insurance',
+                                'Icici' => 'Icici Insurance',
+                                'Tata' => 'Tata Insurance',
                             ])
                             ->placeholder('Select Insurance Type')
                             ->validationMessages([
@@ -244,6 +247,9 @@ class PdfParser extends Page implements HasForms
                     break;
                 case 'Icici':
                     $extractor = new IciciExtractor();
+                    break;
+				case 'Tata':
+                    $extractor = new TataExtractor();
                     break;
                 default:
                     throw new \Exception('This Insurance Company is not yet supported');
