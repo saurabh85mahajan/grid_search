@@ -24,6 +24,7 @@ class UnitedInsuranceExtractor
 
         $this->extractSumInsured($text, $data);
 
+        $data = $this->cleanData($data);
         return $data;
     }
 
@@ -86,6 +87,19 @@ class UnitedInsuranceExtractor
 
     private function extractVehicleInfo($text, &$data)
     {
+        if (preg_match('/VEHICLE\s+NO\.?\s*:\s*([^\n\r]+)/i', $text, $matches)) {
+            $vehicleNumber = trim($matches[1]);
+            if (strtolower(trim($vehicleNumber)) != 'new') {
+                $data['vehicle_number'] = $vehicleNumber;
+                if (preg_match('/^([A-Z]{2})(\d{1,2})([A-Z]{1,2})(\d{4})$/', $vehicleNumber, $matches)) {
+                    $data['registration_number_1'] = "{$matches[1]}";
+                    $data['registration_number_2'] = "{$matches[2]}";
+                    $data['registration_number_3'] = "{$matches[3]}";
+                    $data['registration_number_4'] = "{$matches[4]}";
+                }
+            }
+        }
+
         if (preg_match('/Engine\s*No\.\s*Chassis\s*No\.\s*Make\/\s*Model\s*([\w\d]+)\s+([\w\d]+)\s+([A-Z]+)\s*\/\s*([A-Z0-9 ]+)\s*[\r\n]+([A-Z0-9 ]+)\s*Year of/i', $text, $matches)) {
             $data['engine_number']  = $matches[1];
             $data['chassis_number'] = $matches[2];
@@ -96,7 +110,7 @@ class UnitedInsuranceExtractor
                 $data['make'] = $makeId;
             }
 
-            $data['model']     = $matches[4] . (isset($matches[5]) ? ' ' . $matches[5] : '');
+            $data['model'] = $matches[4] . (isset($matches[5]) ? ' ' . $matches[5] : '');
 
             if (preg_match('/\b\d+\b/', $data['model'], $matches)) {
                 $data['cc'] = $matches[0] ?? '';

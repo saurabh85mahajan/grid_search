@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
-
 class DigitExtractor
 {
 
@@ -11,15 +9,12 @@ class DigitExtractor
 
     public function extractData($text)
     {
-
+        $data = [];
         $aiResponse = $this->getAiResponse($text);
 
         if (is_null($aiResponse)) {
-            $extractFrom = $text;
-        } else {
-            $extractFrom = $aiResponse;
+            return $data;
         }
-        $data = [];
 
         if (str_contains($text, 'Private Car')) {
             $data['insurance_type'] = 'Motor';
@@ -28,13 +23,14 @@ class DigitExtractor
             $data['insurance_type'] = '2 Wheeler';
         }
 
-        $this->extractCustomerInfo($extractFrom, $data);
-        $this->extractCustomerAddress($extractFrom, $data);
-        $this->extractPolicyNumber($extractFrom, $data);
-        $this->extractPolicyDates($extractFrom, $data);
-        $this->extractVehicleInfo($extractFrom, $data);
-        $this->extractSumInsured($extractFrom, $data);
+        $this->extractCustomerInfo($aiResponse, $data);
+        $this->extractCustomerAddress($aiResponse, $data);
+        $this->extractPolicyNumber($aiResponse, $data);
+        $this->extractPolicyDates($aiResponse, $data);
+        $this->extractVehicleInfo($aiResponse, $data);
+        $this->extractSumInsured($aiResponse, $data);
 
+        $data = $this->cleanData($data);
         return $data;
     }
 
@@ -212,13 +208,18 @@ class DigitExtractor
     {
         $ai = app(Ai::class);
 
-        //todo improve
-        $filteredText = substr($text, 0, 4000);
+        $searchString = "The above total OD premium is inclusive of all applicable ";
+        $position = strpos($text, $searchString);
+
+        if ($position !== false) {
+            $filteredText = substr($text, 0, $position);
+        } else {
+            $filteredText = substr($text, 0, 4000);
+        }
         $systemInstruction = <<<PROMPT
 You are a data extraction bot. Return ONLY exact values. No explanation. Use this format:
 
 **Policy & Insured Details**
-* **Insured Type**: 
 * **Insured Name**: 
 * **Insured Full Address**: 
 * **Insured Mobile**: 
