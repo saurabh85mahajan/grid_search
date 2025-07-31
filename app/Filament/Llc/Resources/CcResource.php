@@ -2,6 +2,10 @@
 
 namespace App\Filament\Llc\Resources;
 
+use App\Services\DigitExtractor;
+use App\Services\IciciExtractor;
+use App\Services\TataExtractor;
+use App\Services\UnitedInsuranceExtractor;
 use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\User;
@@ -137,6 +141,20 @@ class CcResource extends Resource
                     ->modalWidth('lg')
                     ->modalSubmitActionLabel('Parse & Populate')
                     ->form([
+						Forms\Components\Select::make('insurance_type')
+                            ->label('Type of Insurance')
+                            ->options([
+                                'Digit' => 'Digit',
+                                'United' => 'United Insurance',
+                                'Icici' => 'Icici Insurance',
+                                'Tata' => 'Tata Insurance',
+                            ])
+                            ->placeholder('Select Insurance Type')
+                            ->validationMessages([
+                                'required' => 'Please enter Type of Insurance',
+                            ])
+                            ->live()
+                            ->required(),
                         Forms\Components\FileUpload::make('pdf_file')
                             ->label('Insurance PDF Document')
                             ->acceptedFileTypes(['application/pdf'])
@@ -165,7 +183,7 @@ class CcResource extends Resource
                             }
 
                             // Parse PDF content
-                            $parsedData = self::parsePdfContent($filePath);
+                            $parsedData = self::parsePdfContent($filePath, $insuranceType);
                             
                             if ($parsedData) {
                                 // Populate form fields based on parsed data
@@ -1649,99 +1667,39 @@ class CcResource extends Resource
         ];
     }
 
-    public static function parsePdfContent(string $filePath): ?array
+    public static function parsePdfContent(string $filePath, $insuranceType): ?array
     {
         try {
             $text = \Spatie\PdfToText\Pdf::getText($filePath);
+			
+			switch ($insuranceType) {
+                case 'United':
+                    $extractor = new UnitedInsuranceExtractor();
+                    break;
+                case 'Digit':
+                    $extractor = new DigitExtractor();
+                    break;
+                case 'Icici':
+                    $extractor = new IciciExtractor();
+                    break;
+				case 'Tata':
+                    $extractor = new TataExtractor();
+                    break;
+                default:
+                    throw new \Exception('This Insurance Company is not yet supported');
+            }
 
             Log::info('PDF Text Extracted', ['text' => $text]);
-            
-            return self::extractDataFromText($text);
+			
+			$response = $extractor->extractData($text);
+			
+			//dd($response);
+			
+			return $response;
+			
         } catch (\Exception $e) {
             Log::error('PDF Parsing Error: ' . $e->getMessage());
             return null;
         }
-    }
-
-    // Extract structured data from PDF text
-    private static function extractDataFromText(string $text): array
-    {
-        $data = [];
-        
-        // Extract customer name
-        if (preg_match('/(?:Insured|Name|Customer)\s*[:]*\s*(?:MR|MS|DR|Miss|Mrs\.?)\s*([A-Z][A-Z\s]+)/i', $text, $matches)) {
-            $data['customer_name'] = trim($matches[1]);
-        }
-        
-        // Extract phone number
-        if (preg_match('/(?:Mobile|Phone|Contact).*?(\d{10})/i', $text, $matches)) {
-            $data['phone'] = $matches[1];
-        }
-        
-        // Extract email
-        if (preg_match('/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i', $text, $matches)) {
-            $data['email'] = $matches[1];
-        }
-        
-        // Extract policy number
-        if (preg_match('/Policy\s*(?:No|Number)\.?\s*[:]*\s*([A-Z0-9]+)/i', $text, $matches)) {
-            $data['policy_number'] = trim($matches[1]);
-        }
-        
-        // Extract vehicle number
-        if (preg_match('/(?:Vehicle|Registration)\s*(?:No|Number)\.?\s*[:]*\s*([A-Z0-9\s]+)/i', $text, $matches)) {
-            $vehicleNo = trim($matches[1]);
-            if ($vehicleNo !== 'NEW' && $vehicleNo !== 'Obsolete') {
-                $data['vehicle_number'] = $vehicleNo;
-            }
-        }
-        
-        // Extract address components
-        $lines = explode("\n", $text);
-        $addressFound = false;
-        $fullAddress = '';
-        
-        foreach ($lines as $line) {
-            $line = trim($line);
-            
-            // Look for address patterns
-            if (preg_match('/^[A-Z0-9\s,.-]+(?:COLONY|ROAD|STREET|NAGAR|BLOCK|SECTOR)/i', $line)) {
-                $addressFound = true;
-                $fullAddress = $line;
-                continue;
-            }
-            
-            // Extract city and state
-            if (preg_match('/^([A-Z\s]+)\s+([A-Z\s]+)$/i', $line, $matches)) {
-                if (strlen($matches[1]) > 2 && strlen($matches[2]) > 2) {
-                    $data['city'] = trim($matches[1]);
-                    $data['state'] = trim($matches[2]);
-                }
-            }
-            
-            // Extract pincode
-            if (preg_match('/\b(\d{6})\b/', $line, $matches)) {
-                $data['pincode'] = $matches[1];
-            }
-        }
-        
-        if ($addressFound && $fullAddress) {
-            $data['address'] = $fullAddress;
-        }
-        
-        // Specific patterns for the sample PDF format
-        // Extract UNITED INDIA INSURANCE format
-        if (preg_match('/MR\s+([A-Z\s]+)\s+VP\s+PANCHMUKHI/i', $text, $matches)) {
-            $data['customer_name'] = trim($matches[1]);
-        }
-        
-        if (preg_match('/VP\s+PANCHMUKHI\s+COLONY\s+([^0-9]+)(\d{6})/i', $text, $matches)) {
-            $data['address'] = 'VP PANCHMUKHI COLONY ' . trim($matches[1]);
-            $data['pincode'] = $matches[2];
-        }
-
-        Log::info('PDF Data Extracted', ['data' => $data]);
-        
-        return $data;
     }
 }
