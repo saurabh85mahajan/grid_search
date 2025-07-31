@@ -32,16 +32,11 @@ class IciciExtractor
                 $data['insurance_type'] = 'Health';
 
                 $this->extractPolicyHolderDetails($text, $data);
-                
-				$this->extractPolicyDetails($text, $data);
-                
-				$this->extractPremiumDetails($text, $data);
-                
-				$this->extractNomineeDetails($text, $data);
-                
-				$this->extractInsuredDetails($text, $data);
-                
-				$this->extractAgentDetails($text, $data);
+                $this->extractPolicyDetails($text, $data);
+                // $this->extractPremiumDetails($text, $data);
+                $this->extractNomineeDetails($text, $data);
+                $this->extractInsuredDetails($text, $data);
+                $this->extractAgentDetails($text, $data);
 
                 $data = $this->cleanData($data);
                 return $data;
@@ -411,166 +406,163 @@ class IciciExtractor
     private function extractPolicyHolderDetails($text, &$data)
     {
         if (preg_match('/Policy holder(.*?)Associated with PEPs/s', $text, $match)) {
-			$policyHolderSection = $match[1];
-			
-			if (preg_match('/Name\s+(.*?)(?:\s{2,}|\n{2,})/', $policyHolderSection, $name)) {
-				$customer_name = trim($name[1]);
-				if($customer_name){
-					$this->processNameComponents(trim($customer_name), $data);
-				}
-			}
+            $policyHolderSection = $match[1];
 
-			if (preg_match('/Email ID\s+([a-zA-Z0-9*._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})/', $policyHolderSection, $email)) {
-				$data['email'] = trim($email[1]);
-			}
+            if (preg_match('/Name\s+(.*?)(?:\s{2,}|\n{2,})/', $policyHolderSection, $name)) {
+                $customer_name = trim($name[1]);
+                if ($customer_name) {
+                    $this->processNameComponents(trim($customer_name), $data);
+                }
+            }
 
-			if (preg_match('/Mobile Number\s+([\d*]+)/', $policyHolderSection, $mobile)) {
-				$data['mobile_no'] = trim($mobile[1]);
-			}
+            if (preg_match('/Email ID\s+([a-zA-Z0-9*._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})/', $policyHolderSection, $email)) {
+                $data['email'] = trim($email[1]);
+            }
 
-			if (preg_match('/Address\s+(.*?)\s+Are you or any of the applicants/i', $policyHolderSection, $address)) {
-				$addressText = trim($address[1]);
-				if($addressText){
-					$this->parseAddressComponents(trim($addressText), $data);
-				}
-			}
-		}
+            if (preg_match('/Mobile Number\s+([\d*]+)/', $policyHolderSection, $mobile)) {
+                $data['mobile_no'] = trim($mobile[1]);
+            }
+
+            if (preg_match('/Address\s+(.*?)\s+Are you or any of the applicants/i', $policyHolderSection, $address)) {
+                $addressText = trim($address[1]);
+                if ($addressText) {
+                    $this->parseAddressComponents(trim($addressText), $data);
+                }
+            }
+        }
     }
 
     private function extractAgentDetails($text, &$data)
     {
-		if(preg_match('/Agent Details\s*Agent Name\s*(.*?)\s*Agent Code\s*(.*?)\s*Mobile Number\s*(.*?)\s*GSTIN Reg\. No\s*(.*?)\s*HSN\/SAC code\s*(.*?)\s*The stamp duty of/s', $text, $matches)){
-			$data['agent_name'] = $matches[1] ?? '';
-			$data['agent_code'] = $matches[2] ?? '';
-			$data['agent_mobile_no'] = $matches[3] ?? '';
-		}
+        if (preg_match('/Agent Details\s*Agent Name\s*(.*?)\s*Agent Code\s*(.*?)\s*Mobile Number\s*(.*?)\s*GSTIN Reg\. No\s*(.*?)\s*HSN\/SAC code\s*(.*?)\s*The stamp duty of/s', $text, $matches)) {
+            $data['agent_name'] = $matches[1] ?? '';
+        }
     }
 
     private function extractInsuredDetails($text, &$data)
     {
-		$sumInsured = '';
-		if (preg_match('/Previous Policy Number(.*?)Loyalty Bonus/s', $text, $match)) {
-			if (preg_match('/Sum Insured.*?\*\*\s*(\d+)/s', $match[1], $valueMatch)) {
-				$data['sum_insured'] = trim($valueMatch[1]);
-			}
-		}
+        $sumInsured = '';
+        if (preg_match('/Previous Policy Number(.*?)Loyalty Bonus/s', $text, $match)) {
+            if (preg_match('/Sum Insured.*?\*\*\s*(\d+)/s', $match[1], $valueMatch)) {
+                $data['sum_insured'] = trim($valueMatch[1]);
+            }
+        }
     }
 
     private function extractNomineeDetails($text, &$data)
     {
-		$nomineeDetailStr = '';
-		
-		if (preg_match('/Nominee Details(.*?)Insured Details/s', $text, $match)) {
-			$nomineeDetailStr = trim($match[1]);
-		}
-		
-		if($nomineeDetailStr){
-			$lines = array_values(array_filter(array_map('trim', explode("\n", $nomineeDetailStr))));
+        $nomineeDetailStr = '';
 
-			$dobLabelIndex = array_search('Date of Birth', $lines);
-			
-			if ($dobLabelIndex !== false && isset($lines[$dobLabelIndex + 1], $lines[$dobLabelIndex + 2], $lines[$dobLabelIndex + 3])) {
-				$data['nominee'] = $lines[$dobLabelIndex + 1];
-				$data['nominee_relationship'] = $lines[$dobLabelIndex + 2];
-				$data['nominee_dob'] = $lines[$dobLabelIndex + 3];
-				
-				if($data['nominee_dob']){
-					$date = DateTime::createFromFormat('F d Y', $data['nominee_dob']);
-					if ($date) {
-						$data['nominee_dob'] = $date->format('Y-m-d');
-					}
-				}
-			}
-		}
+        if (preg_match('/Nominee Details(.*?)Insured Details/s', $text, $match)) {
+            $nomineeDetailStr = trim($match[1]);
+        }
+
+        if ($nomineeDetailStr) {
+            $lines = array_values(array_filter(array_map('trim', explode("\n", $nomineeDetailStr))));
+
+            $dobLabelIndex = array_search('Date of Birth', $lines);
+
+            if ($dobLabelIndex !== false && isset($lines[$dobLabelIndex + 1], $lines[$dobLabelIndex + 2], $lines[$dobLabelIndex + 3])) {
+                $data['nominee'] = $lines[$dobLabelIndex + 1];
+                $data['nominee_relationship'] = $lines[$dobLabelIndex + 2];
+                $data['nominee_dob'] = $lines[$dobLabelIndex + 3];
+
+                if ($data['nominee_dob']) {
+                    $date = DateTime::createFromFormat('F d Y', $data['nominee_dob']);
+                    if ($date) {
+                        $data['nominee_dob'] = $date->format('Y-m-d');
+                    }
+                }
+            }
+        }
     }
 
     private function extractPremiumDetails($text, &$data)
     {
-		$section = '';
-		
-		if (preg_match('/Premium Details(.*?)Nominee Details/s', $text, $match)) {
-			
-			$section = trim($match[1]);
-			
-			$lines = array_values(array_filter(array_map('trim', explode("\n", $section))));
+        $section = '';
 
-			$fields = [
-				'Basic Premium (₹)',
-				'Total Tax Payable (₹)',
-				'Total Premium (₹)'
-			];
+        if (preg_match('/Premium Details(.*?)Nominee Details/s', $text, $match)) {
 
-			$values = [];
-			$fieldIndex = 0;
-			$premiumDetailArray = [];
+            $section = trim($match[1]);
 
-			foreach ($lines as $line) {
-				if (in_array($line, $fields)) {
-					continue;
-				}
+            $lines = array_values(array_filter(array_map('trim', explode("\n", $section))));
 
-				if ($fieldIndex < count($fields)) {
-					$premiumDetailArray[$fields[$fieldIndex]] = $line;
-					$fieldIndex++;
-				}
-			}
-			
-			if($premiumDetailArray['Basic Premium (₹)']){
-				$data['basic_premium'] = str_replace(',', '', $premiumDetailArray['Basic Premium (₹)']);
-			}
-			
-			if($premiumDetailArray['Total Tax Payable (₹)']){
-				$data['total_tax_payable'] = str_replace(',', '', $premiumDetailArray['Total Tax Payable (₹)']);
-			}
-			
-			if($premiumDetailArray['Total Premium (₹)']){
-				$data['total_premium'] = str_replace(',', '', $premiumDetailArray['Total Premium (₹)']);
-			}
-		}
+            $fields = [
+                'Basic Premium (₹)',
+                'Total Tax Payable (₹)',
+                'Total Premium (₹)'
+            ];
+
+            $values = [];
+            $fieldIndex = 0;
+            $premiumDetailArray = [];
+
+            foreach ($lines as $line) {
+                if (in_array($line, $fields)) {
+                    continue;
+                }
+
+                if ($fieldIndex < count($fields)) {
+                    $premiumDetailArray[$fields[$fieldIndex]] = $line;
+                    $fieldIndex++;
+                }
+            }
+
+            if ($premiumDetailArray['Basic Premium (₹)']) {
+                $data['basic_premium'] = str_replace(',', '', $premiumDetailArray['Basic Premium (₹)']);
+            }
+
+            if ($premiumDetailArray['Total Tax Payable (₹)']) {
+                $data['total_tax_payable'] = str_replace(',', '', $premiumDetailArray['Total Tax Payable (₹)']);
+            }
+
+            if ($premiumDetailArray['Total Premium (₹)']) {
+                $data['total_premium'] = str_replace(',', '', $premiumDetailArray['Total Premium (₹)']);
+            }
+        }
     }
 
     private function extractPolicyDetails($text, &$data)
     {
 
         if (preg_match('/Policy Details(.*?)Basic Premium/s', $text, $match)) {
-			$policyDetailStr = trim($match[1]);
-			$lines = array_values(array_filter(array_map('trim', explode("\n", $policyDetailStr))));
-			
-			for ($i = 0; $i < count($lines); $i++) {
-				$line = $lines[$i];
+            $policyDetailStr = trim($match[1]);
+            $lines = array_values(array_filter(array_map('trim', explode("\n", $policyDetailStr))));
 
-				if ($line === 'Policy Number' && isset($lines[$i + 1])) {
-					$data['policy_number'] = $lines[$i + 1];
-				}
+            for ($i = 0; $i < count($lines); $i++) {
+                $line = $lines[$i];
 
-				if ($line === 'Policy Start Date & Time' && isset($lines[$i + 1], $lines[$i + 3])) {
-					$month = $lines[$i + 1];
-					$date = $lines[$i + 3];
-					$data['risk_start_date'] = "$month $date";
-					$rsd_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_start_date']);
+                if ($line === 'Policy Number' && isset($lines[$i + 1])) {
+                    $data['policy_number'] = $lines[$i + 1];
+                }
 
-					if ($rsd_date) {
-						$data['risk_start_date'] = $rsd_date->format('Y-m-d');
-					} else {
-						$data['risk_start_date'] = '';
-					}
-				}
+                if ($line === 'Policy Start Date & Time' && isset($lines[$i + 1], $lines[$i + 3])) {
+                    $month = $lines[$i + 1];
+                    $date = $lines[$i + 3];
+                    $data['risk_start_date'] = "$month $date";
+                    $rsd_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_start_date']);
 
-				if ($line === 'Policy End Date & Time' && isset($lines[$i + 1], $lines[$i + 2])) {
-					$month = $lines[$i + 1];
-					$date = $lines[$i + 2];
-					$data['risk_end_date'] = "$month $date";
-					$red_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_end_date']);
+                    if ($rsd_date) {
+                        $data['risk_start_date'] = $rsd_date->format('Y-m-d');
+                    } else {
+                        $data['risk_start_date'] = '';
+                    }
+                }
 
-					if ($red_date) {
-						$data['risk_end_date'] = $red_date->format('Y-m-d');
-					} else {
-						$data['risk_end_date'] = '';
-					}
-				}
-			}
-			
-		}
+                if ($line === 'Policy End Date & Time' && isset($lines[$i + 1], $lines[$i + 2])) {
+                    $month = $lines[$i + 1];
+                    $date = $lines[$i + 2];
+                    $data['risk_end_date'] = "$month $date";
+                    $red_date = DateTime::createFromFormat('F j, Y, H:i \h\r\s', $data['risk_end_date']);
+
+                    if ($red_date) {
+                        $data['risk_end_date'] = $red_date->format('Y-m-d');
+                    } else {
+                        $data['risk_end_date'] = '';
+                    }
+                }
+            }
+        }
     }
 
     private function extractSumInsured($text, &$data)
