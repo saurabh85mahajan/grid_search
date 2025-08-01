@@ -175,28 +175,18 @@ class TataExtractor
 
         $cleanText = preg_replace('/\s+/', ' ', $text);
 
-        // Extract values using regex
-        // preg_match('/Gross Premium \(₹\)\s*(\d+)/', $cleanText, $m1);
-        // preg_match('/Issuing Office\s*([A-Z]+)/i', $cleanText, $m2);
-        preg_match('/From:(\d{2}\/\d{2}\/\d{4})\s+\d{2}:\d{2}\s+To:(\d{2}\/\d{2}\/\d{4})/', $cleanText, $m3);
-        // preg_match('/Product Name\s*(TATA AIG.*?)(?=\s+Proposal No)/i', $cleanText, $m4);
-        // preg_match('/Proposal No\.\s*([A-Z0-9\/]+)/', $cleanText, $m5);
-        // preg_match('/Plan Type\s*([A-Za-z]+)/', $cleanText, $m6);
-        // preg_match('/Premium Payment Zone\s*(Zone [A-Z])/', $cleanText, $m7);
-        // preg_match('/Business Type\s*([A-Za-z ]+)/', $cleanText, $m8);
-        // preg_match('/Policy Tenure\s*([0-9]+ year)/', $cleanText, $m9);
-
-        // $data['premium_amount'] = $m1[1] ?? '';
-        $risk_start_date = $m3[1] ?? '';
-        $date = DateTime::createFromFormat('d/m/Y', $risk_start_date);
-        if ($date) {
-            $data['risk_start_date'] = $date->format('Y-m-d');
-        }
-        $risk_end_date = $m3[2] ?? '';
-        $date = DateTime::createFromFormat('d/m/Y', $risk_end_date);
-        if ($date) {
-            $data['risk_end_date'] = $date->format('Y-m-d');
-        }
+        if(preg_match('/From:(\d{2}\/\d{2}\/\d{4})\s+\d{2}:\d{2}\s+To:(\d{2}\/\d{2}\/\d{4})/', $cleanText, $m3)){
+			$risk_start_date = $m3[1] ?? '';
+			$date = DateTime::createFromFormat('d/m/Y', $risk_start_date);
+			if ($date) {
+				$data['risk_start_date'] = $date->format('Y-m-d');
+			}
+			$risk_end_date = $m3[2] ?? '';
+			$date = DateTime::createFromFormat('d/m/Y', $risk_end_date);
+			if ($date) {
+				$data['risk_end_date'] = $date->format('Y-m-d');
+			}
+		}		
     }
 
     private function extractHealthSumInsured($text, &$data)
@@ -210,30 +200,32 @@ class TataExtractor
     private function extractHealthCustomerInfo($text, &$data)
     {
         if (preg_match('/Policy Schedule(.*?)Gross Premium/s', $text, $matches)) {
-            $block = trim($matches[1]);
+            
+			$customerInfoStr = trim($matches[1]);
 
-            // Remove line breaks to make regex simpler
-            $flatText = preg_replace('/\s+/', ' ', $block);
+            $customerInfoStr = preg_replace('/\s+/', ' ', $customerInfoStr);
 
-            // Step 2: Extract details
-            preg_match('/Policy No\.\s*(\d{10})/', $flatText, $m1);
-            $policyNumber = $m1[1] ?? 'Not found';
-
-            preg_match('/Name\s+([A-Za-z]+)/', $flatText, $m2);
-            $name = $m2[1] ?? 'Not found';
-
-            preg_match('/Permanent Address\s+(.*?)\s+(\d{6})/', $flatText, $m3);
-            $address = isset($m3[1], $m3[2]) ? $m3[1] . ' ' . $m3[2] : 'Not found';
-
-            // Get the last 10-digit number (assumed to be contact number)
-            preg_match_all('/\b\d{10}\b/', $flatText, $m4);
-            $contactNumber = end($m4[0]) ?? 'Not found';
-
-            // Output
-            $data['policy_number'] = $policyNumber;
-            $data['customer_name'] = $name;
-            $this->parseAddressComponents($address, $data);
-            $data['mobile_no'] = $contactNumber;
+            if(preg_match('/Policy No\.\s*(\d{10})/', $customerInfoStr, $m1)){
+				$data['policy_number'] = $m1[1] ?? '';
+			}
+            
+			if(preg_match('/Name\s+([A-Za-z]+)/', $customerInfoStr, $m2)){
+				
+				$data['customer_name'] = $m2[1] ?? '';
+				
+				if($data['customer_name']){
+					$this->processNameComponents($data['customer_name'], $data);
+				}
+			}
+            
+			if(preg_match('/Permanent Address\s+(.*?)\s+(\d{6})/', $customerInfoStr, $m3)){
+				$address = isset($m3[1], $m3[2]) ? $m3[1] . ' ' . $m3[2] : '';
+				$this->parseAddressComponents($address, $data);
+			}
+			
+            if(preg_match_all('/\b\d{10}\b/', $customerInfoStr, $m4)){
+				$data['mobile_no'] = end($m4[0]) ?? '';
+			}
         }
     }
 
