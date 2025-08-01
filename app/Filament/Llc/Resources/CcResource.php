@@ -188,7 +188,12 @@ class CcResource extends Resource
                             
                             if ($parsedData) {
                                 // Populate form fields based on parsed data
-                                if (isset($parsedData['first_name'])) {
+								
+                                if (isset($parsedData['name_prefix'])) {
+                                    $set('salutation_id', $parsedData['name_prefix']);
+                                }
+								
+								if (isset($parsedData['first_name'])) {
                                     $set('first_name', $parsedData['first_name']);
                                 }
 								
@@ -236,11 +241,7 @@ class CcResource extends Resource
                                     $set('policy_number', $parsedData['policy_number']);
                                 }
                                 
-                                if (isset($parsedData['vehicle_number'])) {
-                                    $set('vehicle_number', $parsedData['vehicle_number']);
-                                }
-								
-								if (isset($parsedData['sum_insured'])) {
+                                if (isset($parsedData['sum_insured'])) {
                                     $set('sum_issured', $parsedData['sum_insured']);
                                 }
 								
@@ -274,6 +275,46 @@ class CcResource extends Resource
 								
 								if (isset($parsedData['insurance_company_id'])) {
                                     $set('insurance_company_id', $parsedData['insurance_company_id']);
+                                }
+								
+								if (isset($parsedData['registration_number_1'])) {
+                                    $set('registration_number_1', $parsedData['registration_number_1']);
+                                }
+								
+								if (isset($parsedData['registration_number_2'])) {
+                                    $set('registration_number_2', $parsedData['registration_number_2']);
+                                }
+								
+								if (isset($parsedData['registration_number_3'])) {
+                                    $set('registration_number_3', $parsedData['registration_number_3']);
+                                }
+								
+								if (isset($parsedData['registration_number_4'])) {
+                                    $set('registration_number_4', $parsedData['registration_number_4']);
+                                }
+								
+								if (isset($parsedData['vehicle_model'])) {
+                                    $set('vehicle_model', $parsedData['vehicle_model']);
+                                }
+								
+								if (isset($parsedData['vehicle_sub_model'])) {
+                                    $set('vehicle_sub_model', $parsedData['vehicle_sub_model']);
+                                }
+								
+								if (isset($parsedData['engine_number'])) {
+                                    $set('engine_type', $parsedData['engine_number']);
+                                }
+								
+								if (isset($parsedData['chassis_number'])) {
+                                    $set('chasis', $parsedData['chassis_number']);
+                                }
+								
+								if (isset($parsedData['yom'])) {
+                                    $set('yom', $parsedData['yom']);
+                                }
+								
+								if (isset($parsedData['cc'])) {
+                                    $set('cc', $parsedData['cc']);
                                 }
                                 
                                 // Clean up temporary file
