@@ -187,24 +187,32 @@ class CcResource extends Resource
                             
                             if ($parsedData) {
                                 // Populate form fields based on parsed data
-                                if (isset($parsedData['customer_name'])) {
-                                    $set('first_name', $parsedData['customer_name']);
+                                if (isset($parsedData['first_name'])) {
+                                    $set('first_name', $parsedData['first_name']);
                                 }
                                 
-                                if (isset($parsedData['phone'])) {
-                                    $set('phone', $parsedData['phone']);
+                                if (isset($parsedData['mobile_no'])) {
+                                    $set('phone', $parsedData['mobile_no']);
                                 }
                                 
                                 if (isset($parsedData['email'])) {
                                     $set('email', $parsedData['email']);
                                 }
                                 
-                                if (isset($parsedData['address'])) {
-                                    $set('address', $parsedData['address']);
+                                if (isset($parsedData['address_1'])) {
+                                    $set('address_1', $parsedData['address_1']);
+                                }
+								
+								if (isset($parsedData['address_2'])) {
+                                    $set('address_2', $parsedData['address_2']);
+                                }
+								
+								if (isset($parsedData['address_3'])) {
+                                    $set('address_3', $parsedData['address_3']);
                                 }
                                 
                                 if (isset($parsedData['city'])) {
-                                    $set('city', $parsedData['city']);
+                                    $set('city_id', $parsedData['city']);
                                 }
                                 
                                 if (isset($parsedData['state'])) {
@@ -212,7 +220,7 @@ class CcResource extends Resource
                                 }
                                 
                                 if (isset($parsedData['pincode'])) {
-                                    $set('pincode', $parsedData['pincode']);
+                                    $set('zipcode', $parsedData['pincode']);
                                 }
                                 
                                 if (isset($parsedData['policy_number'])) {
@@ -221,6 +229,30 @@ class CcResource extends Resource
                                 
                                 if (isset($parsedData['vehicle_number'])) {
                                     $set('vehicle_number', $parsedData['vehicle_number']);
+                                }
+								
+								if (isset($parsedData['sum_insured'])) {
+                                    $set('sum_issured', $parsedData['sum_insured']);
+                                }
+								
+								if (isset($parsedData['risk_start_date'])) {
+                                    $set('risk_start_date', $parsedData['risk_start_date']);
+                                }
+								
+								if (isset($parsedData['risk_end_date'])) {
+                                    $set('risk_end_date', $parsedData['risk_end_date']);
+                                }
+								
+								if (isset($parsedData['nominee_relationship'])) {
+                                    $set('relationship', $parsedData['nominee_relationship']);
+                                }
+								
+								if (isset($parsedData['nominee'])) {
+                                    $set('nominee_name', $parsedData['nominee']);
+                                }
+								
+								if (isset($parsedData['nominee_dob'])) {
+                                    $set('nominee_dob', $parsedData['nominee_dob']);
                                 }
                                 
                                 // Clean up temporary file
