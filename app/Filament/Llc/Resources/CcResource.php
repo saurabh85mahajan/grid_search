@@ -168,6 +168,7 @@ class CcResource extends Resource
                         try {
 
                             $uploadedFile = $data['pdf_file'];
+							$insuranceType = $data['insurance_type'];
                             
                             if (is_array($uploadedFile)) {
                                 $uploadedFile = $uploadedFile[0]; // Get first file if array
