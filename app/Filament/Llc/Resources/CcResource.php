@@ -191,6 +191,14 @@ class CcResource extends Resource
                                 if (isset($parsedData['first_name'])) {
                                     $set('first_name', $parsedData['first_name']);
                                 }
+								
+								if (isset($parsedData['middle_name'])) {
+                                    $set('middle_name', $parsedData['middle_name']);
+                                }
+								
+								if (isset($parsedData['last_name'])) {
+                                    $set('last_name', $parsedData['last_name']);
+                                }
                                 
                                 if (isset($parsedData['mobile_no'])) {
                                     $set('phone', $parsedData['mobile_no']);
