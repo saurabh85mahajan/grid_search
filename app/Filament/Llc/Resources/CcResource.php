@@ -263,6 +263,18 @@ class CcResource extends Resource
 								if (isset($parsedData['nominee_dob'])) {
                                     $set('nominee_dob', $parsedData['nominee_dob']);
                                 }
+								
+								if (isset($parsedData['tp_start_date'])) {
+                                    $set('risk_end_date', $parsedData['tp_start_date']);
+                                }
+								
+								if (isset($parsedData['tp_end_date'])) {
+                                    $set('tp_end_date', $parsedData['tp_end_date']);
+                                }
+								
+								if (isset($parsedData['insurance_company_id'])) {
+                                    $set('insurance_company_id', $parsedData['insurance_company_id']);
+                                }
                                 
                                 // Clean up temporary file
                                 if (file_exists($filePath)) {
