@@ -265,7 +265,7 @@ class CcResource extends Resource
                                 }
 								
 								if (isset($parsedData['tp_start_date'])) {
-                                    $set('risk_end_date', $parsedData['tp_start_date']);
+                                    $set('tp_start_date', $parsedData['tp_start_date']);
                                 }
 								
 								if (isset($parsedData['tp_end_date'])) {
