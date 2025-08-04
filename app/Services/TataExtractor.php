@@ -6,15 +6,12 @@ use DateTime;
 
 class TataExtractor
 {
-
     use ExtractorConcern;
 
     public function extractData($text)
     {
         $data = [];
 		
-		$data['insurance_company_id'] = 21;
-
         if (str_contains($text, 'Private Car Package')) {
             $data['insurance_type'] = 'Motor';
 

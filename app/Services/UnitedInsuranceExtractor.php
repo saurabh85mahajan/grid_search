@@ -11,8 +11,6 @@ class UnitedInsuranceExtractor
     public function extractData($text)
     {
         $data = [];
-		
-		$data['insurance_company_id'] = 24;
 
         $this->extractCustomerInfo($text, $data);
 

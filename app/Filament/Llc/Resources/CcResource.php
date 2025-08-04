@@ -8,6 +8,8 @@ use App\Services\TataExtractor;
 use App\Services\UnitedInsuranceExtractor;
 use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
+use App\Models\FuelType;
+use App\Models\Make;
 use App\Models\User;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -74,7 +76,7 @@ class CcResource extends Resource
                     Action::make('search_existing')
                         ->label('Search Existing Customers')
                         ->icon('heroicon-o-magnifying-glass')
-                        ->visible(fn ($livewire) => !$livewire->getRecord())
+                        ->visible(fn($livewire) => !$livewire->getRecord())
                         ->color('gray')
                         ->modal()
                         ->modalHeading('Search Existing Customers')
@@ -129,216 +131,330 @@ class CcResource extends Resource
                                 $set('email', $record->email);
                             }
                         }),
-                Action::make('parse_pdf')
-                    ->label('Upload PDF')
-                    ->icon('heroicon-o-document-text')
-                    ->color('primary')
-                    // ->visible(fn ($livewire) => !$livewire->getRecord())
-                    ->visible(fn () => request()->has('pdf') && request()->get('pdf') == '1')
-                    ->modal()
-                    ->modalHeading('Upload Insurance Document')
-                    ->modalDescription('Upload a PDF insurance document and we will try to extract and populate maximum details')
-                    ->modalWidth('lg')
-                    ->modalSubmitActionLabel('Parse & Populate')
-                    ->form([
-						Forms\Components\Select::make('insurance_type')
-                            ->label('Type of Insurance')
-                            ->options([
-                                'Digit' => 'Digit',
-                                'United' => 'United Insurance',
-                                'Icici' => 'Icici Insurance',
-                                'Tata' => 'Tata Insurance',
-                            ])
-                            ->placeholder('Select Insurance Type')
-                            ->validationMessages([
-                                'required' => 'Please enter Type of Insurance',
-                            ])
-                            ->live()
-                            ->required(),
-                        Forms\Components\FileUpload::make('pdf_file')
-                            ->label('Insurance PDF Document')
-                            ->acceptedFileTypes(['application/pdf'])
-                            ->maxSize(10240) // 10MB max
-                            ->required()
-                            ->helperText('Upload insurance PDF to automatically extract customer information')
-                            ->disk('public')
-                            ->directory('temp-uploads')
-                    ])
-                    ->action(function (array $data, Set $set): void {
-                        try {
+                    Action::make('parse_pdf')
+                        ->label('Upload Policy Document')
+                        ->icon('heroicon-o-document-text')
+                        ->color('primary')
+                        ->modal()
+                        ->modalHeading('Upload Insurance Policy Document')
+                        ->modalDescription('Upload your insurance policy PDF and we\'ll automatically extract and populate customer details, insurance details and other key data to save you time.')
+                        ->modalWidth('lg')
+                        ->modalSubmitActionLabel('Extract & Populate Data')
+                        ->form([
+                            Forms\Components\Select::make('insurance_type_modal')
+                                ->label('Insurance Company')
+                                ->options([
+                                    // 'Digit' => 'Digit',
+                                    'United' => 'United Insurance',
+                                    'Icici' => 'Icici Insurance',
+                                    'Tata' => 'Tata Insurance',
+                                ])
+                                ->placeholder('Choose your insurance provider')
+                                ->validationMessages([
+                                    'required' => 'Please select your insurance provider to ensure accurate data extraction',
+                                ])
+                                ->live()
+                                ->helperText('Select the insurance company that issued your policy for optimal parsing accuracy. Don\'t see your provider? We\'re actively adding support for more companies - email us if your specific insurer is missing and we\'ll prioritize it.')
+                                ->required(),
+                            Forms\Components\FileUpload::make('pdf_file')
+                                ->label('Policy Document (PDF)')
+                                ->acceptedFileTypes(['application/pdf'])
+                                ->maxSize(10240) // 10MB max
+                                ->required()
+                                ->helperText('Upload your insurance policy PDF (max 10MB). We\'ll automatically extract policy details, customer information, and coverage data.')
+                                ->disk('public')
+                                ->directory('temp-uploads')
+                                ->validationMessages([
+                                    'required' => 'Please upload your insurance policy PDF document',
+                                    'mimes' => 'Only PDF files are supported for policy document upload',
+                                    'max' => 'File size must be less than 10MB'
+                                ])
+                        ])
+                        ->action(function (array $data, Set $set): void {
+                            try {
 
-                            $uploadedFile = $data['pdf_file'];
-							$insuranceType = $data['insurance_type'];
-                            
-                            if (is_array($uploadedFile)) {
-                                $uploadedFile = $uploadedFile[0]; // Get first file if array
-                            }
-                            
-                            // Build the full file path
-                            // $filePath = storage_path('app/' . $uploadedFile);
-                            $filePath = Storage::disk('public')->path($uploadedFile);
-                            
-                            // Check if file exists
-                            if (!file_exists($filePath)) {
-                                throw new \Exception('Uploaded file not found: ' . $filePath);
-                            }
+                                $uploadedFile = $data['pdf_file'];
+                                $insuranceType = $data['insurance_type_modal'];
 
-                            // Parse PDF content
-                            $parsedData = self::parsePdfContent($filePath, $insuranceType);
-                            
-                            if ($parsedData) {
-                                // Populate form fields based on parsed data
-								
-                                if (isset($parsedData['name_prefix'])) {
-                                    $set('salutation_id', $parsedData['name_prefix']);
+                                if (is_array($uploadedFile)) {
+                                    $uploadedFile = $uploadedFile[0]; // Get first file if array
                                 }
-								
-								if (isset($parsedData['first_name'])) {
-                                    $set('first_name', $parsedData['first_name']);
+
+                                // Build the full file path
+                                // $filePath = storage_path('app/' . $uploadedFile);
+                                $filePath = Storage::disk('public')->path($uploadedFile);
+
+                                // Check if file exists
+                                if (!file_exists($filePath)) {
+                                    throw new \Exception('Uploaded file not found: ' . $filePath);
                                 }
-								
-								if (isset($parsedData['middle_name'])) {
-                                    $set('middle_name', $parsedData['middle_name']);
+
+                                // Parse PDF content
+                                $parsedData = self::parsePdfContent($filePath, $insuranceType);
+
+                                if ($parsedData) {
+                                    // Populate form fields based on parsed data
+
+                                    if (isset($parsedData['agent_name'])) {
+                                        $agentName = trim($parsedData['agent_name']);
+                                        $brokerOptions = Setting::getSelectOptions('brokers_1');
+                                        $matchedBroker = null;
+                                        
+                                        if (!empty($agentName) && !empty($brokerOptions)) {
+                                            // First try: Exact match (case-insensitive)
+                                            foreach ($brokerOptions as $broker) {
+                                                if (strcasecmp($agentName, $broker) === 0) {
+                                                    $matchedBroker = $broker;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            // Second try: Partial match - check if agent_name contains broker or vice versa
+                                            if (!$matchedBroker) {
+                                                foreach ($brokerOptions as $broker) {
+                                                    if (stripos($agentName, $broker) !== false || stripos($broker, $agentName) !== false) {
+                                                        $matchedBroker = $broker;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Set the matched broker if found
+                                        if ($matchedBroker) {
+                                            $set('broker', $matchedBroker);
+                                        }
+                                    }
+
+                                    if (isset($parsedData['insurance_type'])) {
+                                        $insurancType = trim($parsedData['insurance_type']);
+                                        $insuranceOptions = Setting::getSelectOptions('insurance_type_1');
+                                        $matchedInsuranceType = null;
+                                        
+                                        if (!empty($insurancType) && !empty($insuranceOptions)) {
+                                            // First try: Exact match (case-insensitive)
+                                            foreach ($insuranceOptions as $insurance) {
+                                                if (strcasecmp($insurancType, $insurance) === 0) {
+                                                    $matchedInsuranceType = $insurance;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            // Second try: Partial match - check if agent_name contains broker or vice versa
+                                            if (!$matchedInsuranceType) {
+                                                foreach ($insuranceOptions as $insensitive) {
+                                                    if (stripos($insurancType, $insensitive) !== false || stripos($insensitive, $insurancType) !== false) {
+                                                        $matchedInsuranceType = $insensitive;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Set the matched broker if found
+                                        if ($matchedInsuranceType) {
+                                            $set('insurance_type', $matchedInsuranceType);
+                                        }
+                                    }
+
+                                    if (isset($parsedData['name_prefix'])) {
+                                        $set('salutation_id', $parsedData['name_prefix']);
+                                    }
+
+                                    if (isset($parsedData['first_name'])) {
+                                        $set('first_name', $parsedData['first_name']);
+                                    }
+
+                                    if (isset($parsedData['middle_name'])) {
+                                        $set('middle_name', $parsedData['middle_name']);
+                                    }
+
+                                    if (isset($parsedData['last_name'])) {
+                                        $set('last_name', $parsedData['last_name']);
+                                    }
+
+                                    if (isset($parsedData['mobile_no'])) {
+                                        $set('phone', $parsedData['mobile_no']);
+                                    }
+
+                                    if (isset($parsedData['email'])) {
+                                        $set('email', $parsedData['email']);
+                                    }
+
+                                    if (isset($parsedData['address_1'])) {
+                                        $set('address_1', $parsedData['address_1']);
+                                    }
+
+                                    if (isset($parsedData['address_2'])) {
+                                        $set('address_2', $parsedData['address_2']);
+                                    }
+
+                                    if (isset($parsedData['address_3'])) {
+                                        $set('address_3', $parsedData['address_3']);
+                                    }
+
+                                    if (isset($parsedData['city'])) {
+                                        $set('city_id', $parsedData['city']);
+                                    }
+
+                                    if (isset($parsedData['state'])) {
+                                        $set('state', $parsedData['state']);
+                                    }
+
+                                    if (isset($parsedData['pincode'])) {
+                                        $set('zipcode', $parsedData['pincode']);
+                                    }
+
+                                    if (isset($parsedData['policy_number'])) {
+                                        $set('policy_number', $parsedData['policy_number']);
+                                    }
+
+                                    if (isset($parsedData['sum_insured'])) {
+                                        $set('sum_issured', $parsedData['sum_insured']);
+                                    }
+
+                                    if (isset($parsedData['risk_start_date'])) {
+                                        $set('risk_start_date', $parsedData['risk_start_date']);
+                                    }
+
+                                    if (isset($parsedData['risk_end_date'])) {
+                                        $set('risk_end_date', $parsedData['risk_end_date']);
+                                    }
+
+                                    if (isset($parsedData['nominee_relationship'])) {
+                                        $set('relationship', $parsedData['nominee_relationship']);
+                                    }
+
+                                    if (isset($parsedData['nominee'])) {
+                                        $set('nominee_name', $parsedData['nominee']);
+                                    }
+
+                                    if (isset($parsedData['nominee_dob'])) {
+                                        $set('nominee_dob', $parsedData['nominee_dob']);
+                                    }
+
+                                    if (isset($parsedData['tp_start_date'])) {
+                                        $set('tp_start_date', $parsedData['tp_start_date']);
+                                    }
+
+                                    if (isset($parsedData['tp_end_date'])) {
+                                        $set('tp_end_date', $parsedData['tp_end_date']);
+                                    }
+
+                                    if (isset($parsedData['insurance_company'])) {
+                                        $insurance = trim($parsedData['insurance_company']);
+                                        $insuranceCompanies = Setting::getSelectOptions('insurance_companies_1');
+                                        $matchedInsuranceCompany = null;
+                                        
+                                        if (!empty($insurance) && !empty($insuranceCompanies)) {
+                                            foreach ($insuranceCompanies as $insuranceCompany) {
+                                                if (strcasecmp($insurance, $insuranceCompany) === 0) {
+                                                    $matchedInsuranceCompany = $insuranceCompany;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            if (!$matchedInsuranceCompany) {
+                                                foreach ($insuranceCompanies as $insensitive) {
+                                                    if (stripos($insurance, $insensitive) !== false || stripos($insensitive, $insurance) !== false) {
+                                                        $matchedInsuranceCompany = $insensitive;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if ($matchedInsuranceCompany) {
+                                            $set('insurance_company_name', $matchedInsuranceCompany);
+                                        }
+                                    }
+
+                                    if (isset($parsedData['registration_number_1'])) {
+                                        $set('registration_number_1', $parsedData['registration_number_1']);
+                                    }
+
+                                    if (isset($parsedData['registration_number_2'])) {
+                                        $set('registration_number_2', $parsedData['registration_number_2']);
+                                    }
+
+                                    if (isset($parsedData['registration_number_3'])) {
+                                        $set('registration_number_3', $parsedData['registration_number_3']);
+                                    }
+
+                                    if (isset($parsedData['registration_number_4'])) {
+                                        $set('registration_number_4', $parsedData['registration_number_4']);
+                                    }
+
+                                    if (isset($parsedData['make'])) {
+                                        $makeId = Make::query()
+                                            ->where('name', $parsedData['make'])
+                                            ->value('id');
+                                        $set('make_id', $makeId);
+                                    }
+
+                                    if (isset($parsedData['fuel_type'])) {
+                                        $fuelId = FuelType::query()
+                                            ->where('name', $parsedData['fuel_type'])
+                                            ->value('id');
+                                        $set('fuel_type_id', $fuelId);
+                                    }
+
+                                    if (isset($parsedData['model'])) {
+                                        $set('vehicle_model', $parsedData['model']);
+                                    }
+
+                                    if (isset($parsedData['sub_model'])) {
+                                        $set('vehicle_sub_model', $parsedData['sub_model']);
+                                    }
+
+                                    if (isset($parsedData['engine_number'])) {
+                                        $set('engine_type', $parsedData['engine_number']);
+                                    }
+
+                                    if (isset($parsedData['chassis_number'])) {
+                                        $set('chasis', $parsedData['chassis_number']);
+                                    }
+
+                                    if (isset($parsedData['yom'])) {
+                                        $set('yom', $parsedData['yom']);
+                                    }
+
+                                    if (isset($parsedData['cc'])) {
+                                        $set('cc', $parsedData['cc']);
+                                    }
+
+                                    // Clean up temporary file
+                                    // if (file_exists($filePath)) {
+                                    //     unlink($filePath);
+                                    // }
+
+                                    $message = 'FilePath ' . $filePath;
+                                    $message .= ' Parsed Data Cound ' . count($parsedData);
+                                    logger($message);
+
+                                    Notification::make()
+                                        ->title('PDF Parsed Successfully!')
+                                        ->body(count($parsedData) . ' Fields have been populated. Please verify.')
+                                        ->success()
+                                        ->send();
+                                } else {
+                                    $message = 'FilePath ' . $filePath;
+                                    $message .= ' Why ??';
+                                    logger($message);
+                                    throw new \Exception('Could not extract customer information from the PDF.');
                                 }
-								
-								if (isset($parsedData['last_name'])) {
-                                    $set('last_name', $parsedData['last_name']);
-                                }
-                                
-                                if (isset($parsedData['mobile_no'])) {
-                                    $set('phone', $parsedData['mobile_no']);
-                                }
-                                
-                                if (isset($parsedData['email'])) {
-                                    $set('email', $parsedData['email']);
-                                }
-                                
-                                if (isset($parsedData['address_1'])) {
-                                    $set('address_1', $parsedData['address_1']);
-                                }
-								
-								if (isset($parsedData['address_2'])) {
-                                    $set('address_2', $parsedData['address_2']);
-                                }
-								
-								if (isset($parsedData['address_3'])) {
-                                    $set('address_3', $parsedData['address_3']);
-                                }
-                                
-                                if (isset($parsedData['city'])) {
-                                    $set('city_id', $parsedData['city']);
-                                }
-                                
-                                if (isset($parsedData['state'])) {
-                                    $set('state', $parsedData['state']);
-                                }
-                                
-                                if (isset($parsedData['pincode'])) {
-                                    $set('zipcode', $parsedData['pincode']);
-                                }
-                                
-                                if (isset($parsedData['policy_number'])) {
-                                    $set('policy_number', $parsedData['policy_number']);
-                                }
-                                
-                                if (isset($parsedData['sum_insured'])) {
-                                    $set('sum_issured', $parsedData['sum_insured']);
-                                }
-								
-								if (isset($parsedData['risk_start_date'])) {
-                                    $set('risk_start_date', $parsedData['risk_start_date']);
-                                }
-								
-								if (isset($parsedData['risk_end_date'])) {
-                                    $set('risk_end_date', $parsedData['risk_end_date']);
-                                }
-								
-								if (isset($parsedData['nominee_relationship'])) {
-                                    $set('relationship', $parsedData['nominee_relationship']);
-                                }
-								
-								if (isset($parsedData['nominee'])) {
-                                    $set('nominee_name', $parsedData['nominee']);
-                                }
-								
-								if (isset($parsedData['nominee_dob'])) {
-                                    $set('nominee_dob', $parsedData['nominee_dob']);
-                                }
-								
-								if (isset($parsedData['tp_start_date'])) {
-                                    $set('tp_start_date', $parsedData['tp_start_date']);
-                                }
-								
-								if (isset($parsedData['tp_end_date'])) {
-                                    $set('tp_end_date', $parsedData['tp_end_date']);
-                                }
-								
-								if (isset($parsedData['insurance_company_id'])) {
-                                    $set('insurance_company_id', $parsedData['insurance_company_id']);
-                                }
-								
-								if (isset($parsedData['registration_number_1'])) {
-                                    $set('registration_number_1', $parsedData['registration_number_1']);
-                                }
-								
-								if (isset($parsedData['registration_number_2'])) {
-                                    $set('registration_number_2', $parsedData['registration_number_2']);
-                                }
-								
-								if (isset($parsedData['registration_number_3'])) {
-                                    $set('registration_number_3', $parsedData['registration_number_3']);
-                                }
-								
-								if (isset($parsedData['registration_number_4'])) {
-                                    $set('registration_number_4', $parsedData['registration_number_4']);
-                                }
-								
-								if (isset($parsedData['vehicle_model'])) {
-                                    $set('vehicle_model', $parsedData['vehicle_model']);
-                                }
-								
-								if (isset($parsedData['vehicle_sub_model'])) {
-                                    $set('vehicle_sub_model', $parsedData['vehicle_sub_model']);
-                                }
-								
-								if (isset($parsedData['engine_number'])) {
-                                    $set('engine_type', $parsedData['engine_number']);
-                                }
-								
-								if (isset($parsedData['chassis_number'])) {
-                                    $set('chasis', $parsedData['chassis_number']);
-                                }
-								
-								if (isset($parsedData['yom'])) {
-                                    $set('yom', $parsedData['yom']);
-                                }
-								
-								if (isset($parsedData['cc'])) {
-                                    $set('cc', $parsedData['cc']);
-                                }
-                                
-                                // Clean up temporary file
-                                if (file_exists($filePath)) {
-                                    unlink($filePath);
-                                }
-                                
+                            } catch (\Exception $e) {
+
+                                $message = 'FilePath ' . $filePath;
+                                $message .= ' Exception ' . $e->getMessage();
+                                logger($message);
                                 Notification::make()
-                                    ->title('PDF Parsed Successfully!')
-                                    ->body('Customer information has been extracted and populated from the PDF.')
-                                    ->success()
+                                    ->title('Could not extract customer information from the PDF.')
+                                    ->body('Error: ' . $e->getMessage())
+                                    ->danger()
                                     ->send();
-                            } else {
-                                throw new \Exception('Could not extract customer information from the PDF.');
                             }
-                            
-                        } catch (\Exception $e) {
-                            Notification::make()
-                                ->title('PDF Parsing Failed')
-                                ->body('Error: ' . $e->getMessage())
-                                ->danger()
-                                ->send();
-                        }
-                    })
+                        })
                 ]),
                 // Client Details Card
                 Forms\Components\Section::make('CC Entry')
@@ -545,7 +661,7 @@ class CcResource extends Resource
                                         Forms\Components\Select::make('insurance_company_name')
                                             ->label('Insurance Company')
                                             ->options(fn() => Setting::getSelectOptions('insurance_companies_1'))
-                                            ->placeholder('Select Insurance Type')
+                                            ->placeholder('Select Insurance Company')
                                             ->validationMessages([
                                                 'required' => 'Please select Insurance Company',
                                             ])
@@ -1146,7 +1262,7 @@ class CcResource extends Resource
                         $trimmedName = Str::limit($record->first_name . ' ' . $record->last_name, 20);
                         return "
                             <div class='space-y-1'>
-                                <div class='font-medium'>{$trimmedName }</div>
+                                <div class='font-medium'>{$trimmedName}</div>
                                 <div class='text-sm text-gray-500'>{$record->phone}</div>
                                 <div class='text-xs text-gray-500'>{$record->city->name}, {$record->zipcode}</div>
                             </div>
@@ -1763,10 +1879,49 @@ class CcResource extends Resource
 
     public static function parsePdfContent(string $filePath, $insuranceType): ?array
     {
+        // return 
+        //     [
+        //         'name_prefix' => 'Mr',
+        //         'first_name' => 'Saurabh',
+        //         'middle_name' => 'Kumar',
+        //         'last_name' => 'Mahajan',
+        //         'address_1' => 'GBL 201',
+        //         'address_2' => 'IREO Rise',
+        //         'address_3' => 'SECtor 99',
+        //         'address_3' => 'SECtor 99',
+        //         'pincode' => '160062',
+        //         'city' => 'Mohali',
+        //         'mobile_no' => '9646358300',
+        //         'email' => 'sm**@gmail.com',
+        //         'nominee' => 'Mehak',
+        //         'nominee_relationship' => 'Wife',
+        //         'nominee_dob' => '1991-01-01',
+        //         'insurance_type' => 'Motor',
+        //         'policy_number' => '1111111',
+        //         'sum_insured' => '5000',
+        //         'risk_start_date' => '1991-01-01',
+        //         'risk_end_date' => '1992-01-01',
+        //         'tp_start_date' => '1993-01-01',
+        //         'tp_end_date' => '1994-01-01',
+        //         'make' => 'Honda',
+        //         'model' => 'MotorCycle',
+        //         'sub_model' => 'Passion',
+        //         'engine_number' => 'E1234',
+        //         'chassis_number' => 'C12312312',
+        //         'cc' => '150',
+        //         'yom' => '2017',
+        //         'fuel_type' => 'Petrol',
+        //         'agent_name' => 'Robinhood Pvt',
+        //         'registration_number_1' => 'PB',
+        //         'registration_number_2' => '65',
+        //         'registration_number_3' => 'AP',
+        //         'registration_number_4' => '8027',
+        //         'insurance_company' => 'Tata',
+        //     ];
         try {
             $text = \Spatie\PdfToText\Pdf::getText($filePath);
-			
-			switch ($insuranceType) {
+
+            switch ($insuranceType) {
                 case 'United':
                     $extractor = new UnitedInsuranceExtractor();
                     break;
@@ -1776,7 +1931,7 @@ class CcResource extends Resource
                 case 'Icici':
                     $extractor = new IciciExtractor();
                     break;
-				case 'Tata':
+                case 'Tata':
                     $extractor = new TataExtractor();
                     break;
                 default:
@@ -1784,13 +1939,11 @@ class CcResource extends Resource
             }
 
             Log::info('PDF Text Extracted', ['text' => $text]);
-			
-			$response = $extractor->extractData($text);
-			
-			//dd($response);
-			
-			return $response;
-			
+
+            $response = $extractor->extractData($text);
+            $response['insurance_company'] = $insuranceType;
+
+            return $response;
         } catch (\Exception $e) {
             Log::error('PDF Parsing Error: ' . $e->getMessage());
             return null;

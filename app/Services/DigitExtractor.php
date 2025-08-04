@@ -22,8 +22,6 @@ class DigitExtractor
         if (str_contains($text, 'Two-Wheeler')) {
             $data['insurance_type'] = '2 Wheeler';
         }
-		
-		$data['insurance_company_id'] = 6;
 
         $this->extractCustomerInfo($aiResponse, $data);
         $this->extractCustomerAddress($aiResponse, $data);
