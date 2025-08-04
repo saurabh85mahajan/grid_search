@@ -1938,8 +1938,6 @@ class CcResource extends Resource
                     throw new \Exception('This Insurance Company is not yet supported');
             }
 
-            Log::info('PDF Text Extracted', ['text' => $text]);
-
             $response = $extractor->extractData($text);
             $response['insurance_company'] = $insuranceType;
 
