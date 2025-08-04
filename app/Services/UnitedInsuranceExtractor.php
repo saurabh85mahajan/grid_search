@@ -44,6 +44,14 @@ class UnitedInsuranceExtractor
             $addressText = trim(preg_replace('/\s+/', ' ', $matches[2]));
 
             $this->parseAddressComponents($addressText, $data);
+			
+			if (preg_match('/^[1-9][0-9]{5}$/', $matches[3])) {
+				$data['pincode'] = trim($matches[3]);
+			}
+			
+			if (preg_match('/^[1-9][0-9]{5}$/', $matches[4])) {
+				$data['pincode'] = trim($matches[3]);
+			}
         }
     }
 
