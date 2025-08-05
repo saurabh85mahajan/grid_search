@@ -196,10 +196,11 @@ class IciciExtractor
 
     private function extractPolicyDates($text, &$data)
     {
-        $policyNumber = $data['policy_number'];
-        if (!$policyNumber) {
-            return;
-        }
+        if(empty($data['policy_number'])){
+			return;
+		}else{
+			$policyNumber = $data['policy_number'];
+		}
 
         // Escape special regex characters in policy number
         $escapedPolicyNumber = preg_quote($policyNumber, '/');
