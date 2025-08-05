@@ -80,7 +80,7 @@ class TataExtractor
     private function extractNomieeDetails($text, &$data){
 		if(preg_match('/Name of the Nominee\s*:\s*(.*?)\s*•\s*Nominee Age\s*:\s*(\d+)\s*•\s*Relationship.*?:\s*(\w+)/i', $text, $m)){
 			$data['nominee'] = $m[1] ?? '';
-			$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : '';
+			//$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : '';
 			$data['nominee_relationship'] = $m[3] ?? '';
 		}
 	}

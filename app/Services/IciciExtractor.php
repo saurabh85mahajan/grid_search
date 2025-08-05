@@ -48,6 +48,7 @@ class IciciExtractor
 
         $this->extractCustomerAddress($text, $data);
         $this->extractCustomerMobileAndEmail($text, $data);
+        $this->extractNominee($text, $data);
         $this->extractPolicyNumber($text, $data);
         $this->extractAgentName($text, $data);
         $this->extractPolicyDates($text, $data);
@@ -105,7 +106,7 @@ class IciciExtractor
 
 			if (preg_match('/Relationship\s+Age\s+([A-Z]+)\s+(\d+)/i', $text, $m)) {
 				$data['nominee_relationship'] = $m[1] ?? null;
-				$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : null;
+				//$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : null;
 			}
 		}
 	}
@@ -149,6 +150,16 @@ class IciciExtractor
         }
     }
 
+    private function extractNominee($text, &$data){
+		
+		$patternForNominee = '/Mobile\s+No\s*:?\s*\n?\s*(\d{10})\s*\n+([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\s*\n(.*?)\s*\nNamed Passenger\'s Nominee:\s*\n(.*?)\s*\n(.*?)\s*\n(.*)/i';
+		
+		if (preg_match($patternForNominee, $text, $matches)) {
+			$data['nominee'] = trim($matches[3]);
+			$data['nominee_relationship'] = trim($matches[5]);
+		}
+	}
+	
     private function extractCustomerMobileAndEmail($text, &$data)
     {
         // $pattern = '/Mobile\s+No\s*:\s*\n?\s*(\d+)\s*\n?\s*([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})?/i';
