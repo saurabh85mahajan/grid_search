@@ -18,7 +18,7 @@ class IciciExtractor
         if (empty($data)) {
             if (str_contains($text, 'we have your car covered')) {
                 $this->extractPartnerName($text, $data);
-				$this->extractPartnerEmailPhoneAndNominee($text, $data);
+                $this->extractPartnerEmailPhoneAndNominee($text, $data);
                 $this->extractPartnerAddress($text, $data);
                 $this->extractPolicyNumber($text, $data);
                 $this->extractPartnerDates($text, $data);
@@ -82,33 +82,34 @@ class IciciExtractor
             $data['agent_name'] = trim($matches[2]);
         }
     }
-	
-	private function extractPartnerEmailPhoneAndNominee($text, &$data){
-		if (preg_match('/Nominee Name(.*?)Servicing Branch Address/s', $text, $match)) {
-			
-			$block = trim($match[1]);
 
-			// Extract Nominee Name
-			if (preg_match('/^Nominee Name\s*[\r\n]+([^\r\n]+)/mi', $text, $m)) {
-				$data['nominee'] = trim($m[1]);
-			}
+    private function extractPartnerEmailPhoneAndNominee($text, &$data)
+    {
+        if (preg_match('/Nominee Name(.*?)Servicing Branch Address/s', $text, $match)) {
 
-			// Mobile number
-			if (preg_match('/Mobile no\s+(\d{2}\*{6}\d{2})/', $block, $m)) {
-				$data['mobile_no'] = $m[1];
-			}
+            $block = trim($match[1]);
 
-			// Email
-			if (preg_match('/Email\s*[\r\n]+([a-zA-Z0-9._%+\-*]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/', $block, $m)) {
-				$data['email'] = $m[1];
-			}
+            // Extract Nominee Name
+            if (preg_match('/^Nominee Name\s*[\r\n]+([^\r\n]+)/mi', $text, $m)) {
+                $data['nominee'] = trim($m[1]);
+            }
 
-			if (preg_match('/Relationship\s+Age\s+([A-Z]+)\s+(\d+)/i', $text, $m)) {
-				$data['nominee_relationship'] = $m[1] ?? null;
-				$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : null;
-			}
-		}
-	}
+            // Mobile number
+            if (preg_match('/Mobile no\s+(\d{2}\*{6}\d{2})/', $block, $m)) {
+                $data['mobile_no'] = $m[1];
+            }
+
+            // Email
+            if (preg_match('/Email\s*[\r\n]+([a-zA-Z0-9._%+\-*]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/', $block, $m)) {
+                $data['email'] = $m[1];
+            }
+
+            if (preg_match('/Relationship\s+Age\s+([A-Z]+)\s+(\d+)/i', $text, $m)) {
+                $data['nominee_relationship'] = $m[1] ?? null;
+                $data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : null;
+            }
+        }
+    }
 
     private function extractCustomerAddress($text, &$data)
     {
@@ -196,11 +197,11 @@ class IciciExtractor
 
     private function extractPolicyDates($text, &$data)
     {
-        if(empty($data['policy_number'])){
-			return;
-		}else{
-			$policyNumber = $data['policy_number'];
-		}
+        if (empty($data['policy_number'])) {
+            return;
+        } else {
+            $policyNumber = $data['policy_number'];
+        }
 
         // Escape special regex characters in policy number
         $escapedPolicyNumber = preg_quote($policyNumber, '/');
@@ -387,9 +388,9 @@ class IciciExtractor
         if (preg_match($pattern, $text, $matches)) {
             $vehicleNumber = trim($matches[1]);
             $data['vehicle_number'] = $vehicleNumber;
-			if (!empty($data['vehicle_number'])) {
-				$this->processRegistrationNumber($data);
-			}
+            if (!empty($data['vehicle_number'])) {
+                $this->processRegistrationNumber($data);
+            }
         }
 
         $makePattern = '/Make\s*\n\s*([A-Z\s]+?)(?=\s*\n.*?Trailer|\s*\n\s*Model|\s*\n\s*$)/is';
