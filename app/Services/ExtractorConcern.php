@@ -170,7 +170,7 @@ trait ExtractorConcern
 
     private function processRegistrationNumber(&$data)
     {
-        if (preg_match('/^([A-Z]{2})(\d{1,2})([A-Z]{1,2})(\d{4})$/', $data['vehicle_number'], $parts)) {
+        if (preg_match('/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})(\d{4})$/', $data['vehicle_number'], $parts)) {
             $data['registration_number_1'] = "{$parts[1]}";
             $data['registration_number_2'] = "{$parts[2]}";
             $data['registration_number_3'] = "{$parts[3]}";

@@ -10,14 +10,16 @@ class TataExtractor
 
     public function extractData($text)
     {
-        $data = [];
+       
+		$data = [];
 		
-        if (str_contains($text, 'Private Car Package')) {
+        if (str_contains($text, 'your motor vehicle insurance')) {
             $data['insurance_type'] = 'Motor';
 
             $this->extractCustomerInfo($text, $data);
             $this->extractCustomerAddress($text, $data);
             $this->extractCustomerMobileAndEmail($text, $data);
+            $this->extractNomieeDetails($text, $data);
             $this->extractPolicyNumber($text, $data);
             $this->extractAgentName($text, $data);
             $this->extractPolicyDates($text, $data);
@@ -26,6 +28,7 @@ class TataExtractor
         } else if (str_contains($text, 'Your health is secured with TATA')) {
             $data['insurance_type'] = 'Health';
             $this->extractHealthCustomerInfo($text, $data);
+			$this->extractHealthNomineeInfo($text, $data);
             $this->extractHealthAgentName($text, $data);
             $this->extractHealthSumInsured($text, $data);
             $this->extractHealthPolicyDetails($text, $data);
@@ -74,6 +77,14 @@ class TataExtractor
         }
     }
 
+    private function extractNomieeDetails($text, &$data){
+		if(preg_match('/Name of the Nominee\s*:\s*(.*?)\s*•\s*Nominee Age\s*:\s*(\d+)\s*•\s*Relationship.*?:\s*(\w+)/i', $text, $m)){
+			$data['nominee'] = $m[1] ?? '';
+			$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : '';
+			$data['nominee_relationship'] = $m[3] ?? '';
+		}
+	}
+	
     private function extractPolicyNumber($text, &$data)
     {
         $pattern = '/Policy\s+No\.\s+(\d+)/i';
@@ -90,7 +101,7 @@ class TataExtractor
 
     private function extractAgentName($text, &$data)
     {
-        $pattern = '/Agent\s+Name\s*:\s*([A-Za-z\s]+)/i';
+        $pattern = '/Agent Name\s*:\s*(.*?)\s*Agent License Code/i';
 
         if (preg_match($pattern, $text, $matches)) {
             $data['agent_name'] = trim($matches[1]);
@@ -124,7 +135,7 @@ class TataExtractor
 
         $pattern = '/Registration\s+no\s*:\s*([A-Z]{2}\s+\d{2}\s+[A-Z]{1,2}\s+\d{1,4})/i';
         if (preg_match($pattern, $text, $matches)) {
-            $data['vehicle_number'] = trim($matches[1]);
+            $data['vehicle_number'] = trim(str_replace(' ', '', $matches[1]));
             $this->processRegistrationNumber($data);
         }
 
@@ -227,6 +238,18 @@ class TataExtractor
 			}
         }
     }
+	
+	private function extractHealthNomineeInfo($text, &$data){
+		if (preg_match('/Relationship To Policyholder\s*(.*?)\s*Registered office/si', $text, $match)) {
+			$block = trim($match[1]);
+
+			$lines = preg_split('/\r\n|\r|\n/', $block);
+			$lines = array_values(array_filter(array_map('trim', $lines))); // Remove empty lines
+
+			$data['nominee'] = $lines[1] ?? '';
+			$data['nominee_relationship'] = $lines[2] ?? '';
+		}
+	}
 
     private function convertDateFormat($dateString)
     {

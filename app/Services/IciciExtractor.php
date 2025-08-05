@@ -18,6 +18,7 @@ class IciciExtractor
         if (empty($data)) {
             if (str_contains($text, 'we have your car covered')) {
                 $this->extractPartnerName($text, $data);
+				$this->extractPartnerEmailPhoneAndNominee($text, $data);
                 $this->extractPartnerAddress($text, $data);
                 $this->extractPolicyNumber($text, $data);
                 $this->extractPartnerDates($text, $data);
@@ -81,6 +82,33 @@ class IciciExtractor
             $data['agent_name'] = trim($matches[2]);
         }
     }
+	
+	private function extractPartnerEmailPhoneAndNominee($text, &$data){
+		if (preg_match('/Nominee Name(.*?)Servicing Branch Address/s', $text, $match)) {
+			
+			$block = trim($match[1]);
+
+			// Extract Nominee Name
+			if (preg_match('/^Nominee Name\s*[\r\n]+([^\r\n]+)/mi', $text, $m)) {
+				$data['nominee'] = trim($m[1]);
+			}
+
+			// Mobile number
+			if (preg_match('/Mobile no\s+(\d{2}\*{6}\d{2})/', $block, $m)) {
+				$data['mobile_no'] = $m[1];
+			}
+
+			// Email
+			if (preg_match('/Email\s*[\r\n]+([a-zA-Z0-9._%+\-*]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/', $block, $m)) {
+				$data['email'] = $m[1];
+			}
+
+			if (preg_match('/Relationship\s+Age\s+([A-Z]+)\s+(\d+)/i', $text, $m)) {
+				$data['nominee_relationship'] = $m[1] ?? null;
+				$data['nominee_dob'] = isset($m[2]) ? (int)$m[2] : null;
+			}
+		}
+	}
 
     private function extractCustomerAddress($text, &$data)
     {
@@ -180,8 +208,8 @@ class IciciExtractor
         $pattern = '/' . $escapedPolicyNumber . '\s*\n\s*([A-Za-z]{3}\s+\d{1,2},\s+\d{4})\s+\d{2}:\d{2}\s+to\s*\n\s*Midnight\s+of\s+([A-Za-z]{3}\s+\d{1,2},\s+\d{4})/i';
 
         if (preg_match($pattern, $text, $matches)) {
-            $data['risk_start_date'] = trim($matches[1]);
-            $data['risk_end_date'] = trim($matches[2]);
+            $data['risk_start_date'] = $this->convertDateFormat(trim($matches[1]));
+            $data['risk_end_date'] = $this->convertDateFormat(trim($matches[2]));
         }
     }
 
@@ -358,6 +386,9 @@ class IciciExtractor
         if (preg_match($pattern, $text, $matches)) {
             $vehicleNumber = trim($matches[1]);
             $data['vehicle_number'] = $vehicleNumber;
+			if (!empty($data['vehicle_number'])) {
+				$this->processRegistrationNumber($data);
+			}
         }
 
         $makePattern = '/Make\s*\n\s*([A-Z\s]+?)(?=\s*\n.*?Trailer|\s*\n\s*Model|\s*\n\s*$)/is';
