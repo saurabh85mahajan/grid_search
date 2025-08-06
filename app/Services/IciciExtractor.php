@@ -167,8 +167,10 @@ class IciciExtractor
 				if (in_array(strtolower(trim($matches[4])), array_map('strtolower', $valid_relationships))) {
 					$data['nominee_relationship'] = trim($matches[4]);
 				} else {
-					if (in_array(strtolower(trim($matches[5])), array_map('strtolower', $valid_relationships))) {
-						$data['nominee_relationship'] = trim($matches[5]);
+					if (!empty($matches[5])) {
+						if (in_array(strtolower(trim($matches[5])), array_map('strtolower', $valid_relationships))) {
+							$data['nominee_relationship'] = trim($matches[5]);
+						}
 					}
 				}
 			}
