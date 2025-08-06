@@ -1,0 +1,1951 @@
+<?php
+
+namespace App\Filament\Demo\Resources;
+
+use App\Services\DigitExtractor;
+use App\Services\IciciExtractor;
+use App\Services\TataExtractor;
+use App\Services\UnitedInsuranceExtractor;
+use App\Filament\Demo\Resources\CcResource\Pages;
+use App\Models\Ccdemo;
+use App\Models\FuelType;
+use App\Models\Make;
+use App\Models\User;
+use App\Models\Setting;
+use Carbon\Carbon;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Infolist;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
+use Filament\Notifications\Notification;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Number;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+
+class CcResource extends Resource
+{
+    protected static ?string $model = Ccdemo::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+        $is_organisation_admin = $user->is_organisation_admin;
+        $organisationId = $user->organisation_id;
+        $is_manager = $user->is_manager;
+
+        if ($is_organisation_admin) {
+            $ccs = parent::getEloquentQuery();
+        } else if ($is_manager) {
+            $users = User::getSubordinates($organisationId);
+            $ccs = parent::getEloquentQuery()->whereIn('user_id', $users);
+        } else {
+            $ccs = parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        }
+        return $ccs;
+    }
+
+    public static function form(Form $form): Form
+    {
+        //Dp make sure to change this in Infolist.
+        $nonVehicleInsuranceTypes = ['WC', 'Health', 'Marine', 'Life', 'Fire', 'Travel'];
+
+        return $form
+            ->schema([
+                Forms\Components\Actions::make([
+                    Action::make('search_existing')
+                        ->label('Search Existing Customers')
+                        ->icon('heroicon-o-magnifying-glass')
+                        ->visible(fn($livewire) => !$livewire->getRecord())
+                        ->color('gray')
+                        ->modal()
+                        ->modalHeading('Search Existing Customers')
+                        ->modalWidth('md')
+                        ->modalSubmitActionLabel('Populate Details')
+                        ->form([
+                            Forms\Components\Select::make('search_record')
+                                ->label('Search by Name or Phone')
+                                ->searchable()
+                                ->noSearchResultsMessage('No customers found.')
+                                ->searchPrompt('Start typing customer name...')
+                                ->getSearchResultsUsing(function (string $search): array {
+                                    if (strlen($search) < 2) {
+                                        return [];
+                                    }
+
+                                    return Ccdemo::where('first_name', 'like', "%{$search}%")
+                                        ->orWhere('last_name', 'like', "%{$search}%")
+                                        ->orWhere('phone', 'like', "%{$search}%")
+                                        ->limit(50)
+                                        ->get()
+                                        ->mapWithKeys(function ($record) {
+                                            return [
+                                                $record->id => "{$record->first_name} {$record->last_name}" .
+                                                    ($record->phone ? " - {$record->phone}" : "")
+                                            ];
+                                        })
+                                        ->toArray();
+                                })
+                                ->getOptionLabelUsing(function ($value): ?string {
+                                    $record = Ccdemo::find($value);
+                                    return $record ? "{$record->first_name} {$record->last_name}" : null;
+                                })
+                                ->required()
+                                ->placeholder('Type name or phone to search...')
+                                ->helperText('Search by first name, last name or phone')
+                        ])
+                        ->action(function (array $data, Set $set): void {
+                            $record = Ccdemo::find($data['search_record']);
+
+                            if ($record) {
+                                $set('salutation_id', $record->salutation_id);
+                                $set('first_name', $record->first_name);
+                                $set('middle_name', $record->middle_name);
+                                $set('last_name', $record->last_name);
+                                $set('address_1', $record->address_1);
+                                $set('address_2', $record->address_2);
+                                $set('address_3', $record->address_3);
+                                $set('zipcode', $record->zipcode);
+                                $set('city_id', $record->city_id);
+                                $set('phone', $record->phone);
+                                $set('email', $record->email);
+                            }
+                        }),
+                    Action::make('parse_pdf')
+                        ->label('Upload Policy Document')
+                        ->icon('heroicon-o-document-text')
+                        ->color('primary')
+                        ->modal()
+                        ->modalHeading('Upload Insurance Policy Document')
+                        ->modalDescription('Upload your insurance policy PDF and we\'ll automatically extract and populate customer details, insurance details and other key data to save you time.')
+                        ->modalWidth('lg')
+                        ->modalSubmitActionLabel('Extract & Populate Data')
+                        ->form([
+                            Forms\Components\Select::make('insurance_type_modal')
+                                ->label('Insurance Company')
+                                ->options([
+                                    // 'Digit' => 'Digit',
+                                    'United' => 'United Insurance',
+                                    'Icici' => 'Icici Insurance',
+                                    'Tata' => 'Tata Insurance',
+                                ])
+                                ->placeholder('Choose your insurance provider')
+                                ->validationMessages([
+                                    'required' => 'Please select your insurance provider to ensure accurate data extraction',
+                                ])
+                                ->live()
+                                ->helperText('Select the insurance company that issued your policy for optimal parsing accuracy. Don\'t see your provider? We\'re actively adding support for more companies - email us if your specific insurer is missing and we\'ll prioritize it.')
+                                ->required(),
+                            Forms\Components\FileUpload::make('pdf_file')
+                                ->label('Policy Document (PDF)')
+                                ->acceptedFileTypes(['application/pdf'])
+                                ->maxSize(10240) // 10MB max
+                                ->required()
+                                ->helperText('Upload your insurance policy PDF (max 10MB). We\'ll automatically extract policy details, customer information, and coverage data.')
+                                ->disk('public')
+                                ->directory('temp-uploads')
+                                ->validationMessages([
+                                    'required' => 'Please upload your insurance policy PDF document',
+                                    'mimes' => 'Only PDF files are supported for policy document upload',
+                                    'max' => 'File size must be less than 10MB'
+                                ])
+                        ])
+                        ->action(function (array $data, Set $set): void {
+                            try {
+
+                                $uploadedFile = $data['pdf_file'];
+                                $insuranceType = $data['insurance_type_modal'];
+
+                                if (is_array($uploadedFile)) {
+                                    $uploadedFile = $uploadedFile[0]; // Get first file if array
+                                }
+
+                                // Build the full file path
+                                // $filePath = storage_path('app/' . $uploadedFile);
+                                $filePath = Storage::disk('public')->path($uploadedFile);
+
+                                // Check if file exists
+                                if (!file_exists($filePath)) {
+                                    throw new \Exception('Uploaded file not found: ' . $filePath);
+                                }
+
+                                // Parse PDF content
+                                $parsedData = self::parsePdfContent($filePath, $insuranceType);
+
+                                if ($parsedData) {
+                                    // Populate form fields based on parsed data
+
+                                    if (isset($parsedData['agent_name'])) {
+                                        $agentName = trim($parsedData['agent_name']);
+                                        $brokerOptions = Setting::getSelectOptions('brokers_1');
+                                        $matchedBroker = null;
+                                        
+                                        if (!empty($agentName) && !empty($brokerOptions)) {
+                                            // First try: Exact match (case-insensitive)
+                                            foreach ($brokerOptions as $broker) {
+                                                if (strcasecmp($agentName, $broker) === 0) {
+                                                    $matchedBroker = $broker;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            // Second try: Partial match - check if agent_name contains broker or vice versa
+                                            if (!$matchedBroker) {
+                                                foreach ($brokerOptions as $broker) {
+                                                    if (stripos($agentName, $broker) !== false || stripos($broker, $agentName) !== false) {
+                                                        $matchedBroker = $broker;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Set the matched broker if found
+                                        if ($matchedBroker) {
+                                            $set('broker', $matchedBroker);
+                                        }
+                                    }
+
+                                    if (isset($parsedData['insurance_type'])) {
+                                        $insurancType = trim($parsedData['insurance_type']);
+                                        $insuranceOptions = Setting::getSelectOptions('insurance_type_1');
+                                        $matchedInsuranceType = null;
+                                        
+                                        if (!empty($insurancType) && !empty($insuranceOptions)) {
+                                            // First try: Exact match (case-insensitive)
+                                            foreach ($insuranceOptions as $insurance) {
+                                                if (strcasecmp($insurancType, $insurance) === 0) {
+                                                    $matchedInsuranceType = $insurance;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            // Second try: Partial match - check if agent_name contains broker or vice versa
+                                            if (!$matchedInsuranceType) {
+                                                foreach ($insuranceOptions as $insensitive) {
+                                                    if (stripos($insurancType, $insensitive) !== false || stripos($insensitive, $insurancType) !== false) {
+                                                        $matchedInsuranceType = $insensitive;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Set the matched broker if found
+                                        if ($matchedInsuranceType) {
+                                            $set('insurance_type', $matchedInsuranceType);
+                                        }
+                                    }
+
+                                    if (isset($parsedData['name_prefix'])) {
+                                        $set('salutation_id', $parsedData['name_prefix']);
+                                    }
+
+                                    if (isset($parsedData['first_name'])) {
+                                        $set('first_name', $parsedData['first_name']);
+                                    }
+
+                                    if (isset($parsedData['middle_name'])) {
+                                        $set('middle_name', $parsedData['middle_name']);
+                                    }
+
+                                    if (isset($parsedData['last_name'])) {
+                                        $set('last_name', $parsedData['last_name']);
+                                    }
+
+                                    if (isset($parsedData['mobile_no'])) {
+                                        $set('phone', $parsedData['mobile_no']);
+                                    }
+
+                                    if (isset($parsedData['email'])) {
+                                        $set('email', $parsedData['email']);
+                                    }
+
+                                    if (isset($parsedData['address_1'])) {
+                                        $set('address_1', $parsedData['address_1']);
+                                    }
+
+                                    if (isset($parsedData['address_2'])) {
+                                        $set('address_2', $parsedData['address_2']);
+                                    }
+
+                                    if (isset($parsedData['address_3'])) {
+                                        $set('address_3', $parsedData['address_3']);
+                                    }
+
+                                    if (isset($parsedData['city'])) {
+                                        $set('city_id', $parsedData['city']);
+                                    }
+
+                                    if (isset($parsedData['state'])) {
+                                        $set('state', $parsedData['state']);
+                                    }
+
+                                    if (isset($parsedData['pincode'])) {
+                                        $set('zipcode', $parsedData['pincode']);
+                                    }
+
+                                    if (isset($parsedData['policy_number'])) {
+                                        $set('policy_number', $parsedData['policy_number']);
+                                    }
+
+                                    if (isset($parsedData['sum_insured'])) {
+                                        $set('sum_issured', $parsedData['sum_insured']);
+                                    }
+
+                                    if (isset($parsedData['risk_start_date'])) {
+                                        $set('risk_start_date', $parsedData['risk_start_date']);
+                                    }
+
+                                    if (isset($parsedData['risk_end_date'])) {
+                                        $set('risk_end_date', $parsedData['risk_end_date']);
+                                    }
+
+                                    if (isset($parsedData['nominee_relationship'])) {
+                                        $set('relationship', $parsedData['nominee_relationship']);
+                                    }
+
+                                    if (isset($parsedData['nominee'])) {
+                                        $set('nominee_name', $parsedData['nominee']);
+                                    }
+
+                                    if (isset($parsedData['nominee_dob'])) {
+                                        $set('nominee_dob', $parsedData['nominee_dob']);
+                                    }
+
+                                    if (isset($parsedData['tp_start_date'])) {
+                                        $set('tp_start_date', $parsedData['tp_start_date']);
+                                    }
+
+                                    if (isset($parsedData['tp_end_date'])) {
+                                        $set('tp_end_date', $parsedData['tp_end_date']);
+                                    }
+
+                                    if (isset($parsedData['insurance_company'])) {
+                                        $insurance = trim($parsedData['insurance_company']);
+                                        $insuranceCompanies = Setting::getSelectOptions('insurance_companies_1');
+                                        $matchedInsuranceCompany = null;
+                                        
+                                        if (!empty($insurance) && !empty($insuranceCompanies)) {
+                                            foreach ($insuranceCompanies as $insuranceCompany) {
+                                                if (strcasecmp($insurance, $insuranceCompany) === 0) {
+                                                    $matchedInsuranceCompany = $insuranceCompany;
+                                                    break;
+                                                }
+                                            }
+                                            
+                                            if (!$matchedInsuranceCompany) {
+                                                foreach ($insuranceCompanies as $insensitive) {
+                                                    if (stripos($insurance, $insensitive) !== false || stripos($insensitive, $insurance) !== false) {
+                                                        $matchedInsuranceCompany = $insensitive;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if ($matchedInsuranceCompany) {
+                                            $set('insurance_company_name', $matchedInsuranceCompany);
+                                        }
+                                    }
+
+                                    if (isset($parsedData['registration_number_1'])) {
+                                        $set('registration_number_1', $parsedData['registration_number_1']);
+                                    }
+
+                                    if (isset($parsedData['registration_number_2'])) {
+                                        $set('registration_number_2', $parsedData['registration_number_2']);
+                                    }
+
+                                    if (isset($parsedData['registration_number_3'])) {
+                                        $set('registration_number_3', $parsedData['registration_number_3']);
+                                    }
+
+                                    if (isset($parsedData['registration_number_4'])) {
+                                        $set('registration_number_4', $parsedData['registration_number_4']);
+                                    }
+
+                                    if (isset($parsedData['make'])) {
+                                        $makeId = Make::query()
+                                            ->where('name', $parsedData['make'])
+                                            ->value('id');
+                                        $set('make_id', $makeId);
+                                    }
+
+                                    if (isset($parsedData['fuel_type'])) {
+                                        $fuelId = FuelType::query()
+                                            ->where('name', $parsedData['fuel_type'])
+                                            ->value('id');
+                                        $set('fuel_type_id', $fuelId);
+                                    }
+
+                                    if (isset($parsedData['model'])) {
+                                        $set('vehicle_model', $parsedData['model']);
+                                    }
+
+                                    if (isset($parsedData['sub_model'])) {
+                                        $set('vehicle_sub_model', $parsedData['sub_model']);
+                                    }
+
+                                    if (isset($parsedData['engine_number'])) {
+                                        $set('engine_type', $parsedData['engine_number']);
+                                    }
+
+                                    if (isset($parsedData['chassis_number'])) {
+                                        $set('chasis', $parsedData['chassis_number']);
+                                    }
+
+                                    if (isset($parsedData['yom'])) {
+                                        $set('yom', $parsedData['yom']);
+                                    }
+
+                                    if (isset($parsedData['cc'])) {
+                                        $set('cc', $parsedData['cc']);
+                                    }
+
+                                    // Clean up temporary file
+                                    // if (file_exists($filePath)) {
+                                    //     unlink($filePath);
+                                    // }
+
+                                    $message = 'FilePath ' . $filePath;
+                                    $message .= ' Parsed Data Cound ' . count($parsedData);
+                                    logger($message);
+
+                                    Notification::make()
+                                        ->title('PDF Parsed Successfully!')
+                                        ->body(count($parsedData) . ' Fields have been populated. Please verify.')
+                                        ->success()
+                                        ->send();
+                                } else {
+                                    $message = 'FilePath ' . $filePath;
+                                    $message .= ' Why ??';
+                                    logger($message);
+                                    throw new \Exception('Could not extract customer information from the PDF.');
+                                }
+                            } catch (\Exception $e) {
+
+                                $message = 'FilePath ' . $filePath;
+                                $message .= ' Exception ' . $e->getMessage();
+                                logger($message);
+                                Notification::make()
+                                    ->title('Could not extract customer information from the PDF.')
+                                    ->body('Error: ' . $e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        })
+                ]),
+                // Client Details Card
+                Forms\Components\Section::make('CC Entry')
+                    ->schema([
+                        // Proposal Information
+                        Forms\Components\Section::make('Proposal Information')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\Hidden::make("user_id")
+                                            ->default(auth()->user()->id)
+                                            ->dehydrated(fn($state, $record) => $record === null),
+                                        Forms\Components\Select::make('broker')
+                                            ->label('Broker Name')
+                                            ->options(fn() => Setting::getSelectOptions('brokers_1'))
+                                            ->placeholder('Select Broker')
+                                            ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please select Broker',
+                                            ])
+                                            ->columnSpan(1),
+
+                                        Forms\Components\TextInput::make('posp')
+                                            ->label('Posp Name')
+                                            ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please enter Posp Name',
+                                            ])
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(1)
+                                            ->placeholder('Posp Name'),
+
+                                        Forms\Components\TextInput::make('source')
+                                            ->label('Source')
+                                            ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please enter Source',
+                                            ])
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(1)
+                                            ->placeholder('Enter Source Name'),
+                                    ]),
+                            ])->collapsible(),
+
+                        // Basic Information
+                        Forms\Components\Section::make('Client Details')
+                            ->schema([
+                                Forms\Components\Grid::make()
+                                    ->schema([
+
+                                        Forms\Components\Select::make('salutation_id')
+                                            ->label('Salutation')
+                                            ->relationship(
+                                                'salutation',
+                                                'name',
+                                                modifyQueryUsing: fn(Builder $query) => $query->active()->orderBy('id', 'asc')
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->extraAttributes(['style' => 'width: 100px;'])
+                                            ->columnSpan(2)
+                                            ->placeholder('Select'),
+
+                                        Forms\Components\TextInput::make('first_name')
+                                            ->label('First Name')
+                                            ->required()
+                                            ->validationMessages([
+                                                'required' => 'Please enter First Name',
+                                            ])
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(4)
+                                            ->placeholder('Enter First Name'),
+
+                                        Forms\Components\TextInput::make('middle_name')
+                                            ->label('Middle Name')
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(3)
+                                            ->placeholder('Enter Middle Name'),
+
+                                        Forms\Components\TextInput::make('last_name')
+                                            ->label('Last Name')
+                                            ->extraInputAttributes(['maxlength' => 50])
+                                            ->columnSpan(3)
+                                            ->placeholder('Enter Last Name'),
+                                    ])->columns(12),
+
+                                Forms\Components\Grid::make()
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('address_1')
+                                            ->label('Address')
+                                            ->placeholder('Enter Address 1')
+                                            ->columnSpan(6)
+                                            ->validationMessages([
+                                                'required' => 'Please enter Address',
+                                            ])
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('address_2')
+                                            ->label('Address 2')
+                                            ->columnSpan(3)
+                                            ->placeholder('Enter Address 2'),
+
+                                        Forms\Components\TextInput::make('address_3')
+                                            ->label('Address 3')
+                                            ->columnSpan(3)
+                                            ->placeholder('Enter Address 3'),
+                                    ])->columns(12),
+
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('zipcode')
+                                            ->label('Pin Code')
+                                            ->numeric()
+                                            ->minLength(6)
+                                            ->maxLength(8)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 8) this.value = this.value.slice(0, 8);'
+                                            ])
+                                            ->placeholder('Enter Pin Code'),
+
+                                        Forms\Components\Select::make('city_id')
+                                            ->label('City')
+                                            ->relationship('city', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Select City')
+                                            ->validationMessages([
+                                                'required' => 'Please select City',
+                                            ])
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('phone')
+                                            ->label('Mobile')
+                                            ->tel()
+                                            ->placeholder('Enter Mobile Number')
+                                            ->validationMessages([
+                                                'required' => 'Please enter Mobile',
+                                            ])
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('email')
+                                            ->label('Email')
+                                            ->email()
+                                            ->placeholder('Enter Email Address'),
+
+                                    ]),
+                            ])->collapsible(),
+
+                        // Nominee Details
+                        Forms\Components\Section::make('Nominee Details')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('relationship')
+                                            ->label('Nominee Rel.')
+                                            ->placeholder('Enter Nominee Relation'),
+
+                                        Forms\Components\TextInput::make('nominee_name')
+                                            ->label('Nominee Name')
+                                            ->placeholder('Nominee Name'),
+                                        Forms\Components\DatePicker::make('nominee_dob')
+                                            ->label('Nominee DOB')
+                                            ->placeholder('Select Nominee DOB')
+                                            ->maxDate(fn(string $operation) => $operation === 'create' ? now() : null)
+                                            ->format('Y-m-d'),
+                                    ]),
+
+
+                            ])->collapsible(),
+
+                        // Policy Details
+                        Forms\Components\Section::make('Policy Details')
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+
+                                        Forms\Components\Select::make('business_type')
+                                            ->label('Nature of Business')
+                                            ->options([
+                                                'Fresh' => 'Fresh',
+                                                'Port ' => 'Port',
+                                                'Renwal' => 'Renwal',
+                                                'Rollover' => 'Rollover',
+                                            ])
+                                            ->placeholder('Select Business'),
+
+                                        Forms\Components\Select::make('insurance_type')
+                                            ->label('Type of Insurance')
+                                            ->options(fn() => Setting::getSelectOptions('insurance_type_1'))
+                                            ->placeholder('Select Insurance Type')
+                                            ->validationMessages([
+                                                'required' => 'Please enter Type of Insurance',
+                                            ])
+                                            ->live()
+                                            ->required(),
+                                    ]),
+
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+
+                                        Forms\Components\Select::make('insurance_company_name')
+                                            ->label('Insurance Company')
+                                            ->options(fn() => Setting::getSelectOptions('insurance_companies_1'))
+                                            ->placeholder('Select Insurance Company')
+                                            ->validationMessages([
+                                                'required' => 'Please select Insurance Company',
+                                            ])
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('policy_number')
+                                            ->label('Policy No.')
+                                            ->placeholder('Enter Policy No.'),
+                                        Forms\Components\TextInput::make('sum_issured')
+                                            ->label('Sum Issured')
+                                            ->prefix('₹')
+                                            ->required()
+                                            ->numeric()
+                                            ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                            ])
+                                            ->validationMessages([
+                                                'max' => 'Amount cannot exceed ₹9,999,999,999,999',
+                                            ])
+                                            ->placeholder('Enter Sum Issured'),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+
+                                        Forms\Components\DatePicker::make('risk_start_date')
+                                            ->label('Risk Start Date')
+                                            ->format('Y-m-d'),
+
+                                        Forms\Components\DatePicker::make('risk_end_date')
+                                            ->label('Risk End Date')
+                                            ->format('Y-m-d'),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+
+                                        Forms\Components\DatePicker::make('tp_start_date')
+                                            ->label('TP Start Date')
+                                            ->format('Y-m-d'),
+
+                                        Forms\Components\DatePicker::make('tp_end_date')
+                                            ->label('TP End Date')
+                                            ->format('Y-m-d'),
+                                    ]),
+
+
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\Select::make('make_id')
+                                            ->label('Make')
+                                            ->relationship('make', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Select Make'),
+                                        Forms\Components\TextInput::make('vehicle_model')
+                                            ->label('Vehicle Model')
+                                            ->placeholder('Enter Vehicle Model'),
+                                        Forms\Components\TextInput::make('vehicle_sub_model')
+                                            ->label('Vehicle Sub Model')
+                                            ->placeholder('Enter Vehicle Sub Model'),
+                                    ])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
+
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('cc')
+                                            ->label('CC')
+                                            ->numeric()
+                                            ->extraInputAttributes([
+                                                'oninput' => 'if(this.value.length > 25) this.value = this.value.slice(0, 25);'
+                                            ])
+                                            ->placeholder('Enter CC'),
+
+                                        Forms\Components\Select::make('yom')
+                                            ->label('YOM')
+                                            ->searchable()
+                                            ->placeholder('Select YOM')
+                                            ->options(function () {
+                                                $currentYear = now()->year;
+                                                $years = [];
+
+                                                for ($year = $currentYear; $year >= 1990; $year--) {
+                                                    $years[$year] = $year;
+                                                }
+
+                                                return $years;
+                                            }),
+                                        // ->validationMessages([
+                                        //     'required' => 'Please select YOM',
+                                        // ]),
+                                        // ->required(),
+
+                                        Forms\Components\Select::make('fuel_type_id')
+                                            ->label('Fuel Type')
+                                            ->relationship('fuelType', 'name', modifyQueryUsing: fn(Builder $query) => $query->active())
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Select Fuel Type'),
+                                    ])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
+
+                                Fieldset::make('Registration Number')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('registration_number_1')
+                                            ->hiddenLabel()
+                                            ->extraInputAttributes(['maxlength' => 2])
+                                            ->placeholder('GJ'),
+
+                                        Forms\Components\TextInput::make('registration_number_2')
+                                            ->hiddenLabel()
+                                            ->extraInputAttributes(['maxlength' => 2])
+                                            ->placeholder('01'),
+
+                                        Forms\Components\TextInput::make('registration_number_3')
+                                            ->hiddenLabel()
+                                            ->extraInputAttributes(['maxlength' => 4])
+                                            ->placeholder('AB'),
+
+                                        Forms\Components\TextInput::make('registration_number_4')
+                                            ->hiddenLabel()
+                                            ->extraInputAttributes(['maxlength' => 4])
+                                            ->placeholder('1234'),
+                                    ])
+                                    ->columns(4)
+                                    ->extraAttributes(['style' => 'max-width: 35%; margin-right: 60%;'])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
+
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+
+                                        Forms\Components\TextInput::make('engine_type')
+                                            ->label('Engine No.')
+                                            ->minLength(5)
+                                            ->extraInputAttributes(['maxlength' => 25])
+                                            ->rules(['regex:/^[a-zA-Z0-9]+$/'])
+                                            ->validationMessages([
+                                                // 'required' => 'Please enter Engine No.',
+                                                'regex' => 'Only Enter letters and numbers.'
+                                            ])
+                                            ->placeholder('Enter Engine No.'),
+
+                                        Forms\Components\TextInput::make('chasis')
+                                            ->label('Chasis')
+                                            ->minLength(5)
+                                            ->extraInputAttributes(['maxlength' => 25])
+                                            // ->required()
+                                            ->validationMessages([
+                                                // 'required' => 'Please enter Chasis',
+                                                'regex' => 'Only Enter letters and numbers.'
+                                            ])
+                                            ->placeholder('Enter Chasis'),
+                                        Forms\Components\TextInput::make('ncb')
+                                            ->label('Current NCB')
+                                            ->extraInputAttributes(['maxlength' => 25])
+                                            ->placeholder('Enter NCB'),
+                                        Forms\Components\TextInput::make('last_ncb')
+                                            ->label('Last NCB')
+                                            ->extraInputAttributes(['maxlength' => 25])
+                                            ->placeholder('Enter Last NCB'),
+                                    ])
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
+
+                            ])->collapsible(),
+
+                        // Premium Details
+                        Forms\Components\Section::make('Premium Details')
+                            ->schema([
+                                // STEP 1: Basic Premium Components
+                                Forms\Components\Fieldset::make('Premium Components')
+                                    ->schema([
+                                        Forms\Components\Grid::make(3)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('od')
+                                                    ->label('OD Amount')
+                                                    ->prefix('₹')
+                                                    ->numeric()
+                                                    ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                                    ])
+                                                    ->validationMessages([
+                                                        'max' => 'Amount cannot exceed ₹9,999,999,999,999',
+                                                    ])
+                                                    ->placeholder('Enter OD Amount'),
+
+                                                Forms\Components\TextInput::make('rider')
+                                                    ->label('Rider Amount')
+                                                    ->prefix('₹')
+                                                    ->numeric()
+                                                    ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                                    ])
+                                                    ->validationMessages([
+                                                        'max' => 'Amount cannot exceed ₹9,999,999,999,999',
+                                                    ])
+                                                    ->placeholder('Enter Rider Amount'),
+
+                                                Forms\Components\TextInput::make('commission')
+                                                    ->label('Commission')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const odAmount = parseFloat($wire.get("data.od") || 0);
+                                                                const riderAmount = parseFloat($wire.get("data.rider") || 0);
+                                                                const commission = odAmount + riderAmount;
+                                                                const formattedCommission = commission.toFixed(2);
+                                                                $wire.set("data.commission", formattedCommission);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+                                            ]),
+                                    ]),
+
+                                // STEP 2: Net Calculation
+                                Forms\Components\Fieldset::make('Net Premium Calculation')
+                                    ->schema([
+                                        Forms\Components\Grid::make(4)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('third_party_amount')
+                                                    ->label('Third Party Amount')
+                                                    ->prefix('₹')
+                                                    ->numeric()
+                                                    ->maxValue(9999999999999) // Maximum value for DECIMAL(15,2)
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 13) this.value = this.value.slice(0, 13);',
+                                                    ])
+                                                    ->validationMessages([
+                                                        'max' => 'Amount cannot exceed ₹9,999,999,999,999',
+                                                    ])
+                                                    ->placeholder('Enter Third Party Amount'),
+
+                                                Forms\Components\TextInput::make('net')
+                                                    ->label('Net Amount')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const odAmount = parseFloat($wire.get("data.od") || 0);
+                                                                const riderAmount = parseFloat($wire.get("data.rider") || 0);
+                                                                const thirdPartyAmount = parseFloat($wire.get("data.third_party_amount") || 0);
+                                                                const total = odAmount + riderAmount + thirdPartyAmount;
+                                                                const formattedTotal = total.toFixed(2);
+                                                                $wire.set("data.net", formattedTotal);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+
+                                                Forms\Components\TextInput::make('gst')
+                                                    ->label('GST (%)')
+                                                    ->numeric()
+                                                    ->maxValue(100)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                    ])
+                                                    ->placeholder('Enter GST %'),
+
+                                                Forms\Components\TextInput::make('total_amount')
+                                                    ->label('Total Amount (Inc. GST)')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const netAmount = parseFloat($wire.get("data.net") || 0);
+                                                                const gstPercent = parseFloat($wire.get("data.gst") || 0);
+                                                                const gstAmount = netAmount * (gstPercent / 100);
+                                                                const totalAmount = netAmount + gstAmount;
+                                                                const formattedTotal = totalAmount.toFixed(2);
+                                                                $wire.set("data.total_amount", formattedTotal);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+                                            ]),
+                                    ]),
+
+                                // STEP 3: Commission Breakdown - What We Pay
+                                Forms\Components\Fieldset::make('Commission Payout (What We Pay)')
+                                    ->schema([
+                                        Forms\Components\Grid::make(4)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('paid_per_ca')
+                                                    ->label('CA Rate (%)')
+                                                    ->numeric()
+                                                    ->maxValue(100)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                    ])
+                                                    ->placeholder('Enter CA %'),
+
+                                                Forms\Components\TextInput::make('ca_amount')
+                                                    ->label('CA Amount')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.paid_per_ca") || 0);
+                                                                const commission = parseFloat($wire.get("data.commission") || 0);
+                                                                const caAmount = (paidPerCa / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.ca_amount", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+
+                                                Forms\Components\TextInput::make('paid_per_tp')
+                                                    ->label('TP Rate (%)')
+                                                    ->numeric()
+                                                    ->maxValue(100)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                    ])
+                                                    ->placeholder('Enter TP %'),
+
+                                                Forms\Components\TextInput::make('tp_amount')
+                                                    ->label('TP Amount')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerTp = parseFloat($wire.get("data.paid_per_tp") || 0);
+                                                                const commission = parseFloat($wire.get("data.third_party_amount") || 0);
+                                                                const caAmount = (paidPerTp / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.tp_amount", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+                                            ]),
+                                    ]),
+
+                                // STEP 4: Commission Breakdown - What We Receive
+                                Forms\Components\Fieldset::make('Commission Received (What We Get)')
+                                    ->schema([
+                                        Forms\Components\Grid::make(4)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('received_per_ca')
+                                                    ->label('CA Received Rate (%)')
+                                                    ->numeric()
+                                                    ->maxValue(100)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                    ])
+                                                    ->placeholder('Enter Received CA %'),
+
+                                                Forms\Components\TextInput::make('ca_received_amount')
+                                                    ->label('CA Received Amount')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.received_per_ca") || 0);
+                                                                const commission = parseFloat($wire.get("data.commission") || 0);
+                                                                const caAmount = (paidPerCa / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.ca_received_amount", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+
+                                                Forms\Components\TextInput::make('received_per_tp')
+                                                    ->label('TP Received Rate (%)')
+                                                    ->numeric()
+                                                    ->maxValue(100)
+                                                    ->minValue(0.01)
+                                                    ->validationMessages([
+                                                        'min' => 'The value must be greater than 0',
+                                                    ])
+                                                    ->extraInputAttributes([
+                                                        'oninput' => 'if(this.value.length > 5) this.value = this.value.slice(0, 5);'
+                                                    ])
+                                                    ->placeholder('Enter Received TP %'),
+
+                                                Forms\Components\TextInput::make('tp_received_amount')
+                                                    ->label('TP Received Amount')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerTp = parseFloat($wire.get("data.received_per_tp") || 0);
+                                                                const commission = parseFloat($wire.get("data.third_party_amount") || 0);
+                                                                const caAmount = (paidPerTp / 100) * commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.tp_received_amount", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+                                            ]),
+                                    ]),
+
+                                // STEP 5: Final Summary
+                                Forms\Components\Fieldset::make('Summary')
+                                    ->schema([
+                                        Forms\Components\Grid::make(3)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('total_paid_amount')
+                                                    ->label('Total Paid Out')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.ca_amount") || 0);
+                                                                const commission = parseFloat($wire.get("data.tp_amount") || 0);
+                                                                const caAmount = paidPerCa + commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.total_paid_amount", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+
+                                                Forms\Components\TextInput::make('total_received_payout')
+                                                    ->label('Total Received')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.ca_received_amount") || 0);
+                                                                const commission = parseFloat($wire.get("data.tp_received_amount") || 0);
+                                                                const caAmount = paidPerCa + commission;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.total_received_payout", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+
+                                                Forms\Components\TextInput::make('profit')
+                                                    ->label('Net Profit')
+                                                    ->prefix('₹')
+                                                    ->disabled()
+                                                    ->dehydrated(true)
+                                                    ->extraAttributes([
+                                                        'x-data' => '{}',
+                                                        'x-init' => 'Alpine.effect(() => {
+                                                                const paidPerCa = parseFloat($wire.get("data.total_paid_amount") || 0);
+                                                                const commission = parseFloat($wire.get("data.total_received_payout") || 0);
+                                                                const caAmount = commission - paidPerCa;
+                                                                const formattedCaAmount = caAmount.toFixed(2);
+                                                                $wire.set("data.profit", formattedCaAmount);
+                                                            })'
+                                                    ])
+                                                    ->placeholder('Auto-calculated'),
+                                            ]),
+                                    ]),
+                            ])->collapsible(),
+                        Forms\Components\Section::make('Documents')
+                            ->schema([
+                                FileUpload::make('policy')
+                                    ->label('Current Policy')
+                                    ->disk('protected')
+                                    ->directory('cc/policy/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                                FileUpload::make('last_policy')
+                                    ->label('Last Policy')
+                                    ->disk('protected')
+                                    ->directory('cc/policy/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    )
+                                    ->hidden(function (Get $get) use ($nonVehicleInsuranceTypes): bool {
+                                        return in_array($get('insurance_type'), $nonVehicleInsuranceTypes);
+                                    }),
+                                FileUpload::make('rc')
+                                    ->label('RC')
+                                    ->disk('protected')
+                                    ->directory('cc/rc/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+
+                                FileUpload::make('pan_card')
+                                    ->label('PAN Card')
+                                    ->disk('protected')
+                                    ->directory('cc/pan_card/')
+                                    ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                                FileUpload::make('aadhaar_front')
+                                    ->label('Aadhar Front Side')
+                                    ->disk('protected')
+                                    ->directory('entry/aadhaar_front/')
+                                    ->acceptedFileTypes(['image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                                FileUpload::make('aadhaar_back')
+                                    ->label('Aadhar Back Side')
+                                    ->disk('protected')
+                                    ->directory('entry/aadhaar_back/')
+                                    ->acceptedFileTypes(['image/*'])
+                                    ->maxSize(10240)
+                                    ->maxFiles(1)
+                                    ->downloadable()
+                                    ->openable()
+                                    ->getUploadedFileNameForStorageUsing(
+                                        fn(TemporaryUploadedFile $file): string =>
+                                        time() . '_' . Str::random(16) . '_' . $file->getClientOriginalName()
+                                    ),
+                            ])->collapsible(),
+                    ])
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->defaultSort('id', 'desc')
+			->paginated([5,10,25,50])
+            ->columns([
+                TextColumn::make('posp')
+                    ->formatStateUsing(function (Cc $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->broker}</div>
+                                <div class='text-sm text-gray-500'>{$record->posp}</div>
+                                <div class='text-xs text-gray-500'>{$record->source} - {$record->business_type}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->label('Type')
+                    ->searchable(['source', 'posp', 'broker', 'business_type']),
+
+                TextColumn::make('first_name')
+                    ->formatStateUsing(function (Ccdemo $record): string {
+                        $trimmedName = Str::limit($record->first_name . ' ' . $record->last_name, 20);
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$trimmedName}</div>
+                                <div class='text-sm text-gray-500'>{$record->phone}</div>
+                                <div class='text-xs text-gray-500'>{$record->city->name}, {$record->zipcode}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->label('Client Name')
+                    ->searchable(['first_name', 'last_name', 'phone'])
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('make')
+                    ->label('Vehicle Details')
+                    ->formatStateUsing(function (Ccdemo $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->registration_number}</div>
+                                <div class='text-sm text-gray-500'>{$record->make->name}, {$record->vehicle_model}</div>
+                                <div class='text-xs text-gray-500'>Engine No.: {$record->engine_type}</div>
+                                <div class='text-xs text-gray-500'>Chasis: {$record->chasis}</div>
+                            </div>
+                        ";
+                    })
+                    ->searchable(['engine_type', 'chasis', 'registration_number_1', 'registration_number_2', 'registration_number_3', 'registration_number_4'])
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->html(),
+                Tables\Columns\TextColumn::make('insurance_company_name')
+                    ->label('Insurance')
+                    ->formatStateUsing(function (Ccdemo $record): string {
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>{$record->insurance_company_name}</div>
+                                <div class='text-sm text-gray-500'>{$record->insurance_type}</div>
+                                <div class='text-xs text-gray-500'>Policy: {$record->policy_number}</div>
+                            </div>
+                        ";
+                    })
+                    ->searchable(['insurance_company_name', 'insurance_type', 'policy_number'])
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->html(),
+                TextColumn::make('sum_issured')
+                    ->label('Sum Issured')
+                    ->formatStateUsing(function (Ccdemo $record): string {
+                        $sumIssured = is_null($record->sum_issured) ? 0 : Number::format($record->sum_issured, 0, locale: 'en_IN');
+                        $thirdPartyAmount = is_null($record->third_party_amount) ? 0 : Number::format($record->third_party_amount, 0, locale: 'en_IN');
+                        $totalPaidAmount = is_null($record->total_paid_amount) ? 0 : Number::format($record->total_paid_amount, 0, locale: 'en_IN');
+                        return "
+                            <div class='space-y-1'>
+                                <div class='font-medium'>₹{$sumIssured}</div>
+                                <div class='text-sm text-gray-500'>TP Amount: ₹{$thirdPartyAmount}</div>
+                                <div class='text-xs text-gray-500'>Total Paid Out: ₹{$totalPaidAmount}</div>
+                            </div>
+                        ";
+                    })
+                    ->html()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Agent')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime('dS M, Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+            ])
+            ->filters([
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder =>
+                                $query->where('created_at', '>=', Carbon::parse($date)->startOfDay()),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder =>
+                                $query->where('created_at', '<=', Carbon::parse($date)->endOfDay()),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'Created from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                        }
+
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Created until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                        }
+
+                        return $indicators;
+                    }),
+                SelectFilter::make('agent')
+                    ->label('Agent')
+                    ->relationship('user', 'name', function (Builder $query) {
+                        return $query->where('organisation_id', 1);
+                    })
+                    ->preload() // Preload options instead of lazy-loading
+                    ->searchable() // Add search capability for larger lists
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('exportCsv')
+                    ->label('Download as CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($livewire) {
+                        $query = $livewire->getFilteredTableQuery();
+                        $query = $query->with([
+                            // 'user:id,name',
+                            'city:id,name',
+                            // 'previousInsurer:id,name',
+                            // 'insuranceCompany:id,name',
+                            'fuelType:id,name',
+                            'make:id,name',
+                            'product:id,name',
+                            // 'ncb:id,name',
+                            'salutation:id,name',
+                            // 'region:id,name',
+                            // 'businessLock:id,name',
+                            // 'productCategory:id,name',
+                            // 'rto:id,name',
+                            // 'bank:id,name',
+                        ]);
+
+                        $records = $query->get();
+
+                        $formatCurrency = function ($value) {
+                            if (empty($value)) {
+                                return '';
+                            }
+                            return number_format((float) $value, 2, '.', ',');
+                        };
+
+                        // Define CSV structure - field name mapping to record accessor
+                        $csvStructure = [
+                            'Sr. No.' => fn($row, $index) => $index + 1,
+                            'Created At' => fn($row) => $row->created_at->format('Y-m-d'),
+                            'Broker Name' => 'broker',
+                            'Posp Name' => 'posp',
+                            'Source Name' => 'source',
+                            'Client Name' => fn($row) => trim(optional($row->salutation)->name . ' ' . $row->first_name . ' ' . $row->middle_name . ' ' . $row->last_name),
+                            'Mobile No' => 'phone',
+                            'Email' => 'email',
+                            'Address' => fn($row) => implode(', ', array_filter([
+                                $row->address_1,
+                                $row->address_2,
+                                $row->address_3,
+                                $row->city?->name,
+                                $row->zipcode
+                            ])),
+                            'Nominee Name' => 'nominee_name',
+                            'Nominee DOB' => 'nominee_dob',
+                            'Nominee Relationship' => 'relationship',
+                            'Nature of Business' => 'business_type',
+                            'Type of Insurance' => 'insurance_type',
+                            'Risk Start Date' => 'risk_start_date',
+                            'Risk End Date' => 'risk_end_date',
+                            'Policy No.' => 'policy_number',
+                            'Company Name' => 'insurance_company_name',
+                            'OD Amount' => fn($row) => $formatCurrency($row->od),
+                            'Rider Amount' => fn($row) => $formatCurrency($row->rider),
+                            'Commission Amount' => fn($row) => $formatCurrency($row->commission),
+                            'Third Party' => fn($row) => $formatCurrency($row->third_party_amount),
+                            'Net' => fn($row) => $formatCurrency($row->net),
+                            'Net' => fn($row) => $formatCurrency($row->net),
+                            'GST%' => 'gst',
+                            'Total Amount' => fn($row) => $formatCurrency($row->total_amount),
+                            'Paid % CA' => 'paid_per_ca',
+                            'CA Amount' => fn($row) => $formatCurrency($row->ca_amount),
+                            'Paid % TP' => 'paid_per_tp',
+                            'TP Amount' => fn($row) => $formatCurrency($row->tp_amount),
+                            'Received % CA' => 'received_per_ca',
+                            'Received CA Amount' => fn($row) => $formatCurrency($row->ca_received_amount),
+                            'Received  % TP' => 'received_per_tp',
+                            'Received  TP Amount' => fn($row) => $formatCurrency($row->tp_received_amount),
+                            'Total Paid Amount' => fn($row) => $formatCurrency($row->total_paid_amount),
+                            'Total Received Payout' => fn($row) => $formatCurrency($row->total_received_payout),
+                            'Profit' => fn($row) => $formatCurrency($row->profit),
+                            'Last NCB' => 'last_ncb',
+                            'Current NCB' => 'ncb',
+                            'TP Start Date' => 'tp_start_date',
+                            'TP End Date' => 'tp_end_date',
+                            'Sum Issured' => fn($row) => $formatCurrency($row->sum_issured),
+                            'Car No' => fn($row) => $row->registration_number,
+                            'Make' => fn($row) => optional($row->make)->name,
+                            'Model' => 'vehicle_model',
+                            'Fuel Type' => fn($row) => optional($row->fuelType)->name,
+                            'CC' => 'cc',
+                        ];
+
+                        // Create CSV header
+                        $headers = array_keys($csvStructure);
+                        $csvContent = implode(',', $headers) . "\n";
+
+                        // Process each record
+                        foreach ($records as $index => $record) {
+                            $row = [];
+
+                            // Generate each field for the row
+                            foreach ($csvStructure as $header => $accessor) {
+                                $value = '';
+
+                                if (is_callable($accessor)) {
+                                    // Use the closure to get the value
+                                    $value = $accessor($record, $index);
+                                } else {
+                                    // Direct property access
+                                    $value = data_get($record, $accessor, '');
+                                }
+
+                                // Format for CSV and escape quotes
+                                $row[] = '"' . str_replace('"', '""', $value ?? '') . '"';
+                            }
+
+                            // Add row to CSV content
+                            $csvContent .= implode(',', $row) . "\n";
+                        }
+
+                        // Create a temporary file
+                        $tempFile = tempnam(sys_get_temp_dir(), 'csv');
+                        file_put_contents($tempFile, $csvContent);
+
+                        // Return a download response
+                        return response()->download(
+                            $tempFile,
+                            'cc-export-' . date('Y-m-d-H-i-s') . '.csv',
+                            ['Content-Type' => 'text/csv']
+                        )->deleteFileAfterSend();
+                    }),
+            ])
+            ->bulkActions([]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('CC Entry')
+                    ->schema([
+                        // Proposal Information
+                        Section::make('Proposal Information')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('broker')
+                                            ->label('Broker'),
+
+                                        TextEntry::make('posp')
+                                            ->label('Posp'),
+
+                                        TextEntry::make('source')
+                                            ->label('Source'),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // Client Details
+                        Section::make('Client Details')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('full_name')
+                                            ->label('Client Name')
+                                            ->state(
+                                                fn($record) =>
+                                                trim(($record->salutation?->name ?? '') . ' ' .
+                                                    ($record->first_name ?? '') . ' ' .
+                                                    ($record->middle_name ?? '') . ' ' .
+                                                    ($record->last_name ?? ''))
+                                            )
+                                            ->weight(FontWeight::Bold),
+
+                                        TextEntry::make('email')
+                                            ->label('Email')
+                                            ->icon('heroicon-m-envelope')
+                                            ->copyable(),
+
+                                        TextEntry::make('phone')
+                                            ->label('Mobile')
+                                            ->icon('heroicon-m-device-phone-mobile')
+                                            ->copyable(),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('full_address')
+                                            ->label('Address')
+                                            ->state(
+                                                fn($record) =>
+                                                implode(', ', array_filter([
+                                                    $record->address_1,
+                                                    $record->address_2,
+                                                    $record->address_3,
+                                                    $record->city?->name,
+                                                    $record->zipcode
+                                                ]))
+                                            ),
+
+                                        TextEntry::make('zipcode')
+                                            ->label('Pin Code')
+                                            ->badge(),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // Nominee Details
+                        Section::make('Nominee Details')
+                            ->schema([
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('relationship')
+                                            ->label('Nominee Rel.'),
+
+                                        TextEntry::make('nominee_name')
+                                            ->label('Nominee Name'),
+
+                                        TextEntry::make('nominee_dob')
+                                            ->label('Nominee DOB')
+                                            ->date(),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // Policy Details
+                        Section::make('Policy Details')
+                            ->schema([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('business_type')
+                                            ->label('Nature of Business')
+                                            ->badge(),
+
+                                        TextEntry::make('insurance_type')
+                                            ->label('Type of Insurance')
+                                            ->badge(),
+                                    ]),
+                                Grid::make(3)
+                                    ->schema([
+                                        TextEntry::make('insurance_company_name')
+                                            ->label('Insurance Company')
+                                            ->weight(FontWeight::Bold),
+
+                                        TextEntry::make('policy_number')
+                                            ->label('Policy No.')
+                                            ->copyable()
+                                            ->badge()
+                                            ->color('success'),
+                                        TextEntry::make('sum_issured')
+                                            ->label('Sum Issured')
+                                            ->money('INR')
+                                            ->weight(FontWeight::Bold),
+                                    ]),
+
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('risk_start_date')
+                                            ->label('Risk Start Date')
+                                            ->date(),
+                                        TextEntry::make('risk_end_date')
+                                            ->label('Risk End Date')
+                                            ->date(),
+                                    ]),
+                                Grid::make(2)
+                                    ->schema([
+                                        TextEntry::make('tp_start_date')
+                                            ->label('TP Start Date')
+                                            ->date(),
+                                        TextEntry::make('tp_end_date')
+                                            ->label('TP End Date')
+                                            ->date(),
+                                    ]),
+                                // Vehicle Details
+                                Section::make('Vehicle Details')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('make.name')
+                                                    ->label('Make')
+                                                    ->badge(),
+
+                                                TextEntry::make('vehicle_model')
+                                                    ->label('Vehicle Model'),
+
+                                                TextEntry::make('vehicle_sub_model')
+                                                    ->label('Vehicle Sub Model'),
+                                            ]),
+
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('cc')
+                                                    ->label('CC'),
+
+                                                TextEntry::make('yom')
+                                                    ->label('YOM')
+                                                    ->badge(),
+
+                                                TextEntry::make('fuelType.name')
+                                                    ->label('Fuel Type')
+                                                    ->badge(),
+                                            ]),
+
+                                        TextEntry::make('registration_number')
+                                            ->label('Registration Number')
+                                            ->state(
+                                                fn($record) =>
+                                                trim(
+                                                    ($record->registration_number_1 ?? '') . '-' .
+                                                        ($record->registration_number_2 ?? '') . '-' .
+                                                        ($record->registration_number_3 ?? '') . '-' .
+                                                        ($record->registration_number_4 ?? '')
+                                                )
+                                            )
+                                            ->badge()
+                                            ->color('primary')
+                                            ->copyable(),
+
+                                        Grid::make(4)
+                                            ->schema([
+                                                TextEntry::make('engine_type')
+                                                    ->label('Engine No.')
+                                                    ->copyable(),
+
+                                                TextEntry::make('chasis')
+                                                    ->label('Chasis')
+                                                    ->copyable(),
+                                                TextEntry::make('ncb')
+                                                    ->label('Current NCB'),
+                                                TextEntry::make('last_ncb')
+                                                    ->label('Last NCB'),
+                                            ]),
+                                    ])
+                                    ->visible(function ($record) {
+                                        $nonVehicleInsuranceTypes = ['WC', 'Health', 'Marine', 'Life', 'Fire'];
+                                        return !in_array($record->insurance_type, $nonVehicleInsuranceTypes);
+                                    })
+                                    ->collapsible(),
+                            ])
+                            ->collapsible(),
+
+                        // Premium Details
+                        Section::make('Premium Details')
+                            ->schema([
+                                // Premium Components
+                                Section::make('Premium Components')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('od')
+                                                    ->label('OD Amount')
+                                                    ->money('INR'),
+
+                                                TextEntry::make('rider')
+                                                    ->label('Rider Amount')
+                                                    ->money('INR'),
+
+                                                TextEntry::make('commission')
+                                                    ->label('Commission')
+                                                    ->money('INR')
+                                                    ->weight(FontWeight::Bold)
+                                                    ->color('primary'),
+                                            ]),
+                                    ]),
+
+                                // Net Premium Calculation
+                                Section::make('Net Premium Calculation')
+                                    ->schema([
+                                        Grid::make(4)
+                                            ->schema([
+                                                TextEntry::make('third_party_amount')
+                                                    ->label('Third Party Amount')
+                                                    ->money('INR'),
+
+                                                TextEntry::make('net')
+                                                    ->label('Net Amount')
+                                                    ->money('INR')
+                                                    ->weight(FontWeight::Bold),
+
+                                                TextEntry::make('gst')
+                                                    ->label('GST')
+                                                    ->suffix('%'),
+
+                                                TextEntry::make('total_amount')
+                                                    ->label('Total Amount (Inc. GST)')
+                                                    ->money('INR')
+                                                    ->weight(FontWeight::Bold)
+                                                    ->size('lg')
+                                                    ->color('success'),
+                                            ]),
+                                    ]),
+
+                                // Commission Payout (What We Pay)
+                                Section::make('Commission Payout (What We Pay)')
+                                    ->schema([
+                                        Grid::make(4)
+                                            ->schema([
+                                                TextEntry::make('paid_per_ca')
+                                                    ->label('CA Rate')
+                                                    ->suffix('%'),
+
+                                                TextEntry::make('ca_amount')
+                                                    ->label('CA Amount')
+                                                    ->money('INR'),
+
+                                                TextEntry::make('paid_per_tp')
+                                                    ->label('TP Rate')
+                                                    ->suffix('%'),
+
+                                                TextEntry::make('tp_amount')
+                                                    ->label('TP Amount')
+                                                    ->money('INR'),
+                                            ]),
+                                    ]),
+
+                                // Commission Received (What We Get)
+                                Section::make('Commission Received (What We Get)')
+                                    ->schema([
+                                        Grid::make(4)
+                                            ->schema([
+                                                TextEntry::make('received_per_ca')
+                                                    ->label('CA Received Rate')
+                                                    ->suffix('%'),
+
+                                                TextEntry::make('ca_received_amount')
+                                                    ->label('CA Received Amount')
+                                                    ->money('INR'),
+
+                                                TextEntry::make('received_per_tp')
+                                                    ->label('TP Received Rate')
+                                                    ->suffix('%'),
+
+                                                TextEntry::make('tp_received_amount')
+                                                    ->label('TP Received Amount')
+                                                    ->money('INR'),
+                                            ]),
+                                    ]),
+
+                                // Summary
+                                Section::make('Summary')
+                                    ->schema([
+                                        Grid::make(3)
+                                            ->schema([
+                                                TextEntry::make('total_paid_amount')
+                                                    ->label('Total Paid Out')
+                                                    ->money('INR')
+                                                    ->weight(FontWeight::Bold)
+                                                    ->color('danger'),
+
+                                                TextEntry::make('total_received_payout')
+                                                    ->label('Total Received')
+                                                    ->money('INR')
+                                                    ->weight(FontWeight::Bold)
+                                                    ->color('success'),
+
+                                                TextEntry::make('profit')
+                                                    ->label('Net Profit')
+                                                    ->money('INR')
+                                                    ->weight(FontWeight::Bold)
+                                                    ->size('lg')
+                                                    ->color(fn($state) => $state >= 0 ? 'success' : 'danger'),
+                                            ]),
+                                    ]),
+                            ])
+                            ->collapsible(),
+
+                        // //Documents
+                        Section::make('Documents')
+                            ->schema([
+                                ViewEntry::make('policy')
+                                    ->label('Current Policy')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('last_policy')
+                                    ->label('Last Policy')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('rc')
+                                    ->label('RC')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('aadhaar_front')
+                                    ->label('Aadhar Front')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('aadhaar_back')
+                                    ->label('Aadhar Back')
+                                    ->view('filament.infolists.components.file-viewer'),
+                                ViewEntry::make('pan_card')
+                                    ->label('PAN Card')
+                                    ->view('filament.infolists.components.file-viewer'),
+                            ])
+                            ->collapsible(),
+                    ]),
+            ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListCcs::route('/'),
+            'create' => Pages\CreateCc::route('/create'),
+            'edit' => Pages\EditCc::route('/{record}/edit'),
+            'view' => Pages\ViewCc::route('/{record}'),
+        ];
+    }
+
+    public static function parsePdfContent(string $filePath, $insuranceType): ?array
+    {
+        // return 
+        //     [
+        //         'name_prefix' => 'Mr',
+        //         'first_name' => 'Saurabh',
+        //         'middle_name' => 'Kumar',
+        //         'last_name' => 'Mahajan',
+        //         'address_1' => 'GBL 201',
+        //         'address_2' => 'IREO Rise',
+        //         'address_3' => 'SECtor 99',
+        //         'address_3' => 'SECtor 99',
+        //         'pincode' => '160062',
+        //         'city' => 'Mohali',
+        //         'mobile_no' => '9646358300',
+        //         'email' => 'sm**@gmail.com',
+        //         'nominee' => 'Mehak',
+        //         'nominee_relationship' => 'Wife',
+        //         'nominee_dob' => '1991-01-01',
+        //         'insurance_type' => 'Motor',
+        //         'policy_number' => '1111111',
+        //         'sum_insured' => '5000',
+        //         'risk_start_date' => '1991-01-01',
+        //         'risk_end_date' => '1992-01-01',
+        //         'tp_start_date' => '1993-01-01',
+        //         'tp_end_date' => '1994-01-01',
+        //         'make' => 'Honda',
+        //         'model' => 'MotorCycle',
+        //         'sub_model' => 'Passion',
+        //         'engine_number' => 'E1234',
+        //         'chassis_number' => 'C12312312',
+        //         'cc' => '150',
+        //         'yom' => '2017',
+        //         'fuel_type' => 'Petrol',
+        //         'agent_name' => 'Robinhood Pvt',
+        //         'registration_number_1' => 'PB',
+        //         'registration_number_2' => '65',
+        //         'registration_number_3' => 'AP',
+        //         'registration_number_4' => '8027',
+        //         'insurance_company' => 'Tata',
+        //     ];
+        try {
+            $text = \Spatie\PdfToText\Pdf::getText($filePath);
+
+            switch ($insuranceType) {
+                case 'United':
+                    $extractor = new UnitedInsuranceExtractor();
+                    break;
+                case 'Digit':
+                    $extractor = new DigitExtractor();
+                    break;
+                case 'Icici':
+                    $extractor = new IciciExtractor();
+                    break;
+                case 'Tata':
+                    $extractor = new TataExtractor();
+                    break;
+                default:
+                    throw new \Exception('This Insurance Company is not yet supported');
+            }
+
+            $response = $extractor->extractData($text);
+            $response['insurance_company'] = $insuranceType;
+
+            return $response;
+        } catch (\Exception $e) {
+            Log::error('PDF Parsing Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+}

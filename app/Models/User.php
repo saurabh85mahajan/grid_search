@@ -69,6 +69,10 @@ class User extends Authenticatable implements FilamentUser
         if ($panel->getId() === 'ppc') {
             return  auth()->user()->organisation_id == 2;
         }
+		
+		if ($panel->getId() === 'demo') {
+            return  auth()->user()->organisation_id == 3;
+        }
 
         return true;
     }
