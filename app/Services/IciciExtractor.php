@@ -161,9 +161,7 @@ class IciciExtractor
 			$data['nominee'] = trim($matches[3]);
 			
 			if (!empty($matches[4])) {
-				
 				$valid_relationships = array("Spouse","Son","Daughter","Father","Mother","Brother","Sister","Grandfather","Grandmother","Grandson","Granddaughter","Father-in-law","Mother-in-law","Son-in-law","Daughter-in-law","Nephew","Niece","Uncle","Aunt","Cousin","Legal Guardian","Business Partner","Trustee","Friend","Self");
-
 				if (in_array(strtolower(trim($matches[4])), array_map('strtolower', $valid_relationships))) {
 					$data['nominee_relationship'] = trim($matches[4]);
 				} else {
