@@ -197,9 +197,9 @@ class CcResource extends Resource
 
                                     if (isset($parsedData['agent_name'])) {
                                         $agentName = trim($parsedData['agent_name']);
-                                        $brokerOptions = Setting::getSelectOptions('brokers_1');
+                                        $brokerOptions = Setting::getSelectOptions('brokers_3');
                                         $matchedBroker = null;
-                                        
+
                                         if (!empty($agentName) && !empty($brokerOptions)) {
                                             // First try: Exact match (case-insensitive)
                                             foreach ($brokerOptions as $broker) {
@@ -208,7 +208,7 @@ class CcResource extends Resource
                                                     break;
                                                 }
                                             }
-                                            
+
                                             // Second try: Partial match - check if agent_name contains broker or vice versa
                                             if (!$matchedBroker) {
                                                 foreach ($brokerOptions as $broker) {
@@ -219,7 +219,7 @@ class CcResource extends Resource
                                                 }
                                             }
                                         }
-                                        
+
                                         // Set the matched broker if found
                                         if ($matchedBroker) {
                                             $set('broker', $matchedBroker);
@@ -228,9 +228,9 @@ class CcResource extends Resource
 
                                     if (isset($parsedData['insurance_type'])) {
                                         $insurancType = trim($parsedData['insurance_type']);
-                                        $insuranceOptions = Setting::getSelectOptions('insurance_type_1');
+                                        $insuranceOptions = Setting::getSelectOptions('insurance_type_3');
                                         $matchedInsuranceType = null;
-                                        
+
                                         if (!empty($insurancType) && !empty($insuranceOptions)) {
                                             // First try: Exact match (case-insensitive)
                                             foreach ($insuranceOptions as $insurance) {
@@ -239,7 +239,7 @@ class CcResource extends Resource
                                                     break;
                                                 }
                                             }
-                                            
+
                                             // Second try: Partial match - check if agent_name contains broker or vice versa
                                             if (!$matchedInsuranceType) {
                                                 foreach ($insuranceOptions as $insensitive) {
@@ -250,7 +250,7 @@ class CcResource extends Resource
                                                 }
                                             }
                                         }
-                                        
+
                                         // Set the matched broker if found
                                         if ($matchedInsuranceType) {
                                             $set('insurance_type', $matchedInsuranceType);
@@ -343,9 +343,9 @@ class CcResource extends Resource
 
                                     if (isset($parsedData['insurance_company'])) {
                                         $insurance = trim($parsedData['insurance_company']);
-                                        $insuranceCompanies = Setting::getSelectOptions('insurance_companies_1');
+                                        $insuranceCompanies = Setting::getSelectOptions('insurance_companies_3');
                                         $matchedInsuranceCompany = null;
-                                        
+
                                         if (!empty($insurance) && !empty($insuranceCompanies)) {
                                             foreach ($insuranceCompanies as $insuranceCompany) {
                                                 if (strcasecmp($insurance, $insuranceCompany) === 0) {
@@ -353,7 +353,7 @@ class CcResource extends Resource
                                                     break;
                                                 }
                                             }
-                                            
+
                                             if (!$matchedInsuranceCompany) {
                                                 foreach ($insuranceCompanies as $insensitive) {
                                                     if (stripos($insurance, $insensitive) !== false || stripos($insensitive, $insurance) !== false) {
@@ -469,7 +469,7 @@ class CcResource extends Resource
                                             ->dehydrated(fn($state, $record) => $record === null),
                                         Forms\Components\Select::make('broker')
                                             ->label('Broker Name')
-                                            ->options(fn() => Setting::getSelectOptions('brokers_1'))
+                                            ->options(fn() => Setting::getSelectOptions('brokers_3'))
                                             ->placeholder('Select Broker')
                                             ->required()
                                             ->validationMessages([
@@ -646,7 +646,7 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('insurance_type')
                                             ->label('Type of Insurance')
-                                            ->options(fn() => Setting::getSelectOptions('insurance_type_1'))
+                                            ->options(fn() => Setting::getSelectOptions('insurance_type_3'))
                                             ->placeholder('Select Insurance Type')
                                             ->validationMessages([
                                                 'required' => 'Please enter Type of Insurance',
@@ -660,7 +660,7 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('insurance_company_name')
                                             ->label('Insurance Company')
-                                            ->options(fn() => Setting::getSelectOptions('insurance_companies_1'))
+                                            ->options(fn() => Setting::getSelectOptions('insurance_companies_3'))
                                             ->placeholder('Select Insurance Company')
                                             ->validationMessages([
                                                 'required' => 'Please select Insurance Company',
@@ -1242,7 +1242,7 @@ class CcResource extends Resource
     {
         return $table
             ->defaultSort('id', 'desc')
-			->paginated([5,10,25,50])
+            ->paginated([5, 10, 25, 50])
             ->columns([
                 TextColumn::make('posp')
                     ->formatStateUsing(function (Cc $record): string {

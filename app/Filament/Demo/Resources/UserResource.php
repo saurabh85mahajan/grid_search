@@ -31,7 +31,7 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('organisation_id', 1)
+        return parent::getEloquentQuery()->where('organisation_id', 3)
             ->where('is_organisation_admin', '!=', true);
     }
 
@@ -54,7 +54,7 @@ class UserResource extends Resource
                 $livewire instanceof Pages\EditUser ? 'New Password' : 'Password'),
             (new static)->getStatusSelect(),
             \Filament\Forms\Components\Hidden::make('organisation_id')
-                ->default(1),
+                ->default(3),
             \Filament\Forms\Components\Select::make('is_manager')
                 ->label('Is Manager')
                 ->options([
@@ -71,7 +71,7 @@ class UserResource extends Resource
                     fn($get): array =>
                     User::query()
                         ->active()
-                        ->hasOrganisation(1)
+                        ->hasOrganisation(3)
                         ->isManager()
                         ->where('id', '!=',  auth()->user()->id)
                         ->pluck('name', 'id')->toArray()
