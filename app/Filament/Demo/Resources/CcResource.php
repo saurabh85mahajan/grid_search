@@ -1154,7 +1154,7 @@ class CcResource extends Resource
                                 FileUpload::make('policy')
                                     ->label('Current Policy')
                                     ->disk('protected')
-                                    ->directory('cc/policy/')
+                                    ->directory('3/policy/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1167,7 +1167,7 @@ class CcResource extends Resource
                                 FileUpload::make('last_policy')
                                     ->label('Last Policy')
                                     ->disk('protected')
-                                    ->directory('cc/policy/')
+                                    ->directory('3/policy/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1183,7 +1183,7 @@ class CcResource extends Resource
                                 FileUpload::make('rc')
                                     ->label('RC')
                                     ->disk('protected')
-                                    ->directory('cc/rc/')
+                                    ->directory('3/rc/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1197,7 +1197,7 @@ class CcResource extends Resource
                                 FileUpload::make('pan_card')
                                     ->label('PAN Card')
                                     ->disk('protected')
-                                    ->directory('cc/pan_card/')
+                                    ->directory('3/pan_card/')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1210,7 +1210,7 @@ class CcResource extends Resource
                                 FileUpload::make('aadhaar_front')
                                     ->label('Aadhar Front Side')
                                     ->disk('protected')
-                                    ->directory('entry/aadhaar_front/')
+                                    ->directory('3/aadhaar_front/')
                                     ->acceptedFileTypes(['image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1223,7 +1223,7 @@ class CcResource extends Resource
                                 FileUpload::make('aadhaar_back')
                                     ->label('Aadhar Back Side')
                                     ->disk('protected')
-                                    ->directory('entry/aadhaar_back/')
+                                    ->directory('3/aadhaar_back/')
                                     ->acceptedFileTypes(['image/*'])
                                     ->maxSize(10240)
                                     ->maxFiles(1)
@@ -1245,7 +1245,7 @@ class CcResource extends Resource
             ->paginated([5, 10, 25, 50])
             ->columns([
                 TextColumn::make('posp')
-                    ->formatStateUsing(function (Cc $record): string {
+                    ->formatStateUsing(function (Ccdemo $record): string {
                         return "
                             <div class='space-y-1'>
                                 <div class='font-medium'>{$record->broker}</div>
@@ -1384,7 +1384,7 @@ class CcResource extends Resource
                             // 'insuranceCompany:id,name',
                             'fuelType:id,name',
                             'make:id,name',
-                            'product:id,name',
+                            //'product:id,name',
                             // 'ncb:id,name',
                             'salutation:id,name',
                             // 'region:id,name',

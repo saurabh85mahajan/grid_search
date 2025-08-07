@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Ccdemo extends Model
 {
     use HasFactory;
-    //
+    
     protected $table = 'ccs_3';
     protected $guarded = [];
 
@@ -21,86 +21,24 @@ class Ccdemo extends Model
     {
         return $this->belongsTo(User::class);
     }
+	
+	public function salutation(): BelongsTo
+    {
+        return $this->belongsTo(Salutation::class);
+    }
 
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
     }
-
-    public function previousInsurer(): BelongsTo
+	
+	public function make(): BelongsTo
     {
-        return $this->belongsTo(InsuranceCompany::class, 'py_insurance_company_id');
-    }
-
-    public function insuranceCompany(): BelongsTo
-    {
-        return $this->belongsTo(InsuranceCompany::class);
+        return $this->belongsTo(Make::class);
     }
 
     public function fuelType(): BelongsTo
     {
         return $this->belongsTo(FuelType::class);
-    }
-
-    public function make(): BelongsTo
-    {
-        return $this->belongsTo(Make::class);
-    }
-
-    public function product(): BelongsTo
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    public function ncb()
-    {
-        return $this->belongsTo(Ncb::class);
-    }
-
-	public function salutation(): BelongsTo
-    {
-        return $this->belongsTo(Salutation::class);
-    }
-	
-	public function region(): BelongsTo
-    {
-        return $this->belongsTo(Region::class);
-    }
-	
-	public function businessLock(): BelongsTo
-    {
-        return $this->belongsTo(BusinessLock::class);
-    }
-	
-	public function productCategory(): BelongsTo
-    {
-        return $this->belongsTo(ProductCategory::class);
-    }
-	
-	public function rto(): BelongsTo
-    {
-        return $this->belongsTo(Rto::class);
-    }
-
-    public function bank(): BelongsTo
-    {
-        return $this->belongsTo(Bank::class);
-    }
-
-    public function getRegistrationNumberAttribute()
-    {
-        $parts = [
-            $this->registration_number_1,
-            $this->registration_number_2,
-            $this->registration_number_3,
-            $this->registration_number_4,
-        ];
-
-        // Filter out empty values (like registration_number_3 which might be optional)
-        $parts = array_filter($parts, fn($part) => !is_null($part) && $part !== '');
-        
-        // Join parts with spaces
-        return implode(' ', $parts);
-    }
-	
+    }	
 }
