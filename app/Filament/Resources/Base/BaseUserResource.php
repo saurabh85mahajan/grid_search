@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Base;
 use App\Models\User;
 use App\Traits\HasStatusColumn;
 use Filament\Forms\Form;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +23,8 @@ abstract class BaseUserResource extends Resource
     protected static ?string $navigationLabel = 'Employee';
     protected static ?string $navigationGroup = 'Manage Employees';
     protected static ?int $navigationSort = 10;
+
+    protected const ORGANISATION_ID = null;
 
     public static function getOrganisationId()
     {
@@ -50,12 +54,12 @@ abstract class BaseUserResource extends Resource
                 ->unique(ignoreRecord: true),
             \Filament\Forms\Components\TextInput::make('password')
                 ->password()
-                ->required(fn($livewire) => $livewire instanceof Pages\CreateUser)
+                ->required(fn($livewire) => $livewire instanceof CreateRecord)
                 ->dehydrateStateUsing(fn($state) =>
                 filled($state) ? Hash::make($state) : null)
                 ->dehydrated(fn($state) => filled($state))
                 ->label(fn($livewire) =>
-                $livewire instanceof Pages\EditUser ? 'New Password' : 'Password'),
+                $livewire instanceof EditRecord ? 'New Password' : 'Password'),
             (new static)->getStatusSelect(),
             \Filament\Forms\Components\Hidden::make('organisation_id')
                 ->default(static::getOrganisationId()),
