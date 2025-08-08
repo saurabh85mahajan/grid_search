@@ -9,17 +9,17 @@ class UserResource extends BaseUserResource
 {
     public const ORGANISATION_ID = 1;
 	
-	protected static function getListPageClass(): string
+	protected static function getListUserClass(): string
     {
         return Pages\ListUsers::class;
     }
 
-    protected static function getCreatePageClass(): string
+    protected static function getCreateUserClass(): string
     {
         return Pages\CreateUser::class;
     }
 
-    protected static function getEditPageClass(): string
+    protected static function getEditUserClass(): string
     {
         return Pages\EditUser::class;
     }

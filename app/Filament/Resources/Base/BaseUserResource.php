@@ -119,17 +119,17 @@ abstract class BaseUserResource extends Resource
 	public static function getPages(): array
     {
         return [
-            'index' => static::getListPageClass()::route('/'),
-            'create' => static::getCreatePageClass()::route('/create'),
-            'edit' => static::getEditPageClass()::route('/{record}/edit'),
+            'index' => static::getListUserClass()::route('/'),
+            'create' => static::getCreateUserClass()::route('/create'),
+            'edit' => static::getEditUserClass()::route('/{record}/edit'),
         ];
     }
 
     // Abstract methods that child classes must implement to return their specific page classes
     
-	abstract protected static function getListPageClass(): string;
+	abstract protected static function getListUserClass(): string;
 	
-    abstract protected static function getCreatePageClass(): string;
+    abstract protected static function getCreateUserClass(): string;
     
-	abstract protected static function getEditPageClass(): string;
+	abstract protected static function getEditUserClass(): string;
 }
