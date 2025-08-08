@@ -30,6 +30,8 @@ class ImpersonateController extends Controller
             return '/llc/dashboard';
         } elseif ($organisationId == 2) {
             return '/ppc/dashboard';
+        }  elseif ($organisationId == 3) {
+            return '/demo/dashboard';
         }
 
         return '/dashboard';
