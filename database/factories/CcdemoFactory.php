@@ -9,7 +9,7 @@ use Carbon\Carbon;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Ccdemo>
  */
-class CcdemosFactory extends Factory
+class CcdemoFactory extends Factory
 {
     /**
      * Define the model's default state.

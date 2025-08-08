@@ -43,6 +43,9 @@ class CcResource extends Resource
     protected static ?string $model = Ccdemo::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'Cc';
+    protected static ?string $pluralModelLabel = 'Ccs';
+    protected static ?string $navigationLabel = 'Cc';
 
     const ORGANISATION_ID = 3;
 
