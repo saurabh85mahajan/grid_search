@@ -8,8 +8,8 @@ use App\Filament\Resources\Base\BaseUserResource;
 class UserResource extends BaseUserResource
 {
     public const ORGANISATION_ID = 2;
-	
-	protected static function getListUserClass(): string
+
+    protected static function getListUserClass(): string
     {
         return Pages\ListUsers::class;
     }
@@ -24,4 +24,3 @@ class UserResource extends BaseUserResource
         return Pages\EditUser::class;
     }
 }
-

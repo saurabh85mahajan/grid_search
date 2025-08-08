@@ -13,10 +13,6 @@ class Ccdemo extends Model
     protected $table = 'ccs_3';
     protected $guarded = [];
 
-    protected $casts = [
-        'add_on_coverages' => 'array',
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
