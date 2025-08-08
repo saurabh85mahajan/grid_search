@@ -1377,20 +1377,11 @@ class CcResource extends Resource
                     ->action(function ($livewire) {
                         $query = $livewire->getFilteredTableQuery();
                         $query = $query->with([
-                            // 'user:id,name',
+                            'user:id,name',
                             'city:id,name',
-                            // 'previousInsurer:id,name',
-                            // 'insuranceCompany:id,name',
                             'fuelType:id,name',
                             'make:id,name',
-                            //'product:id,name',
-                            // 'ncb:id,name',
                             'salutation:id,name',
-                            // 'region:id,name',
-                            // 'businessLock:id,name',
-                            // 'productCategory:id,name',
-                            // 'rto:id,name',
-                            // 'bank:id,name',
                         ]);
 
                         $records = $query->get();
