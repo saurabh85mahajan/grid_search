@@ -2,16 +2,13 @@
 
 namespace App\Filament\Llc\Resources;
 
-use App\Services\DigitExtractor;
-use App\Services\IciciExtractor;
-use App\Services\TataExtractor;
-use App\Services\UnitedInsuranceExtractor;
 use App\Filament\Llc\Resources\CcResource\Pages;
 use App\Models\Cc;
 use App\Models\FuelType;
 use App\Models\Make;
 use App\Models\User;
 use App\Models\Setting;
+use App\Services\Extractor;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -47,11 +44,13 @@ class CcResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    const ORGANISATION_ID = 1;
+
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
         $is_organisation_admin = $user->is_organisation_admin;
-        $organisationId = $user->organisation_id;
+        $organisationId = self::ORGANISATION_ID;
         $is_manager = $user->is_manager;
 
         if ($is_organisation_admin) {
@@ -197,7 +196,7 @@ class CcResource extends Resource
 
                                     if (isset($parsedData['agent_name'])) {
                                         $agentName = trim($parsedData['agent_name']);
-                                        $brokerOptions = Setting::getSelectOptions('brokers_1');
+                                        $brokerOptions = Setting::getSelectOptions('brokers_' . self::ORGANISATION_ID);
                                         $matchedBroker = null;
                                         
                                         if (!empty($agentName) && !empty($brokerOptions)) {
@@ -228,7 +227,7 @@ class CcResource extends Resource
 
                                     if (isset($parsedData['insurance_type'])) {
                                         $insurancType = trim($parsedData['insurance_type']);
-                                        $insuranceOptions = Setting::getSelectOptions('insurance_type_1');
+                                        $insuranceOptions = Setting::getSelectOptions('insurance_type_' . self::ORGANISATION_ID);
                                         $matchedInsuranceType = null;
                                         
                                         if (!empty($insurancType) && !empty($insuranceOptions)) {
@@ -343,7 +342,7 @@ class CcResource extends Resource
 
                                     if (isset($parsedData['insurance_company'])) {
                                         $insurance = trim($parsedData['insurance_company']);
-                                        $insuranceCompanies = Setting::getSelectOptions('insurance_companies_1');
+                                        $insuranceCompanies = Setting::getSelectOptions('insurance_companies_' . self::ORGANISATION_ID);
                                         $matchedInsuranceCompany = null;
                                         
                                         if (!empty($insurance) && !empty($insuranceCompanies)) {
@@ -469,7 +468,7 @@ class CcResource extends Resource
                                             ->dehydrated(fn($state, $record) => $record === null),
                                         Forms\Components\Select::make('broker')
                                             ->label('Broker Name')
-                                            ->options(fn() => Setting::getSelectOptions('brokers_1'))
+                                            ->options(fn() => Setting::getSelectOptions('brokers_' . self::ORGANISATION_ID))
                                             ->placeholder('Select Broker')
                                             ->required()
                                             ->validationMessages([
@@ -646,7 +645,7 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('insurance_type')
                                             ->label('Type of Insurance')
-                                            ->options(fn() => Setting::getSelectOptions('insurance_type_1'))
+                                            ->options(fn() => Setting::getSelectOptions('insurance_type_' . self::ORGANISATION_ID))
                                             ->placeholder('Select Insurance Type')
                                             ->validationMessages([
                                                 'required' => 'Please enter Type of Insurance',
@@ -660,7 +659,7 @@ class CcResource extends Resource
 
                                         Forms\Components\Select::make('insurance_company_name')
                                             ->label('Insurance Company')
-                                            ->options(fn() => Setting::getSelectOptions('insurance_companies_1'))
+                                            ->options(fn() => Setting::getSelectOptions('insurance_companies_' . self::ORGANISATION_ID))
                                             ->placeholder('Select Insurance Company')
                                             ->validationMessages([
                                                 'required' => 'Please select Insurance Company',
@@ -1361,7 +1360,7 @@ class CcResource extends Resource
                 SelectFilter::make('agent')
                     ->label('Agent')
                     ->relationship('user', 'name', function (Builder $query) {
-                        return $query->where('organisation_id', 1);
+                        return $query->where('organisation_id', self::ORGANISATION_ID);
                     })
                     ->preload() // Preload options instead of lazy-loading
                     ->searchable() // Add search capability for larger lists
@@ -1879,65 +1878,9 @@ class CcResource extends Resource
 
     public static function parsePdfContent(string $filePath, $insuranceType): ?array
     {
-        // return 
-        //     [
-        //         'name_prefix' => 'Mr',
-        //         'first_name' => 'Saurabh',
-        //         'middle_name' => 'Kumar',
-        //         'last_name' => 'Mahajan',
-        //         'address_1' => 'GBL 201',
-        //         'address_2' => 'IREO Rise',
-        //         'address_3' => 'SECtor 99',
-        //         'address_3' => 'SECtor 99',
-        //         'pincode' => '160062',
-        //         'city' => 'Mohali',
-        //         'mobile_no' => '9646358300',
-        //         'email' => 'sm**@gmail.com',
-        //         'nominee' => 'Mehak',
-        //         'nominee_relationship' => 'Wife',
-        //         'nominee_dob' => '1991-01-01',
-        //         'insurance_type' => 'Motor',
-        //         'policy_number' => '1111111',
-        //         'sum_insured' => '5000',
-        //         'risk_start_date' => '1991-01-01',
-        //         'risk_end_date' => '1992-01-01',
-        //         'tp_start_date' => '1993-01-01',
-        //         'tp_end_date' => '1994-01-01',
-        //         'make' => 'Honda',
-        //         'model' => 'MotorCycle',
-        //         'sub_model' => 'Passion',
-        //         'engine_number' => 'E1234',
-        //         'chassis_number' => 'C12312312',
-        //         'cc' => '150',
-        //         'yom' => '2017',
-        //         'fuel_type' => 'Petrol',
-        //         'agent_name' => 'Robinhood Pvt',
-        //         'registration_number_1' => 'PB',
-        //         'registration_number_2' => '65',
-        //         'registration_number_3' => 'AP',
-        //         'registration_number_4' => '8027',
-        //         'insurance_company' => 'Tata',
-        //     ];
         try {
             $text = \Spatie\PdfToText\Pdf::getText($filePath);
-
-            switch ($insuranceType) {
-                case 'United':
-                    $extractor = new UnitedInsuranceExtractor();
-                    break;
-                case 'Digit':
-                    $extractor = new DigitExtractor();
-                    break;
-                case 'Icici':
-                    $extractor = new IciciExtractor();
-                    break;
-                case 'Tata':
-                    $extractor = new TataExtractor();
-                    break;
-                default:
-                    throw new \Exception('This Insurance Company is not yet supported');
-            }
-
+            $extractor = Extractor::getExtractorClass($insuranceType);
             $response = $extractor->extractData($text);
             $response['insurance_company'] = $insuranceType;
 

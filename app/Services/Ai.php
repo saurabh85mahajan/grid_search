@@ -32,7 +32,7 @@ class Ai
             ->withBasicAuth($this->login, $this->password)
             ->acceptJson()
             ->contentType('application/json')
-            ->post('https://aiwebdesk.com/api/generate', [
+            ->post('https://robot.aiwebdesk.com/api/generate', [
                 'model' => $model,
                 'stream' => false,
                 'prompt' => $fullPrompt,

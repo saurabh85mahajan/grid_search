@@ -23,6 +23,8 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'Manage Employees';
     protected static ?int $navigationSort = 10;
 
+    const ORGANISATION_ID = 1;
+
     public static function canAccess(): bool
     {
         $user = auth()->user();
@@ -31,7 +33,7 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('organisation_id', 1)
+        return parent::getEloquentQuery()->where('organisation_id', self::ORGANISATION_ID)
             ->where('is_organisation_admin', '!=', true);
     }
 
@@ -54,7 +56,7 @@ class UserResource extends Resource
                 $livewire instanceof Pages\EditUser ? 'New Password' : 'Password'),
             (new static)->getStatusSelect(),
             \Filament\Forms\Components\Hidden::make('organisation_id')
-                ->default(1),
+                ->default(self::ORGANISATION_ID),
             \Filament\Forms\Components\Select::make('is_manager')
                 ->label('Is Manager')
                 ->options([
@@ -71,7 +73,7 @@ class UserResource extends Resource
                     fn($get): array =>
                     User::query()
                         ->active()
-                        ->hasOrganisation(1)
+                        ->hasOrganisation(self::ORGANISATION_ID)
                         ->isManager()
                         ->where('id', '!=',  auth()->user()->id)
                         ->pluck('name', 'id')->toArray()
