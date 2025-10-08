@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('insurance_grid_raws', function (Blueprint $table) {
             $table->id();
-            $table->string('policy_group_id', 50)->nullable()->index();
-            
+
             // Basic info - The only searchable fields
             $table->string('insurer', 50)->index();
             $table->string('segment', 50)->index();

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class InsuranceGridRawSeeder extends Seeder
 {
@@ -1002,8 +1003,7 @@ class InsuranceGridRawSeeder extends Seeder
 
         // Insert policies with default null values for unspecified columns
         foreach ($policies as $policy) {
-            DB::table('insurance_policies_raw')->insert(array_merge([
-                'policy_group_id' => Str::uuid(),
+            DB::table('insurance_grid_raws')->insert(array_merge([
                 'location' => null,
                 'location_remarks' => null,
                 'insurer_remarks' => null,
