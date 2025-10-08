@@ -62,17 +62,15 @@
                                 class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                             >
                                 <option value="">All Segments</option>
-                                @foreach(\App\Models\InsuranceGridRaw::distinct()->orderBy('segment')->pluck('segment') as $segmentOption)
-                                    <option value="2W">2W</option>
-                                    <option value="3W GCV">3W GCV</option>
-                                    <option value="3W PCV">3W PCV</option>
-                                    <option value="GCW">GCW</option>
-                                    <option value="MISD">MISD</option>
-                                    <option value="Private Car">Private Car</option>
-                                    <option value="School Bus">School Bus</option>
-                                    <option value="Taxi">Taxi</option>
-                                    <option value="Tractor">Tractor</option>
-                                @endforeach
+                                <option value="2W">2W</option>
+                                <option value="3W GCV">3W GCV</option>
+                                <option value="3W PCV">3W PCV</option>
+                                <option value="GCW">GCW</option>
+                                <option value="MISD">MISD</option>
+                                <option value="Private Car">Private Car</option>
+                                <option value="School Bus">School Bus</option>
+                                <option value="Taxi">Taxi</option>
+                                <option value="Tractor">Tractor</option>
                             </select>
                         </div>
                     </div>
