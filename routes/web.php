@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\ImpersonateController;
+use App\Livewire\PublicInsuranceSearch;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,3 +31,5 @@ Route::get('/protected-file/{path}', function ($path) {
 Route::middleware(['web'])->group(function () {
     Route::get('/remote-aidesk/account-manager/impersonate/{user}', ImpersonateController::class)->name('impersonate.start');
 });
+
+Route::get('/insurance-grid-search', PublicInsuranceSearch::class);
