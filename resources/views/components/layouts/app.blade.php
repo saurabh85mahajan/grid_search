@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="fi h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Insurance Search' }}</title>
+    <title>{{ $title ?? 'Insurance Policy Search' }}</title>
     
     @filamentStyles
-    @vite('resources/css/app.css')
+    <link href="{{ asset('css/filament/filament/app.css') }}" rel="stylesheet" />
 </head>
-<body>
+<body class="antialiased fi-body min-h-full bg-gray-50 dark:bg-gray-950">
     {{ $slot }}
 
     @filamentScripts
-    @vite('resources/js/app.js')
 </body>
 </html>

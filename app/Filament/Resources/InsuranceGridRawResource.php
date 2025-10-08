@@ -18,6 +18,8 @@ class InsuranceGridRawResource extends Resource
 
     protected static ?string $navigationLabel = 'Insurance Grid';
 
+    protected static ?string $layout = null;
+
     public static function form(Form $form): Form
     {
         return $form
