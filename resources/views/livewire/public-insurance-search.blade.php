@@ -2,8 +2,8 @@
     <!-- Header -->
     <div class="bg-white dark:bg-gray-900 shadow border-b border-gray-200 dark:border-gray-800">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Insurance Policy Search</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Find the right insurance policy for your needs</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Monthly Grid</h1>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">UP, DL, NCR, UK, UA, HR</p>
         </div>
     </div>
 
@@ -12,14 +12,6 @@
         <div class="space-y-6">
             <!-- Search Filters -->
             <x-filament::section>
-                <x-slot name="heading">
-                    Search Filters
-                </x-slot>
-                
-                <x-slot name="description">
-                    Select your criteria to find insurance policies
-                </x-slot>
-
                 <form wire:submit.prevent="$refresh">
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                         <!-- Insurer -->
@@ -35,9 +27,25 @@
                                 class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                             >
                                 <option value="">All Insurers</option>
-                                @foreach(\App\Models\InsuranceGridRaw::distinct()->orderBy('insurer')->pluck('insurer') as $insurerOption)
-                                    <option value="{{ $insurerOption }}">{{ $insurerOption }}</option>
-                                @endforeach
+                                <option value="BAJAJ">BAJAJ</option>
+                                <option value="CHOLA">CHOLA</option>
+                                <option value="DIGIT">DIGIT</option>
+                                <option value="FUTURE">FUTURE</option>
+                                <option value="HDFC">HDFC</option>
+                                <option value="ICICI">ICICI</option>
+                                <option value="KOTAK">KOTAK</option>
+                                <option value="LIBERTY">LIBERTY</option>
+                                <option value="MAGMA">MAGMA</option>
+                                <option value="NATIONAL">NATIONAL</option>
+                                <option value="RELIANCE">RELIANCE</option>
+                                <option value="ROYAL">ROYAL</option>
+                                <option value="ROYAL SUNDARAM">ROYAL SUNDARAM</option>
+                                <option value="SBI">SBI</option>
+                                <option value="SHRIRAM">SHRIRAM</option>
+                                <option value="SOMPO">SOMPO</option>
+                                <option value="TATA">TATA</option>
+                                <option value="UNIVERSAL SOMPO">UNIVERSAL SOMPO</option>
+                                <option value="ZUNO">ZUNO</option>
                             </select>
                         </div>
 
@@ -55,67 +63,24 @@
                             >
                                 <option value="">All Segments</option>
                                 @foreach(\App\Models\InsuranceGridRaw::distinct()->orderBy('segment')->pluck('segment') as $segmentOption)
-                                    <option value="{{ $segmentOption }}">{{ $segmentOption }}</option>
+                                    <option value="2W">2W</option>
+                                    <option value="3W GCV">3W GCV</option>
+                                    <option value="3W PCV">3W PCV</option>
+                                    <option value="GCW">GCW</option>
+                                    <option value="MISD">MISD</option>
+                                    <option value="Private Car">Private Car</option>
+                                    <option value="School Bus">School Bus</option>
+                                    <option value="Taxi">Taxi</option>
+                                    <option value="Tractor">Tractor</option>
                                 @endforeach
                             </select>
                         </div>
-
-                        <!-- Policy Type -->
-                        <div>
-                            <label for="policy_type" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
-                                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
-                                    Policy Type
-                                </span>
-                            </label>
-                            <select 
-                                wire:model.live="policy_type"
-                                id="policy_type"
-                                class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                            >
-                                <option value="">All Policy Types</option>
-                                @foreach(\App\Models\InsuranceGridRaw::distinct()->orderBy('policy_type')->pluck('policy_type') as $policyTypeOption)
-                                    <option value="{{ $policyTypeOption }}">{{ $policyTypeOption }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6 flex gap-3">
-                        <x-filament::button type="submit" color="primary">
-                            <x-slot name="icon">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                            </x-slot>
-                            Search
-                        </x-filament::button>
-                        
-                        <x-filament::button 
-                            type="button" 
-                            color="gray"
-                            wire:click="clearFilters"
-                        >
-                            <x-slot name="icon">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </x-slot>
-                            Clear Filters
-                        </x-filament::button>
                     </div>
                 </form>
             </x-filament::section>
 
             <!-- Search Results -->
             <x-filament::section>
-                <x-slot name="heading">
-                    Search Results
-                </x-slot>
-                
-                <x-slot name="description">
-                    Click on any row to view full details
-                </x-slot>
-
                 {{ $this->table }}
             </x-filament::section>
         </div>

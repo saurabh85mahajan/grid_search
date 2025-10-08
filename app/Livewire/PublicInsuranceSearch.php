@@ -59,44 +59,40 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                 return $query;
             })
             ->columns([
-                TextColumn::make('insurer')
+                TextColumn::make('insurer_with_remarks')
                     ->label('Insurer')
-                    ->searchable()
-                    ->sortable()
                     ->weight('semibold')
-                    ->color('primary'),
-                TextColumn::make('segment')
+                    ->color('primary')
+                    ->wrap()
+                    ->extraAttributes(['style' => 'width: 100px; max-width: 100px; word-break: break-word; white-space: normal;']),
+                TextColumn::make('segment_with_remarks')
                     ->label('Segment')
-                    ->searchable()
-                    ->sortable()
-                    ->badge()
-                    ->color('info'),
-                TextColumn::make('policy_type')
+                    ->color('info')
+                    ->wrap()
+                    ->extraAttributes(['style' => 'width: 150px; max-width: 150px; word-break: break-word; white-space: normal;']),
+                TextColumn::make('policy_type_with_remarks')
                     ->label('Policy Type')
-                    ->searchable()
-                    ->sortable()
-                    ->wrap(),
-                TextColumn::make('points')
-                    ->label('Points')
-                    ->sortable()
-                    ->badge()
-                    ->color('success')
-                    ->size('lg')
-                    ->weight('bold'),
+                    ->wrap()
+                    ->extraAttributes(['style' => 'width: 150px; max-width: 150px; word-break: break-word; white-space: normal;']),
                 TextColumn::make('location')
                     ->label('Location')
-                    ->limit(40)
-                    ->tooltip(fn ($record) => $record->location)
                     ->wrap()
-                    ->searchable(),
-            ])
-            ->actions([
-                ViewAction::make()
-                    ->modalHeading(fn ($record) => "{$record->insurer} - {$record->segment}")
-                    ->modalContent(fn ($record) => view('livewire.insurance-details', ['record' => $record])),
+                    ->extraAttributes(['style' => 'width: 150px; max-width: 150px; word-break: break-word; white-space: normal;']),
+                TextColumn::make('remarks_additional')
+                    ->label('Remarks')
+                    ->wrap()
+                    ->extraAttributes(['style' => 'width: 250px; max-width: 250px; word-break: break-word; white-space: normal;']),
+                TextColumn::make('points')
+                    ->label('Points')
+                    ->color('success')
+                    ->size('lg')
+                    ->weight('bold')
+                    ->alignCenter()
+                    ->extraAttributes(['style' => 'width: 100px; max-width: 100px; word-break: break-word; white-space: normal;']),
             ])
             ->defaultSort('insurer')
-            ->paginated([10, 25, 50, 100])
+            ->paginated(100)
+            ->paginationPageOptions([100])
             ->striped();
     }
 
