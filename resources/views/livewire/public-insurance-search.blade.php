@@ -3,7 +3,6 @@
     <div class="bg-white dark:bg-gray-900 shadow border-b border-gray-200 dark:border-gray-800">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Monthly Grid</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">UP, DL, NCR, UK, UA, HR</p>
         </div>
     </div>
 
@@ -71,6 +70,22 @@
                                 <option value="School Bus">School Bus</option>
                                 <option value="Taxi">Taxi</option>
                                 <option value="Tractor">Tractor</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="region" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
+                                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+                                    Region
+                                </span>
+                            </label>
+                            <select 
+                                wire:model.live="region"
+                                id="region"
+                                class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                            >
+                                <option value="1">UP, DL, UK, HR</option>
+                                <option value="2">Maharashtra</option>
                             </select>
                         </div>
                     </div>

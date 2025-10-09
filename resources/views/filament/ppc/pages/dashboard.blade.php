@@ -8,7 +8,7 @@
         </p>
         <x-filament::section>
             <div class="text-sm text-gray-500 mt-2">
-                For any bug or suggestion, please email <a href="mailto:saurabh85mahajan@gmail.com" class="text-primary-600 underline">saurabh85mahajan@gmail.com</a>.
+                For any bug or suggestion, please email <a href="mailto:support@aiwebdesk.com" class="text-primary-600 underline">support@aiwebdesk.com</a>.
                 Do include your registered email in subject.
             </div>
         </x-filament::section>

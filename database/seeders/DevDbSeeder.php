@@ -39,6 +39,15 @@ class DevDbSeeder extends Seeder
             'is_organisation_admin' => true,
         ]);
 
+        //Grid Resource
+        User::create([
+            'name' => 'Admin Grid',
+            'email' => 'admin_grid@aiwebdesk.com',
+            'password' => Hash::make('admin123'),
+            'organisation_id' => 4,
+            'is_organisation_admin' => true,
+        ]);
+
         $managers = User::factory()->count(2)->sequence(
             ['name' => 'Manager One'],
             ['name' => 'Manager Two']

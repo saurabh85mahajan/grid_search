@@ -5,11 +5,11 @@ namespace App\Livewire;
 use App\Models\InsuranceGridRaw;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class PublicInsuranceSearch extends Component implements HasForms, HasTable
@@ -17,9 +17,17 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
     use InteractsWithForms;
     use InteractsWithTable;
 
+    #[Url]
     public $insurer = '';
+
+    #[Url]
     public $segment = '';
+
+    #[Url]
     public $policy_type = '';
+
+    #[Url]
+    public $region = 1;
 
     // These methods trigger table refresh when filters change
     public function updatedInsurer()
@@ -56,6 +64,10 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                     $query->where('policy_type', $this->policy_type);
                 }
 
+                if (!empty($this->region)) {
+                    $query->where('region', $this->region);
+                }
+
                 return $query;
             })
             ->columns([
@@ -64,7 +76,7 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                     ->weight('semibold')
                     ->color('primary')
                     ->wrap()
-                    ->extraAttributes(['style' => 'width: 100px; max-width: 100px; word-break: break-word; white-space: normal;']),
+                    ->extraAttributes(['style' => 'width: 120px; max-width: 120px; word-break: break-word; white-space: normal;']),
                 TextColumn::make('segment_with_remarks')
                     ->label('Segment')
                     ->color('info')
@@ -84,12 +96,15 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                     ->extraAttributes(['style' => 'width: 250px; max-width: 250px; word-break: break-word; white-space: normal;']),
                 TextColumn::make('points')
                     ->label('Points')
+                    ->formatStateUsing(fn ($state) => $state - 5)
                     ->color('success')
                     ->size('lg')
                     ->weight('bold')
                     ->alignCenter()
                     ->extraAttributes(['style' => 'width: 100px; max-width: 100px; word-break: break-word; white-space: normal;']),
             ])
+            ->emptyStateHeading('No Results Found')
+            ->emptyStateDescription('Try adjusting your search criteria')
             ->defaultSort('insurer')
             ->paginated(100)
             ->paginationPageOptions([100])
@@ -101,6 +116,7 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
         $this->insurer = '';
         $this->segment = '';
         $this->policy_type = '';
+        $this->region = 1;
         $this->resetTable();
     }
 

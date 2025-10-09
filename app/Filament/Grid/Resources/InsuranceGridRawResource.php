@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Grid\Resources;
 
-use App\Filament\Resources\InsuranceGridRawResource\Pages;
+use App\Filament\Grid\Resources\InsuranceGridRawResource\Pages;
 use App\Models\InsuranceGridRaw;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -30,6 +30,13 @@ class InsuranceGridRawResource extends Resource
                 Forms\Components\TextInput::make('segment')
                     ->required()
                     ->maxLength(50),
+                Forms\Components\Select::make('region')
+                    ->label('Region')
+                    ->options([
+                        '1' => 'UP, DL, UK, HR',
+                        '2' => 'Maharashtra',
+                    ])
+                    ->required(),
                 Forms\Components\TextInput::make('policy_type')
                     ->required()
                     ->maxLength(50),
@@ -61,26 +68,35 @@ class InsuranceGridRawResource extends Resource
                 Tables\Columns\TextColumn::make('segment')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('region')
+                        ->formatStateUsing(fn(string $state): string => match ($state) {
+                            '1' => 'UP, DL, UK, HR',
+                            '2' => 'Maharashtra',
+                        }),
                 Tables\Columns\TextColumn::make('policy_type')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('location')
+                    ->wrap(),
+                Tables\Columns\TextColumn::make('remarks_additional')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('points')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('insurer')
-                    ->options(fn () => InsuranceGridRaw::distinct()->pluck('insurer', 'insurer')->toArray()),
+                Tables\Filters\SelectFilter::make('region')
+                    ->options([
+                        '1' => 'UP, DL, UK, HR',
+                        '2' => 'Maharashtra',
+                    ]),
                 Tables\Filters\SelectFilter::make('segment')
                     ->options(fn () => InsuranceGridRaw::distinct()->pluck('segment', 'segment')->toArray()),
+                Tables\Filters\SelectFilter::make('insurer')
+                    ->options(fn () => InsuranceGridRaw::distinct()->pluck('insurer', 'insurer')->toArray()),
                 Tables\Filters\SelectFilter::make('policy_type')
                     ->options(fn () => InsuranceGridRaw::distinct()->pluck('policy_type', 'policy_type')->toArray()),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
