@@ -43,7 +43,7 @@ class DevDbSeeder extends Seeder
         User::create([
             'name' => 'Admin Grid',
             'email' => 'admin_grid@aiwebdesk.com',
-            'password' => Hash::make('admin123'),
+            'password' => Hash::make('T5$nP9@hM3#jK7!qW2'),
             'organisation_id' => 4,
             'is_organisation_admin' => true,
         ]);
