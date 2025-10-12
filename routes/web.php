@@ -33,3 +33,5 @@ Route::middleware(['web'])->group(function () {
 });
 
 Route::get('/insurance-grid-search', PublicInsuranceSearch::class);
+Route::get('/employee/insurance-grid-search', PublicInsuranceSearch::class)
+    ->defaults('userType', 'employee');

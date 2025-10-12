@@ -67,6 +67,7 @@ class InsuranceGridRaw extends Model
         return [
             '1' => 'UP, DL, UK, HR',
             '2' => 'Maharashtra',
+            '3' => 'Gujarat',
         ];
     }
 }

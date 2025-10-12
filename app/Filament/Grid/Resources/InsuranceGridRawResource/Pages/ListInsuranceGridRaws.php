@@ -20,6 +20,13 @@ class ListInsuranceGridRaws extends ListRecords
                 ->openUrlInNewTab()
                 ->icon('heroicon-o-link')
                 ->color('primary'),
+
+            Actions\Action::make('employeeLink')
+                ->label('Employee Link')
+                ->url('/employee/insurance-grid-search')
+                ->openUrlInNewTab()
+                ->icon('heroicon-o-link')
+                ->color('primary'),
         ];
     }
 }
