@@ -99,7 +99,7 @@
                                 <option value="2W">2W</option>
                                 <option value="3W GCV">3W GCV</option>
                                 <option value="3W PCV">3W PCV</option>
-                                <option value="GCW">GCW</option>
+                                <option value="GCW">GCV</option>
                                 <option value="MISD">MISD</option>
                                 <option value="Private Car">Private Car</option>
                                 <option value="School Bus">School Bus</option>
