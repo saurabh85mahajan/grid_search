@@ -13,11 +13,11 @@ class InsuranceGridRaw extends Model
     {
         $insurer = $this->insurer ?? '';
         $remarks = $this->insurer_remarks ?? '';
-        
+
         if (empty($remarks)) {
             return $insurer;
         }
-        
+
         return $insurer . ' - ' . $remarks;
     }
 
@@ -30,11 +30,11 @@ class InsuranceGridRaw extends Model
     {
         $segment = $this->segment ?? '';
         $remarks = $this->segment_remarks ?? '';
-        
+
         if (empty($remarks)) {
             return $segment;
         }
-        
+
         return $segment . ' - ' . $remarks;
     }
 
@@ -47,11 +47,26 @@ class InsuranceGridRaw extends Model
     {
         $policyType = $this->policy_type ?? '';
         $remarks = $this->policy_type_remarks ?? '';
-        
+
         if (empty($remarks)) {
             return $policyType;
         }
-        
+
         return $policyType . ' - ' . $remarks;
+    }
+
+    public static function getPeriodArray(): array
+    {
+        return [
+            '1' => 'Oct, 2025',
+        ];
+    }
+
+    public static function getRegionArray(): array
+    {
+        return [
+            '1' => 'UP, DL, UK, HR',
+            '2' => 'Maharashtra',
+        ];
     }
 }

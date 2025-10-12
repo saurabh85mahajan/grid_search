@@ -29,6 +29,9 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
     #[Url]
     public $region = 1;
 
+    #[Url]
+    public $period = 1;
+
     // These methods trigger table refresh when filters change
     public function updatedInsurer()
     {
@@ -66,6 +69,10 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
 
                 if (!empty($this->region)) {
                     $query->where('region', $this->region);
+                }
+
+                if (!empty($this->period)) {
+                    $query->where('period', $this->period);
                 }
 
                 return $query;
@@ -117,12 +124,16 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
         $this->segment = '';
         $this->policy_type = '';
         $this->region = 1;
+        $this->period = 1;
         $this->resetTable();
     }
 
     public function render()
     {
-        return view('livewire.public-insurance-search')
+        return view('livewire.public-insurance-search', [
+            'periodArray' => InsuranceGridRaw::getPeriodArray(),
+            'regionArray' => InsuranceGridRaw::getRegionArray(),
+        ])
             ->layout('components.layouts.app');
     }
 }

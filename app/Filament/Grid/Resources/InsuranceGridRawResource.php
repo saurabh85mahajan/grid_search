@@ -32,10 +32,11 @@ class InsuranceGridRawResource extends Resource
                     ->maxLength(50),
                 Forms\Components\Select::make('region')
                     ->label('Region')
-                    ->options([
-                        '1' => 'UP, DL, UK, HR',
-                        '2' => 'Maharashtra',
-                    ])
+                    ->options(InsuranceGridRaw::getRegionArray())
+                    ->required(),
+                Forms\Components\Select::make('period')
+                    ->label('Period')
+                    ->options(InsuranceGridRaw::getPeriodArray())
                     ->required(),
                 Forms\Components\TextInput::make('policy_type')
                     ->required()
@@ -69,10 +70,13 @@ class InsuranceGridRawResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('region')
-                        ->formatStateUsing(fn(string $state): string => match ($state) {
-                            '1' => 'UP, DL, UK, HR',
-                            '2' => 'Maharashtra',
-                        }),
+                    ->formatStateUsing(fn(string $state): string => 
+                        InsuranceGridRaw::getRegionArray()[$state] ?? $state
+                    ),
+                Tables\Columns\TextColumn::make('period')
+                    ->formatStateUsing(fn(string $state): string => 
+                        InsuranceGridRaw::getPeriodArray()[$state] ?? $state
+                    ),
                 Tables\Columns\TextColumn::make('policy_type')
                     ->searchable()
                     ->sortable(),
@@ -84,11 +88,10 @@ class InsuranceGridRawResource extends Resource
                     ->sortable()
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('period')
+                    ->options(InsuranceGridRaw::getPeriodArray()),
                 Tables\Filters\SelectFilter::make('region')
-                    ->options([
-                        '1' => 'UP, DL, UK, HR',
-                        '2' => 'Maharashtra',
-                    ]),
+                    ->options(InsuranceGridRaw::getRegionArray()),
                 Tables\Filters\SelectFilter::make('segment')
                     ->options(fn () => InsuranceGridRaw::distinct()->pluck('segment', 'segment')->toArray()),
                 Tables\Filters\SelectFilter::make('insurer')

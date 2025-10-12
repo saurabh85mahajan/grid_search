@@ -12,7 +12,42 @@
             <!-- Search Filters -->
             <x-filament::section>
                 <form wire:submit.prevent="$refresh">
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+                        <div>
+                            <label for="region" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
+                                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+                                    Region
+                                </span>
+                            </label>
+                            <select 
+                                wire:model.live="region"
+                                id="region"
+                                class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                            >
+                                @foreach($regionArray as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="period" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
+                                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+                                    Period
+                                </span>
+                            </label>
+                            <select 
+                                wire:model.live="period"
+                                id="period"
+                                class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                            >
+                                @foreach($periodArray as $key => $value)
+                                    <option value="{{ $key }}">{{ $value }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <!-- Insurer -->
                         <div>
                             <label for="insurer" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
@@ -70,22 +105,6 @@
                                 <option value="School Bus">School Bus</option>
                                 <option value="Taxi">Taxi</option>
                                 <option value="Tractor">Tractor</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label for="region" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
-                                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
-                                    Region
-                                </span>
-                            </label>
-                            <select 
-                                wire:model.live="region"
-                                id="region"
-                                class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                            >
-                                <option value="1">UP, DL, UK, HR</option>
-                                <option value="2">Maharashtra</option>
                             </select>
                         </div>
                     </div>
