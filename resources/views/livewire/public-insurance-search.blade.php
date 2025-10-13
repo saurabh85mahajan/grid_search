@@ -71,12 +71,14 @@
                                 <option value="LIBERTY">LIBERTY</option>
                                 <option value="MAGMA">MAGMA</option>
                                 <option value="NATIONAL">NATIONAL</option>
+                                <option value="ORIENTAL">ORIENTAL</option>
                                 <option value="RELIANCE">RELIANCE</option>
                                 <option value="ROYAL">ROYAL</option>
                                 <option value="ROYAL SUNDARAM">ROYAL SUNDARAM</option>
                                 <option value="SBI">SBI</option>
                                 <option value="SHRIRAM">SHRIRAM</option>
                                 <option value="SOMPO">SOMPO</option>
+                                <option value="UNITED INDIA">UNITED INDIA</option>
                                 <option value="TATA">TATA</option>
                                 <option value="UNIVERSAL SOMPO">UNIVERSAL SOMPO</option>
                                 <option value="ZUNO">ZUNO</option>
@@ -102,6 +104,7 @@
                                 <option value="GCW">GCV</option>
                                 <option value="MISD">MISD</option>
                                 <option value="Private Car">Private Car</option>
+                                <option value="Route Bus">Route Bus</option>
                                 <option value="School Bus">School Bus</option>
                                 <option value="Taxi">Taxi</option>
                                 <option value="Tractor">Tractor</option>

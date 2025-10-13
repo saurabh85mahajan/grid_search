@@ -74,9 +74,14 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                     $query->where('policy_type', $this->policy_type);
                 }
 
-                if (!empty($this->region)) {
-                    $query->where('region', $this->region);
-                }
+                $query->where(function ($q) {
+                    if (!empty($this->region)) {
+                        $q->where('region', $this->region)
+                        ->orWhereNull('region');
+                    } else {
+                        $q->whereNull('region');
+                    }
+                });
 
                 if (!empty($this->period)) {
                     $query->where('period', $this->period);
