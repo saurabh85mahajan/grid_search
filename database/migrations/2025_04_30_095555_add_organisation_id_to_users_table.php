@@ -15,6 +15,7 @@ return new class extends Migration
             //
             $table->boolean('is_organisation_admin')->default(false);
             $table->integer('organisation_id')->nullable();
+            $table->boolean('is_active')->default(true);
         });
     }
 
