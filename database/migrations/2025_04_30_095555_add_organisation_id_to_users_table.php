@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
+            $table->boolean('is_organisation_admin')->default(false);
             $table->integer('organisation_id')->nullable();
         });
     }

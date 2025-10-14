@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Ppc\Pages;
+namespace App\Filament\Grid\Pages;
 
 use Filament\Pages\Page;
 

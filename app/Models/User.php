@@ -16,7 +16,6 @@ class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    use HasStatus;
 
     /**
      * The attributes that are mass assignable.
@@ -59,57 +58,14 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            return  config('app.env') == 'local' || str_ends_with($this->email, 'saurabh85mahajan@gmail.com');
+            return  config('app.env') == 'local' || str_ends_with($this->email, 'admin@admin.com');
         }
 
-        if ($panel->getId() === 'llc') {
-            return  auth()->user()->organisation_id == 1;
-        }
-
-        if ($panel->getId() === 'ppc') {
-            return  auth()->user()->organisation_id == 2;
-        }
-		
-		if ($panel->getId() === 'demo') {
-            return  auth()->user()->organisation_id == 3;
+        if ($panel->getId() === 'grid') {
+            return  auth()->user()->organisation_id == 4;
         }
 
         return true;
-    }
-
-    public function scopeIsNotManager(Builder $query): Builder
-    {
-        return $query->where('is_manager', 0);
-    }
-
-    public function scopeIsManager(Builder $query): Builder
-    {
-        return $query->where('is_manager', 1);
-    }
-
-    public function scopeHasManager(Builder $query, $userId): Builder
-    {
-        return $query->where('manager_id', $userId);
-    }
-
-    public function scopeHasOrganisation(Builder $query, $organisationId): Builder
-    {
-        return $query->where('organisation_id', $organisationId);
-    }
-
-    public static function getSubordinates($organisationId): array
-    {
-        $results = User::query()
-            ->active()
-            ->isNotManager()
-            ->hasManager(auth()->user()->id)
-            ->hasOrganisation($organisationId)
-            ->pluck('id')
-            ->toArray();
-
-        $results[] = auth()->user()->id;
-
-        return $results;
     }
 	
 	public function isAdmin()
