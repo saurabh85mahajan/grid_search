@@ -90,40 +90,53 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                 return $query;
             })
             ->columns([
-            TextColumn::make('insurer')
-                ->label('Insurance')
-                ->formatStateUsing(function ($state, $record): string { 
-                    $points = $this->userType === 'employee' ? $record->points : ($record->points - 5);
-                    return "
-                        <div class='bg-white rounded-lg p-3 space-y-2' style='width: 100%; max-width: 100%;'>
-                            <div class='flex justify-between items-start gap-3 pb-2 border-b border-gray-200'>
-                                <span class='font-bold text-primary-600 text-lg' style='word-break: break-word; overflow-wrap: break-word; white-space: normal; flex: 1; min-width: 0;'>{$record->insurer_with_remarks}</span>
-                                <span class='bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold text-xl shrink-0'>{$points}</span>
+                TextColumn::make('insurer')
+                    ->label('Insurance')
+                    ->formatStateUsing(function ($state, $record): string { 
+                        $points = $this->userType === 'employee' ? $record->points : ($record->points - 5);
+                        
+                        // Build notice HTML if notice exists
+                        $noticeHtml = '';
+                        if (!empty($record->notice)) {
+                            $noticeHtml = "
+                                <div class='text-white px-3 py-2 rounded-md mt-2' style='background-color:red; word-break: break-word; overflow-wrap: break-word; white-space: normal;'>
+                                    <span class='font-semibold'>Notice:</span> 
+                                    <span style='font-size:.5rem'>{$record->notice}</span>
+                                </div>
+                            ";
+                        }
+                        
+                        return "
+                            <div class='bg-white rounded-lg p-3 space-y-2' style='width: 100%; max-width: 100%;'>
+                                <div class='flex justify-between items-start gap-3 pb-2 border-b border-gray-200'>
+                                    <span class='font-bold text-primary-600 text-lg' style='word-break: break-word; overflow-wrap: break-word; white-space: normal; flex: 1; min-width: 0;'>{$record->insurer_with_remarks}</span>
+                                    <span class='bg-green-100 text-green-800 px-3 py-1 rounded-full font-bold text-xl shrink-0'>{$points}</span>
+                                </div>
+                                <div class='text-sm space-y-2' style='width: 100%;'>
+                                    <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
+                                        <span class='font-semibold'>Segment:</span> 
+                                        <span class='text-info-600' style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->segment_with_remarks}</span>
+                                    </div>
+                                    <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
+                                        <span class='font-semibold'>Policy:</span> 
+                                        <span style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->policy_type_with_remarks}</span>
+                                    </div>
+                                    <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
+                                        <span class='font-semibold'>Location:</span> 
+                                        <span style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->location}</span>
+                                    </div>
+                                    <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
+                                        <span class='font-semibold'>Remarks:</span> 
+                                        <span class='text-xs text-gray-600' style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->remarks_additional}</span>
+                                    </div>
+                                    {$noticeHtml}
+                                </div>
                             </div>
-                            <div class='text-sm space-y-2' style='width: 100%;'>
-                                <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
-                                    <span class='font-semibold'>Segment:</span> 
-                                    <span class='text-info-600' style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->segment_with_remarks}</span>
-                                </div>
-                                <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
-                                    <span class='font-semibold'>Policy:</span> 
-                                    <span style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->policy_type_with_remarks}</span>
-                                </div>
-                                <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
-                                    <span class='font-semibold'>Location:</span> 
-                                    <span style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->location}</span>
-                                </div>
-                                <div style='word-break: break-word; overflow-wrap: break-word; white-space: normal; max-width: 100%;'>
-                                    <span class='font-semibold'>Remarks:</span> 
-                                    <span class='text-xs text-gray-600' style='word-break: break-word; overflow-wrap: break-word; white-space: normal;'>{$record->remarks_additional}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ";
-                })
-                ->html()
-                ->hiddenFrom('md')
-                ->wrap(), // Add this too
+                        ";
+                    })
+                    ->html()
+                    ->hiddenFrom('md')
+                    ->wrap(),
                 TextColumn::make('insurer_with_remarks')
                     ->label('Insurer')
                     ->weight('semibold')
@@ -149,6 +162,24 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                     ->visibleFrom('md'),
                 TextColumn::make('remarks_additional')
                     ->label('Remarks')
+                    ->formatStateUsing(function ($state, $record): string {
+                        $remarks = nl2br($state);
+                        
+                        if (!empty($record->notice)) {
+                            $notice = nl2br($record->notice);
+                            return "
+                                <div style='word-break: break-word; white-space: normal;'>
+                                    {$remarks}
+                                </div>
+                                <div style='background-color: red; color: white; padding: 8px 10px; border-radius: 6px; margin-top: 8px; word-break: break-word; white-space: normal;'>
+                                    <strong>⚠️ Notice:</strong><br>{$notice}
+                                </div>
+                            ";
+                        }
+                        
+                        return $remarks;
+                    })
+                    ->html()
                     ->wrap()
                     ->extraAttributes(['style' => 'width: 250px; max-width: 250px; word-break: break-word; white-space: normal;'])
                     ->visibleFrom('md'),
