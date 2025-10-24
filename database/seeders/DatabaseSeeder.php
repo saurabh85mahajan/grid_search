@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\InsuranceGridRaw;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,11 +13,12 @@ class DatabaseSeeder extends Seeder
     {
 
         $this->call([
-           InsuranceGridRawSeeder::class,
-           InsuranceGridGujaratSeeder::class,
-           InsuranceGridMhSeeder::class,
-           InsuranceGridOrientSeeder::class,
-           InsuranceGridUnitedSeeder::class,
+           OctDlSeeder::class,
+           OctGujaratSeeder::class,
+           OctMhSeeder::class,
+           OctBrSeeder::class,
+           OctOrientSeeder::class,
+           OctUnitedSeeder::class,
         ]);
     }
 }
