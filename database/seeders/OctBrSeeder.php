@@ -911,10 +911,10 @@ class OctBrSeeder extends Seeder
             // SCHOOL BUS / STAFF BUS
             // ========================================
 
-			['insurer' => 'BAJAJ', 'segment' => 'Staff Bus', 'policy_type' => 'Comprehensive', 'location' => 'Bihar, Jharkhand', 'remarks_additional' => 'Above 10 Seater', 'points' => 22],
-			['insurer' => 'BAJAJ', 'segment' => 'Staff Bus', 'policy_type' => 'Third Party', 'location' => 'Bihar, Jharkhand', 'remarks_additional' => 'Above 10 Seater', 'points' => 48],
-			['insurer' => 'BAJAJ', 'segment' => 'Staff Bus', 'policy_type' => 'Comprehensive', 'location' => 'Bihar, Jharkhand', 'remarks_additional' => 'Upto 10 Seater', 'points' => 17],
-			['insurer' => 'BAJAJ', 'segment' => 'Staff Bus', 'policy_type' => 'Third Party', 'location' => 'BR', 'remarks_additional' => 'Upto 10 Seater', 'points' => 31],
+			['insurer' => 'BAJAJ', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive', 'location' => 'Bihar, Jharkhand', 'remarks_additional' => 'Above 10 Seater', 'points' => 22],
+			['insurer' => 'BAJAJ', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Third Party', 'location' => 'Bihar, Jharkhand', 'remarks_additional' => 'Above 10 Seater', 'points' => 48],
+			['insurer' => 'BAJAJ', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive', 'location' => 'Bihar, Jharkhand', 'remarks_additional' => 'Upto 10 Seater', 'points' => 17],
+			['insurer' => 'BAJAJ', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Third Party', 'location' => 'BR', 'remarks_additional' => 'Upto 10 Seater', 'points' => 31],
 
 			['insurer' => 'DIGIT', 'segment' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'policy_type_remarks' => 'Electric Declined', 'location' => 'All RTOs', 'remarks_additional' => 'On School Name - 8 & Above Seater Only', 'points' => 73],
 			['insurer' => 'DIGIT', 'segment' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'policy_type_remarks' => 'Electric Declined', 'location' => 'All RTOs', 'remarks_additional' => 'On Other Name - 8 & Above Seater Only', 'points' => 60],

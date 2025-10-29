@@ -67,6 +67,7 @@
                                 <option value="FUTURE">FUTURE</option>
                                 <option value="HDFC">HDFC</option>
                                 <option value="ICICI">ICICI</option>
+                                <option value="IFFCO">IFFCO</option>
                                 <option value="KOTAK">KOTAK</option>
                                 <option value="LIBERTY">LIBERTY</option>
                                 <option value="MAGMA">MAGMA</option>
@@ -77,10 +78,9 @@
                                 <option value="ROYAL SUNDARAM">ROYAL SUNDARAM</option>
                                 <option value="SBI">SBI</option>
                                 <option value="SHRIRAM">SHRIRAM</option>
-                                <option value="SOMPO">SOMPO</option>
-                                <option value="UNITED INDIA">UNITED INDIA</option>
+                                <option value="SOMPO">UNIVERSAL SOMPO</option>
                                 <option value="TATA">TATA</option>
-                                <option value="UNIVERSAL SOMPO">UNIVERSAL SOMPO</option>
+                                <option value="UNITED">UNITED</option>
                                 <option value="ZUNO">ZUNO</option>
                             </select>
                         </div>
@@ -102,6 +102,7 @@
                                 <option value="3W GCV">3W GCV</option>
                                 <option value="3W PCV">3W PCV</option>
                                 <option value="GCW">GCV</option>
+                                <option value="Health">Health</option>
                                 <option value="MISD">MISD</option>
                                 <option value="Private Car">Private Car</option>
                                 <option value="Route Bus">Route Bus</option>
