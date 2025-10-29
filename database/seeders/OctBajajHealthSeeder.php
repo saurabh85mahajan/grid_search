@@ -13,9 +13,9 @@ class OctBajajHealthSeeder extends Seeder
     public function run(): void
     {
         $policies = [
-            ['insurer' => 'BAJAJ', 'segment' => 'HEALTH', 'policy_type' => 'Port', 'location' => 'PAN INDIA', 'remarks_additional' => '-', 'points' => 17],
-            ['insurer' => 'BAJAJ', 'segment' => 'HEALTH', 'policy_type' => 'Health', 'location' => 'PAN INDIA', 'remarks_additional' => '-', 'points' => 33],
-            ['insurer' => 'BAJAJ', 'segment' => 'HEALTH', 'policy_type' => 'Renewal', 'location' => 'PAN INDIA', 'remarks_additional' => '-', 'points' => 17],
+            ['insurer' => 'Tata-Bajaj Capital', 'segment' => 'HEALTH', 'policy_type' => 'Port', 'location' => 'PAN INDIA', 'remarks_additional' => '-', 'points' => 17],
+            ['insurer' => 'Tata-Bajaj Capital', 'segment' => 'HEALTH', 'policy_type' => 'Fresh', 'location' => 'PAN INDIA', 'remarks_additional' => '-', 'points' => 33],
+            ['insurer' => 'Tata-Bajaj Capital', 'segment' => 'HEALTH', 'policy_type' => 'Renewal', 'location' => 'PAN INDIA', 'remarks_additional' => '-', 'points' => 17],
         ];
 
         // Insert policies with default null values for unspecified columns

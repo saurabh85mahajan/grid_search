@@ -80,6 +80,7 @@
                                 <option value="SHRIRAM">SHRIRAM</option>
                                 <option value="SOMPO">UNIVERSAL SOMPO</option>
                                 <option value="TATA">TATA</option>
+                                <option value="Tata-Bajaj Capital">Tata Bajaj Capital</option>
                                 <option value="UNITED">UNITED</option>
                                 <option value="ZUNO">ZUNO</option>
                             </select>
