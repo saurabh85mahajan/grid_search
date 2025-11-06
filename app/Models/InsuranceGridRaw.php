@@ -59,6 +59,7 @@ class InsuranceGridRaw extends Model
     {
         return [
             '1' => 'Oct, 2025',
+            '2' => 'Nov, 2025',
         ];
     }
 
@@ -69,6 +70,9 @@ class InsuranceGridRaw extends Model
             '2' => 'Maharashtra',
             '3' => 'Gujarat',
             '4' => 'Bihar & Jharkand',
+            '5' => 'North East',
+            '6' => 'Punjab & Chandigarh',
+            '7' => 'AP & Telangana',
         ];
     }
 }

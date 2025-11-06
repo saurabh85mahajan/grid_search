@@ -32,7 +32,7 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
     public $region = 1;
 
     #[Url]
-    public $period = 1;
+    public $period = 2;
 
     public function mount($userType = 'agent')
     {
@@ -207,7 +207,7 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
         $this->segment = '';
         $this->policy_type = '';
         $this->region = 1;
-        $this->period = 1;
+        $this->period = 2;
         $this->resetTable();
     }
 

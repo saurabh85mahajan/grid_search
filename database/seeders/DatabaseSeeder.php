@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
            OctOrientSeeder::class,
            OctUnitedSeeder::class,
            OctBajajHealthSeeder::class,
+
+           NovDlSeeder::class,
         ]);
     }
 }
