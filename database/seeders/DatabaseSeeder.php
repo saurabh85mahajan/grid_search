@@ -22,13 +22,15 @@ class DatabaseSeeder extends Seeder
            OctBajajHealthSeeder::class,
 
            NovDlSeeder::class,
-        //    NovGujaratSeeder::class,
+           NovGujaratSeeder::class,
         //    NovMhSeeder::class,
         //    NovBrSeeder::class,
            NovOrientSeeder::class,
            NovUnitedSeeder::class,
            NovBajajHealthSeeder::class,
            NovNeSeeder::class,
+        //    NovPbSeeder::class,
+        //    NovApSeeder::class,
         ]);
     }
 }

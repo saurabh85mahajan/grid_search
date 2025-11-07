@@ -1,0 +1,557 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class NovGujaratSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $policies = [
+            // ========================================
+            // PRIVATE CAR - COMPREHENSIVE
+            // ========================================
+            ['insurer' => 'BAJAJ', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Non High End - Petrol With & W/O NCB & Diesel with NCB OD Discount Below - 80%', 'points' => 40],
+            ['insurer' => 'BAJAJ', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'High End Vehicles - with NCB Only', 'points' => 19],
+            
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'S', 'remarks_additional' => 'High End Vehicle', 'points' => 17],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'S', 'remarks_additional' => 'Non High End - All Fuel', 'points' => 23],
+            
+            
+            ['insurer' => 'ICICI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'With NCB', 'points' => 24],
+            ['insurer' => 'ICICI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'notice' => 'Declined Models in ICICI - Bolero,Tavera,Qualis,Indica,Indigo, Omni, Eeco, TATA Sumo, Hyundai Getz, GM, Chevrolet and absolete Models', 'location' => 'All RTO\'s', 'remarks_additional' => ' Without NCB', 'points' => 13],
+            
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Petrol, Electric, Hybrid', 'points' => 27],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Diesel, CNG, LPG- With NCB', 'points' => 27],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Diesel, CNG, LPG- Without NCB', 'points' => 13],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'ROGJ', 'remarks_additional' => 'Petrol, Electric, Hybrid', 'points' => 20],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'ROGJ', 'remarks_additional' => 'Diesel, CNG, LPG- With NCB', 'points' => 20],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'ROGJ', 'remarks_additional' => 'Diesel, CNG, LPG- Without NCB', 'points' => 11],
+            
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR',  'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '-', 'points' => 17],
+
+            ['insurer' => 'SOMPO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'GJ,DD', 'remarks_additional' => 'With NCB', 'points' => 31],
+            ['insurer' => 'SOMPO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'GJ,DD', 'remarks_additional' => 'Without NCB', 'points' => 25],
+
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'With NCB', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Non Diesel', 'points' => 27],
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'With NCB', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Diesel', 'points' => 15],
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Without NCB', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Non Diesel', 'points' => 22],
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Without NCB', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Diesel', 'points' => 13],
+           
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '-', 'points' => 18],
+            
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Petrol, EV & Hybrid Of Petrol & CNG', 'points' => 27],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad, Vadodara', 'remarks_additional' => 'Diesel & CNG - With NCB', 'points' => 27],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'ROGJ', 'remarks_additional' => 'Diesel & CNG - With NCB', 'points' => 22],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad, Vadodara', 'remarks_additional' => 'Diesel & CNG - Without NCB', 'points' => 22],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'ROGJ', 'remarks_additional' => 'Diesel & CNG - Without NCB', 'points' => 13],
+            
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'With NCB Petrol', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 30],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'With NCB Diesel', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 25],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'With out NCB', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 12],
+            
+            ['insurer' => 'CHOLA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '( WO CPA Less 1.5% )', 'points' => 27],
+            ['insurer' => 'IFFCO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => '-', 'remarks_additional' => '', 'points' => 19],
+            ['insurer' => 'FUTURE', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '-', 'points' => 24],
+            ['insurer' => 'SBI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Upto 15 Years Only - Non NCB Less 5% - For Audi/BMW/Mercedes Makes PO - 13%', 'points' => 26],
+            ['insurer' => 'SHRIRAM', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Electric vehicle Decline', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+3', 'location' => 'All RTOs (Upto 15 Yrs)', 'remarks_additional' => 'Petrol Only, Honda, Hyundai & Kia Makes Only - New Vehicle Only', 'points' => 33],
+            ['insurer' => 'SHRIRAM', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Electric vehicle Decline', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'All RTOs (Upto 15 Yrs)', 'remarks_additional' => 'Petrol - EECO Decline', 'points' => 31],
+            ['insurer' => 'SHRIRAM', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Electric vehicle Decline', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'All RTOs (Upto 15 Yrs)', 'remarks_additional' => 'Diesel- IDV Upto 10 L', 'points' => 27],
+            ['insurer' => 'ZUNO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s (Except Surat )', 'remarks_additional' => 'With NCB ( ODD Above 85% Points = 17% & Above 90% Points = 15% ). Without NCB Points = 13%', 'points' => 25],
+
+            // ========================================
+            // PRIVATE CAR - SOAD
+            // ========================================
+
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'All RTO\'S', 'remarks_additional' => 'High End Vehicle', 'points' => 17],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'All RTO\'S', 'remarks_additional' => 'Non High End - All Fuel', 'points' => 22],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'Ahmedabad, Vadodara', 'remarks_additional' => 'Without NCB', 'points' => 17],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'ROGJ', 'remarks_additional' => 'Without NCB', 'points' => 13],
+            ['insurer' => 'LIBERTY', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => 'With NCB', 'points' => 22],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Petrol, Electric, Hybrid - With NCB', 'points' => 27],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Petrol, Electric, Hybrid - Without NCB', 'points' => 22],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Diesel, CNG, LPG- With NCB', 'points' => 18],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'Ahmedabad,Vadodara , DD, DN', 'remarks_additional' => 'Diesel, CNG, LPG- Without NCB', 'points' => 13],
+            ['insurer' => 'HDFC', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'ROGJ', 'remarks_additional' => 'Petrol, Electric, Hybrid', 'points' => 20],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 17],
+            ['insurer' => 'SHRIRAM', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Electric vehicle Decline', 'policy_type' => 'SAOD', 'location' => 'All RTOs', 'remarks_additional' => 'Petrol - Upto 15 Yrs - EECO Decline', 'points' => 31],
+            ['insurer' => 'SHRIRAM', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Electric vehicle Decline', 'policy_type' => 'SAOD', 'location' => 'All RTOs', 'remarks_additional' => 'Diesel - Upto 15 Yrs - IDV upto 10 lacs', 'points' => 27],
+            ['insurer' => 'SOMPO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'GJ/DD', 'remarks_additional' => '-', 'points' => 25],
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => 'With NCB', 'points' => 27],
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Without NCB', 'policy_type' => 'SAOD', 'location' => 'All RTOs', 'remarks_additional' => 'Non Diesel', 'points' => 22],
+            ['insurer' => 'RELIANCE', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Without NCB', 'policy_type' => 'SAOD', 'location' => 'All RTOs', 'remarks_additional' => 'Diesel', 'points' => 18],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Petrol With NCB', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 25],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Diesel With NCB', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 22],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Without NCB', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 12],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 17],
+            ['insurer' => 'FUTURE', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => '-', 'points' => 24],
+            ['insurer' => 'SBI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTO\'s', 'remarks_additional' => 'Upto -15 Yrs- Non NCB Less 5% - For Audi/BMW/Mercedes Makes PO - 13%', 'points' => 24],
+            ['insurer' => 'ZUNO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'SAOD', 'location' => 'All RTOs', 'remarks_additional' => 'With NCB - Surat Decline', 'points' => 22],
+
+            // ========================================
+            // PRIVATE CAR - Third Party
+            // ========================================
+            ['insurer' => 'BAJAJ', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Only Petrol Zen Make Decline', 'points' => 45],
+            ['insurer' => 'BAJAJ', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'DD, DN', 'remarks_additional' => 'Only Petrol Zen Make Decline', 'points' => 42],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'notice' => 'Guj_Bad RTO\'s Code :- GJ03,04,08,09,10,12,13,15,16,18,21,23,26,31,34,35', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Bad', 'remarks_additional' => 'CNG', 'points' => 27],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Good- Allowed RTO\'s:- GJ01,05,06,11,19,25,27,28,29,30,38', 'remarks_additional' => 'CNG - Upto 1000 CC', 'points' => 32],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Good- Allowed RTO\'s:- GJ01,05,06,11,19,25,27,28,29,30,38', 'remarks_additional' => 'CNG - Above 1000 CC', 'points' => 41],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Bad', 'remarks_additional' => 'Diesel - Upto 1500 CC - Above 10 Yrs', 'points' => 31],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Bad', 'remarks_additional' => 'Diesel - Above 1500 CC', 'points' => 36],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Good- Allowed RTO\'s:- GJ01,05,06,11,19,25,27,28,29,30,38', 'remarks_additional' => 'Diesel - Upto 1500 CC', 'points' => 36],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Good- Allowed RTO\'s:- GJ01,05,06,11,19,25,27,28,29,30,38', 'remarks_additional' => 'Diesel - Above 1500 CC', 'points' => 42],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Bad', 'remarks_additional' => 'Petrol - Upto 1000 CC', 'points' => 30],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Bad', 'remarks_additional' => 'Petrol - Above 1000 CC', 'points' => 49],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Good- Allowed RTO\'s:- GJ01,05,06,11,19,25,27,28,29,30,38', 'remarks_additional' => 'Petrol - Upto 1000 CC', 'points' => 49],
+            ['insurer' => 'DIGIT', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'GJ REF Decline', 'location' => 'Guj_Good- Allowed RTO\'s:- GJ01,05,06,11,19,25,27,28,29,30,38', 'remarks_additional' => 'Petrol - Above 1000 CC', 'points' => 49],
+            
+            ['insurer' => 'MAGMA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s:- GJ-01,05,06,15,18,19,21,27,28,29,38', 'remarks_additional' => 'Upto 1000 CC - Petrol, CNG', 'points' => 33],
+            ['insurer' => 'MAGMA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s:- GJ-01,05,06,15,18,19,21,27,28,29,38', 'remarks_additional' => 'Upto 1000 CC - Diesel', 'points' => 35],
+            ['insurer' => 'MAGMA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s:- GJ-01,05,06,15,18,19,21,27,28,29,38', 'remarks_additional' => '1001- 1500 CC - Petrol, CNG', 'points' => 45],
+            ['insurer' => 'MAGMA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s:- GJ-01,05,06,15,18,19,21,27,28,29,38', 'remarks_additional' => '1001- 1500 CC - Diesel', 'points' => 36],
+            ['insurer' => 'MAGMA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s:- GJ-01,05,06,15,18,19,21,27,28,29,38', 'remarks_additional' => 'Above 1500 CC', 'points' => 40],
+           
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad, Surat', 'remarks_additional' => 'CNG & Electric', 'points' => 40],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Vadodara', 'remarks_additional' => 'CNG', 'points' => 36],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Rajkot', 'remarks_additional' => 'Petrol & CNG', 'points' => 31],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad', 'remarks_additional' => 'Diesel', 'points' => 27],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Surat', 'remarks_additional' => 'Diesel', 'points' => 21],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Vadodara', 'remarks_additional' => 'Diesel', 'points' => 30],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad & (ROGJA- GJ04,10,15,16,18,21,36,99)', 'remarks_additional' => 'Petrol - Excluding Rajkot , Vadodara', 'points' => 47],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Surat', 'remarks_additional' => 'Petrol - Excluding Rajkot , Vadodara', 'points' => 40],
+            ['insurer' => 'TATA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Vadodara', 'remarks_additional' => 'Petrol - Excluding Rajkot , Vadodara', 'points' => 36],
+           
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Non Diesel - Upto 1000 CC', 'location' => 'Anand', 'remarks_additional' => 'GJ23', 'points' => 20],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Non Diesel - Upto 1000 CC', 'location' => 'Vadodara', 'remarks_additional' => 'GJ06,29', 'points' => 25],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Non Diesel - Upto 1000 CC', 'location' => 'Ahmedabad, Surat', 'remarks_additional' => 'GJ01,18,27,38,05,19,28', 'points' => 26],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Non Diesel - Above 1000 CC', 'location' => 'Anand, Vadodara', 'remarks_additional' => 'GJ23,06,29', 'points' => 33],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Non Diesel - Above 1000 CC', 'location' => 'Ahmedabad, Surat', 'remarks_additional' => 'GJ01,18,27,38,05,19,28', 'points' => 38],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Non Diesel - Above 1000 CC', 'location' => 'DD, DN', 'remarks_additional' => '', 'points' => 43],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Diesel - Above 1500 CC', 'location' => 'Rajkot, Anand,Vadodara', 'remarks_additional' => 'GJ23,06,29,03,10,11,13,36', 'points' => 36],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Diesel - Above 1500 CC', 'location' => 'Ahmedabad', 'remarks_additional' => 'GJ01,18,27,38', 'points' => 31],
+            ['insurer' => 'ROYAL', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'policy_type_remarks' => 'Diesel - Above 1500 CC', 'location' => 'Surat,DD, DN', 'remarks_additional' => 'GJ05,19,28', 'points' => 42],
+            
+            ['insurer' => 'FUTURE', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Other than Diesel', 'points' => 25],
+            ['insurer' => 'FUTURE', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Diesel', 'points' => 18],
+            ['insurer' => 'UNITED', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 18],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Petrol', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 40],
+            ['insurer' => 'KOTAK', 'segment' => 'PRIVATE CAR', 'insurer_remarks' => 'Diesel & CNG', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'Decline RTO\'s;- GJ07,08,09,12,13,17,20,22,24,25,26,30,31,33,34,35,36,37,39 - M&M & TATA Vehicle Decline & High End Vehicle Decline', 'points' => 22],
+            ['insurer' => 'ICICI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'Petrol', 'points' => 34],
+            ['insurer' => 'ICICI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'Diesel', 'points' => 20],
+            ['insurer' => 'SBI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'notice' => 'For Pvt Car Comp & SAOD declined Model- Ashok Leyland-Stile,Bajaj Tempo-Trax,Bajaj Tempo Traveller,Chevrolet-Enjoy,Tavera,Datsun-GO Plus,Force-All Models,ICML-Rhino Rx,Mahindra & Mahindra-540,555 DI,Armada,CDR,CL 500,-Commander,DP 550,Festara,Gio,Jeep,Marshal,Maxx,Maxximo,Savari,Supro,Jeeto,Voyager,Maruti Suzuki-Eeco,Omni,Versa,Mercedes-Benz-MB 100 D,MB Class,Tata Motors-207,Ace,Magic,Venture,Winger ,Sumo,Toyota-Hiace Commuter,Qualis.', 'policy_type_remarks' => 'Age Upto 25 Years', 'location' => 'All RTOs', 'remarks_additional' => 'Petrol Only - Above 1000 CC', 'points' => 46],
+            ['insurer' => 'SBI', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'notice' => 'For Pvt Car Comp & SAOD declined Model- Ashok Leyland-Stile,Bajaj Tempo-Trax,Bajaj Tempo Traveller,Chevrolet-Enjoy,Tavera,Datsun-GO Plus,Force-All Models,ICML-Rhino Rx,Mahindra & Mahindra-540,555 DI,Armada,CDR,CL 500,-Commander,DP 550,Festara,Gio,Jeep,Marshal,Maxx,Maxximo,Savari,Supro,Jeeto,Voyager,Maruti Suzuki-Eeco,Omni,Versa,Mercedes-Benz-MB 100 D,MB Class,Tata Motors-207,Ace,Magic,Venture,Winger ,Sumo,Toyota-Hiace Commuter,Qualis.', 'policy_type_remarks' => 'Age Upto 25 Years', 'location' => 'All RTOs', 'remarks_additional' => 'Diesel Only - Above 1500 CC', 'points' => 46],
+            ['insurer' => 'ZUNO', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 22],
+            ['insurer' => 'CHOLA', 'segment' => 'PRIVATE CAR', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '1000 to 1500 cc', 'points' => 22],
+
+            // ========================================
+            // TWO WHEELER - COMPREHENSIVE & SAOD
+            // ============================
+
+            ['insurer' => 'BAJAJ', 'segment' => '2W', 'segment_remarks' => 'TW - 1+1 ', 'policy_type' => 'Comprehensive', 'location' => 'Gujarat', 'remarks_additional' => 'Make Bajaj/Vespa/Java and RE Less 5% from mentioned Points', 'points' => 27],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_ABS', 'remarks_additional' => 'Hero & Honda Makes Only', 'points' => 51],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_Bad, GJ_Good', 'remarks_additional' => 'Hero & Honda Makes Only', 'points' => 32],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_ABS', 'remarks_additional' => 'Other Makes', 'points' => 40],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_Bad, GJ_Good', 'remarks_additional' => 'Other Makes', 'points' => 30],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => '181-350 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_ABS', 'remarks_additional' => 'ONLY HONDA/JAWA/Avenger', 'points' => 33],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => '181-350 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_ABS', 'remarks_additional' => 'OTHER THAN HONDA/JAWA/Avenger', 'points' => 28],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => '181-350 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_Bad, GJ_Good', 'remarks_additional' => '', 'points' => 28],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Above 350 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_ABS', 'remarks_additional' => '-', 'points' => 31],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Above 350 CC', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_Good', 'remarks_additional' => '-', 'points' => 22],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Royal Enfield ( 180-350 Only )', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_ABS', 'remarks_additional' => 'Royal Enfield Only', 'points' => 51],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Royal Enfield ( 180-350 Only )', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'GJ_Bad, GJ_Good', 'remarks_additional' => 'Royal Enfield Only', 'points' => 36],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Scooter + EV TW', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'notice' => 'GJ_ABS RTO Code :- GJ01,03,05,06,08,10,11,14,15,21,24,25,27,28,29,32,33,37,38. <br/>GJ_Bad RTO Code :- GJ12,19,23,26,31,34,35,39. <br/> GJ_Good RTO Code:- GJ02,04,09,13,16,18,30,36', 'location' => 'GJ_ABS, GJ_Bad', 'remarks_additional' => 'Decline RTO\'s- GJ07,17,20,22', 'points' => 55],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Scooter + EV TW', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'notice' => 'GJ_ABS RTO Code :- GJ01,03,05,06,08,10,11,14,15,21,24,25,27,28,29,32,33,37,38. <br/>GJ_Bad RTO Code :- GJ12,19,23,26,31,34,35,39. <br/> GJ_Good RTO Code:- GJ02,04,09,13,16,18,30,36', 'location' => 'GJ_Good', 'remarks_additional' => 'Decline RTO\'s- GJ07,17,20,22', 'points' => 56],
+            ['insurer' => 'ICICI', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'ROGJ', 'remarks_additional' => 'Excluding Electric', 'points' => 50],
+            ['insurer' => 'ICICI', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'Surat', 'remarks_additional' => 'Excluding Electric', 'points' => 50],
+            ['insurer' => 'ICICI', 'segment' => '2W', 'segment_remarks' => 'Bike - 1+1', 'policy_type' => 'SAOD', 'location' => 'Ahmedabad, Baroda', 'remarks_additional' => 'Decline Makes- Bajaj, Yamaha, TVS & Suzuki', 'points' => 25],
+            ['insurer' => 'ICICI', 'segment' => '2W', 'segment_remarks' => 'Scooter - EV', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'All RTOs', 'remarks_additional' => 'Rajkot & Vapi Decline', 'points' => 50],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Bike', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'Ahmedabad, Surat, Vododara, Rajkot', 'remarks_additional' => '', 'points' => 46],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'Ahmedabad, Surat, Rajkot', 'remarks_additional' => '', 'points' => 56],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'Vododara', 'remarks_additional' => '', 'points' => 55],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Comprehensive', 'policy_type_remarks' => '1+1', 'location' => 'ROGJ', 'remarks_additional' => '', 'points' => 46],
+            ['insurer' => 'RELIANCE', 'segment' => '2W', 'segment_remarks' => 'Bike - All CC', 'policy_type' => 'SAOD', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 42],
+            ['insurer' => 'RELIANCE', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Comprehensive 1+1 + SAOD', 'location' => 'All RTOs', 'remarks_additional' => 'YAMAHA & EV Less 5%', 'points' => 38],
+
+            // ========================================
+            // TWO WHEELER - Third Party
+            // ============================
+            ['insurer' => 'BAJAJ', 'segment' => '2W', 'segment_remarks' => 'Bike (KTM and Yamaha Excluding)', 'policy_type' => 'Third Party', 'location' => 'Dwarka, Dahod, Sabrkantha,Patan,Kheda,Junagadh,Kutch', 'remarks_additional' => 'Allowed RTO : GJ 07,09,11,12,17,20,37', 'points' => 19],
+            ['insurer' => 'BAJAJ', 'segment' => '2W', 'segment_remarks' => 'Bike (KTM and Yamaha Excluding)', 'policy_type' => 'Third Party', 'location' => 'Porbandar, Bhavnagar,Surendranagar, Morbi', 'remarks_additional' => 'Allowed RTO : GJ 04,13,25,36 ', 'points' => 34],
+            ['insurer' => 'BAJAJ', 'segment' => '2W', 'segment_remarks' => 'Bike (KTM and Yamaha Excluding)', 'policy_type' => 'Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => 'Rajkot GJ03 ,DD,DN Decline', 'points' => 54],
+            ['insurer' => 'BAJAJ', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'DD, DN', 'remarks_additional' => '', 'points' => 54],
+            ['insurer' => 'BAJAJ', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Rajkot Decline', 'points' => 57],
+            
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Third Party', 'notice' => 'GJ_ABS RTO Code :- GJ01,03,05,06,08,10,11,14,15,21,24,25,27,28,29,32,33,37,38. <br/>GJ_Bad RTO Code :- GJ12,19,23,26,31,34,35,39. <br/> GJ_Good RTO Code:- GJ02,04,09,13,16,18,30,36', 'location' => 'GJ_ABS', 'remarks_additional' => 'Hero & Honda Makes Only', 'points' => 43],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Third Party', 'notice' => 'GJ_ABS RTO Code :- GJ01,03,05,06,08,10,11,14,15,21,24,25,27,28,29,32,33,37,38. <br/>GJ_Bad RTO Code :- GJ12,19,23,26,31,34,35,39. <br/> GJ_Good RTO Code:- GJ02,04,09,13,16,18,30,36', 'location' => 'GJ_Bad', 'remarks_additional' => 'Hero & Honda Makes Only', 'points' => 24],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Third Party', 'notice' => 'GJ_ABS RTO Code :- GJ01,03,05,06,08,10,11,14,15,21,24,25,27,28,29,32,33,37,38. <br/>GJ_Bad RTO Code :- GJ12,19,23,26,31,34,35,39. <br/> GJ_Good RTO Code:- GJ02,04,09,13,16,18,30,36', 'location' => 'GJ_Good', 'remarks_additional' => 'Hero & Honda Makes Only', 'points' => 33],
+            
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Third Party', 'location' => 'GJ_ABS', 'remarks_additional' => 'Other Makes', 'points' => 38],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Third Party', 'location' => 'GJ_Bad', 'remarks_additional' => 'Other Makes', 'points' => 24],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Upto 180 CC', 'policy_type' => 'Third Party', 'location' => 'GJ_Good', 'remarks_additional' => 'Other Makes', 'points' => 28],
+            
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => '181-350 CC', 'policy_type' => 'Third Party', 'location' => 'GJ_ABS', 'remarks_additional' => 'Honda, Jawa Makes & Avenger Model', 'points' => 27],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => '181-350 CC', 'policy_type' => 'Third Party', 'location' => 'GJ_Good', 'remarks_additional' => 'Honda, Jawa Makes & Avenger Model', 'points' => 23],
+            
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Royal Enfield ( 180-350 Only )', 'policy_type' => 'Third Party', 'location' => 'GJ_ABS', 'remarks_additional' => 'Royal Enfield Only', 'points' => 46],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Royal Enfield ( 180-350 Only )', 'policy_type' => 'Third Party', 'location' => 'GJ_Bad, GJ_Good', 'remarks_additional' => 'Royal Enfield Only', 'points' => 28],
+           
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Scooter + EV TW', 'policy_type' => 'Third Party', 'location' => 'GJ_ABS', 'remarks_additional' => '', 'points' => 60],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Scooter + EV TW', 'policy_type' => 'Third Party', 'location' => 'GJ_Bad', 'remarks_additional' => '', 'points' => 56],
+            ['insurer' => 'DIGIT', 'segment' => '2W', 'segment_remarks' => 'Scooter + EV TW', 'policy_type' => 'Third Party', 'location' => 'GJ_Good', 'remarks_additional' => '-', 'points' => 58],
+            
+            ['insurer' => 'RELIANCE', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad, Surat, Vododara', 'remarks_additional' => 'YAMAHA & EV Less 5%', 'points' => 57],
+            ['insurer' => 'RELIANCE', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'ROGJ', 'remarks_additional' => 'YAMAHA & EV Less 5%', 'points' => 52],
+
+            ['insurer' => 'LIBERTY', 'segment' => '2W', 'segment_remarks' => 'Bike', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s:-', 'remarks_additional' => 'Allowed RTOs : GJ 01,03,05,06,15,18,19,21,26,27,28,29,30,38', 'points' => 46],
+
+            ['insurer' => 'ICICI', 'segment' => '2W', 'segment_remarks' => 'Bike', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Decline RTOs : GJ 03,07,11,14,17,20,30,34,36', 'points' => 36],
+            ['insurer' => 'ICICI', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Excluding Electric', 'points' => 60],
+           
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'Surat, Vododara, Rajkot', 'remarks_additional' => '', 'points' => 62],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'Ahmedaba', 'remarks_additional' => '', 'points' => 57],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Scooter', 'policy_type' => 'Third Party', 'location' => 'ROGJ', 'remarks_additional' => '', 'points' => 50],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Bike', 'policy_type' => 'Third Party', 'location' => 'Rajkot', 'remarks_additional' => '', 'points' => 35],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Bike', 'policy_type' => 'Third Party', 'location' => 'Surat', 'remarks_additional' => '', 'points' => 56],
+            ['insurer' => 'TATA', 'segment' => '2W', 'segment_remarks' => 'Bike', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad, Vadodara', 'remarks_additional' => '-', 'points' => 36],
+
+            // ========================================
+            // 3W - PASSENGER CARRYING VEHICLE - ( PCV )
+            // ========================================
+
+            ['insurer' => 'BAJAJ', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '-', 'points' => 53],
+            ['insurer' => 'BAJAJ', 'segment' => '3W PCV', 'segment_remarks' => 'E- Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 48],
+
+            ['insurer' => 'ZUNO', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Excluding DD,DN', 'points' => 31],
+            ['insurer' => 'ICICI', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'Rajkot & Surat', 'remarks_additional' => 'Old Only - Petrol & CNG Fuel Only', 'points' => 55],
+            ['insurer' => 'ICICI', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'Surat', 'remarks_additional' => 'Old Only - Diesel Fuel Only', 'points' => 55],
+            ['insurer' => 'UNITED', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 48],
+            ['insurer' => 'UNITED', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 28],
+            ['insurer' => 'DIGIT', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Above 5 Years', 'points' => 63],
+           
+            ['insurer' => 'TATA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad', 'remarks_additional' => 'All Fuel', 'points' => 50],
+            ['insurer' => 'TATA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive', 'location' => 'Rajkot & Surat, Vadodara, ROGJ1', 'remarks_additional' => 'Non Diesel', 'points' => 56],
+            ['insurer' => 'TATA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive', 'location' => 'Rajkot & Surat, Vadodara', 'remarks_additional' => 'Diesel', 'points' => 50],
+            ['insurer' => 'TATA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad, Rajkot & Surat, Vadodara', 'remarks_additional' => 'Non Diesel', 'points' => 56],
+            ['insurer' => 'TATA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad, Rajkot & Surat, Vadodara', 'remarks_additional' => 'Diesel', 'points' => 50],
+           
+            ['insurer' => 'RELIANCE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - Diesel Decline', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Surat', 'remarks_additional' => 'Non Diesel Only', 'points' => 60],
+            ['insurer' => 'RELIANCE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - Diesel Decline', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Ahmedabad, Vadodara', 'remarks_additional' => 'Non Diesel Only', 'points' => 57],
+           
+            ['insurer' => 'SBI', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw (Comprehensive - Upto 15 Years Age Third Party - Upto 25 Years Age)', 'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad, Baroda & Surat. GJ01, GJ05, GJ06, GJ07, GJ18, GJ22, GJ23, GJ27', 'remarks_additional' => 'Petrol CNG Only - 3+1 Seating - New Vehicle', 'points' => 55],
+            ['insurer' => 'SBI', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw (Comprehensive - Upto 15 Years Age Third Party - Upto 25 Years Age)', 'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad, Baroda & Surat. GJ01, GJ05, GJ06, GJ07, GJ18, GJ22, GJ23, GJ27', 'remarks_additional' => 'Petrol CNG Only - 3+1 Seating - Old Vehicle', 'points' => 57],
+            ['insurer' => 'SBI', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw (Comprehensive - Upto 15 Years Age Third Party - Upto 25 Years Age)', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad, Baroda & Surat. GJ01, GJ05, GJ06, GJ07, GJ18, GJ22, GJ23, GJ27', 'remarks_additional' => 'Petrol CNG Only - 3+1 Seating - Old Vehicle', 'points' => 58],
+            
+            ['insurer' => 'MAGMA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive- Old', 'location' => 'GJ2 Cluster', 'remarks_additional' => 'GJ-01,05,06,15,18,19,21,27,28,29,38', 'points' => 46],
+            ['insurer' => 'MAGMA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive- Old', 'location' => 'GJ4 Cluster', 'remarks_additional' => 'GJ - 03', 'points' => 41],
+            ['insurer' => 'MAGMA', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw - 3+1', 'policy_type' => 'Comprehensive- Old', 'location' => 'GJ3 Cluster', 'remarks_additional' => 'GJ - 04,10,11,12,13,14,25,33,36,37,39', 'points' => 31],
+            
+            ['insurer' => 'SHRIRAM', 'segment' => '3W PCV', 'segment_remarks' => 'Petrol , CNG', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'For Comp Upto 15 Yrs & TP Upto 25 Yrs Only', 'points' => 49],
+            ['insurer' => 'SHRIRAM', 'segment' => '3W PCV', 'segment_remarks' => 'E- Autorikshaw', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Upto 15 Years Only', 'points' => 46],
+            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => '-', 'points' => 62],
+            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '-', 'points' => 45],
+
+            // ========================================
+            // TAXI
+            // ========================================
+            ['insurer' => 'BAJAJ', 'segment' => 'Taxi', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Upto 6+1 Seating', 'points' => 28],
+            
+            ['insurer' => 'RELIANCE', 'segment' => 'Taxi', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Ahmedabad, Surat, Vadodara', 'remarks_additional' => '6+1 Str (Non Nil Dep) (Petrol + CNG + Battery)', 'points' => 36],
+            ['insurer' => 'RELIANCE', 'segment' => 'Taxi', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => '6+1 Str (Non Nil Dep) (Petrol + CNG + Battery)', 'points' => 38],
+            ['insurer' => 'RELIANCE', 'segment' => 'Taxi', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '6+1 Str (Nil Dep) (Petrol + CNG + Battery)', 'points' => 15],
+            ['insurer' => 'RELIANCE', 'segment' => 'Taxi', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '6+1 Str (Non Nil Dep) (Diesel)', 'points' => 15],
+            ['insurer' => 'RELIANCE', 'segment' => 'Taxi', 'policy_type' => 'Comprehensiev + Third Party', 'location' => 'Ahmedabad, Surat, Vadodara', 'remarks_additional' => '7+1 Str (Non Nil Dep) ( Maruti, Toyota, Mahindra, Kia, MG ) All Fuel Type', 'points' => 33],
+            ['insurer' => 'RELIANCE', 'segment' => 'Taxi', 'policy_type' => 'Comprehensiev + Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => '7+1 Str (Non Nil Dep) ( Maruti, Toyota, Mahindra, Kia, MG ) All Fuel Type', 'points' => 36],
+            
+            ['insurer' => 'TATA', 'segment' => 'Taxi', 'policy_type' => 'Comprehensiev + Third Party', 'location' => 'Ahmedabad, Rajkot, Vadodara', 'remarks_additional' => '', 'points' => 31],
+            ['insurer' => 'TATA', 'segment' => 'Taxi', 'policy_type' => 'Comprehensiev + Third Party', 'location' => 'Surat', 'remarks_additional' => '', 'points' => 19],
+            ['insurer' => 'TATA', 'segment' => 'Taxi', 'policy_type' => 'Comprehensiev + Third Party', 'location' => 'ROGJ', 'remarks_additional' => '', 'points' => 27],
+            ['insurer' => 'SHRIRAM', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi- Upto 6+1 Seating', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Only Upto 15 Years (Electric Vehicle Decline)', 'points' => 27],
+            ['insurer' => 'SHRIRAM', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi - 7-10 Seater', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Only Upto 15 Years (Electric Vehicle Decline)', 'points' => 13],
+
+            // ========================================
+            // Staff/school Bus
+            // ========================================
+            ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'segment_remarks' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party (Electric Declined )', 'location' => 'All RTOs', 'remarks_additional' => 'On School Name - 8 & Above Seater Only', 'points' => 73],
+            ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'segment_remarks' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party (Electric Declined )', 'location' => 'All RTOs', 'remarks_additional' => 'On Other Name - 8 & Above Seater Only', 'points' => 60],
+            ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'segment_remarks' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party (Electric Declined )', 'location' => 'All RTOs', 'remarks_additional' => 'Upto 7 Seater Only', 'points' => 28],
+            ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive + Third Party (Electric Declined )', 'location' => 'ALL RTOs', 'remarks_additional' => 'On Company Name & On Transporter Name - Above 10 Seater Only', 'points' => 48],
+            ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive + Third Party (Electric Declined )', 'location' => 'ALL RTOs', 'remarks_additional' => 'On Individual Name - Above 10 Seater Only', 'points' => 33],
+            ['insurer' => 'TATA', 'segment' => 'School Bus', 'segment_remarks' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Upto 11 Seater Only', 'points' => 48],
+            ['insurer' => 'TATA', 'segment' => 'School Bus', 'segment_remarks' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Above 12 Seater Only', 'points' => 78],
+            ['insurer' => 'TATA', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Ahmedabad, Rajkot, Vadodara', 'remarks_additional' => 'Above 12 Seater', 'points' => 44],
+            ['insurer' => 'TATA', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Surat', 'remarks_additional' => 'Above 12 Seater', 'points' => 46],
+            ['insurer' => 'TATA', 'segment' => 'School Bus', 'segment_remarks' => 'Staff Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'ROGJ', 'remarks_additional' => 'Above 15 Seater-', 'points' => 48],
+
+            // ========================================
+            // GCV
+            // ========================================
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Atul Shakti Decline - (Decline rto GJ24,21,13)', 'points' => 19],
+            ['insurer' => 'UNITED', 'segment' => 'GCW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 60],
+            
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => 'Non Diesel', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'upto 15 years for Comp & upto 25 Years for STP', 'points' => 44],
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => 'E- 3W- GCV', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Upto 15 Years Only ', 'points' => 46],
+            
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => '1-5 Yrs', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ01,18,27,38', 'points' => 53],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Above 5 Yrs', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ01,18,27,38', 'points' => 58],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ05,15,19,21,22,26,28,30', 'points' => 60],
+            
+            ['insurer' => 'SBI', 'segment' => 'GCW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'For comp Age Upto 15 Years Only & Third Party 25 Years Only - Except EV', 'points' => 48],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ01,03,05,06,27,28,29', 'points' => 57],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ01,03,05,06,27,28,29', 'points' => 59],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'policy_type' => 'Third Party', 'location' => 'ROGJ1', 'remarks_additional' => '', 'points' => 56],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'policy_type' => 'Third Party', 'location' => 'ROGJ2', 'remarks_additional' => '', 'points' => 41],
+
+
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 55],
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '2501-3500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'All Bolero and Max Pick up Decline', 'points' => 50],
+            ['insurer' => 'DIGIT', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Good GJ', 'remarks_additional' => 'GJ01,03,05,06,15,16,19,21,22,26,27,28,29,30,37,38', 'points' => 60],
+            ['insurer' => 'DIGIT', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Bad GJ', 'remarks_additional' => 'GJ02,04,07,08,09,10,11,12,13,14,18,23,24,25,32,33,34,35,36,39', 'points' => 55],
+            ['insurer' => 'DIGIT', 'segment' => 'GCW', 'segment_remarks' => '2501 - 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Good GJ', 'remarks_additional' => 'GJ01,03,05,06,15,16,19,21,22,26,27,28,29,30,37,38 - Mahindra & TATA Only', 'points' => 50],
+            ['insurer' => 'DIGIT', 'segment' => 'GCW', 'segment_remarks' => '2501 - 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Bad GJ', 'remarks_additional' => 'GJ02,04,07,08,09,10,11,12,13,14,18,23,24,25,32,33,34,35,36,39 - Tata Only', 'points' => 50],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Ahmedabad,Vadodara, ROGJ1', 'remarks_additional' => '', 'points' => 60],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Surat', 'remarks_additional' => '', 'points' => 61],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Rajkot', 'remarks_additional' => '', 'points' => 51],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'ROGJ2', 'remarks_additional' => 'Above 1 Yrs', 'points' => 50],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '2501-3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ 03,05,06,28,29', 'points' => 52],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '2501-3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Ahmedabad, ROGJ1', 'remarks_additional' => 'All Ager', 'points' => 50],
+            ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 50],
+            ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => '2501- 3500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 46],
+            ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 55],
+            ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => '2501- 3500 GVW', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad', 'remarks_additional' => '', 'points' => 55],
+            ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => '2501- 3500 GVW', 'policy_type' => 'Third Party', 'location' => 'ROGJ', 'remarks_additional' => '', 'points' => 50],
+            ['insurer' => 'FUTURE', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW + Bolero', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 77],
+            ['insurer' => 'FUTURE', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW + Bolero', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 60],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'TATA & Maruti Makes Only', 'points' => 65],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'Mahindra - Jeeto, Supro, Maximmo Makes Only', 'points' => 60],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive & Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => 'Other Makes', 'points' => 53],
+            
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s - GJ02,07,08,09,13,17,20,23,24,31,34,35,36,39', 'remarks_additional' => '6-11 Yrs', 'points' => 52],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s - GJ02,07,08,09,13,17,20,23,24,31,34,35,36,39', 'remarks_additional' => 'Above 11 Yrs', 'points' => 49],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of GJ', 'remarks_additional' => 'GJ01,03,04,05,10,11,12,14,15,18,19,21,22,25,26,27,28,30,32,33,37,38 - Above 1 Yr', 'points' => 60],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of GJ', 'remarks_additional' => 'GJ06,16,29 - 1-5 Yrs', 'points' => 55],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of GJ', 'remarks_additional' => 'GJ06,16,29 - Above Yrs', 'points' => 59],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s - GJ02,07,08,09,13,17,20,23,24,31,34,35,36,39', 'remarks_additional' => '1 -5 Yrs', 'points' => 53],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s - GJ02,07,08,09,13,17,20,23,24,31,34,35,36,39', 'remarks_additional' => '6-11 Yrs', 'points' => 57],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s - GJ02,07,08,09,13,17,20,23,24,31,34,35,36,39', 'remarks_additional' => 'Above 11 Yrs', 'points' => 54],
+            ['insurer' => 'LIBERTY', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => 'Above 1 Yrs', 'points' => 60],
+            
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2450', 'policy_type' => 'Comprehensive - New Only', 'location' => 'Ahmedabad & Gandhinagar', 'remarks_additional' => '', 'points' => 50],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2450', 'policy_type' => 'Comprehensive - New Only', 'location' => 'Baroda & Vapi', 'remarks_additional' => '', 'points' => 46],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2450', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Surat, Vapi, Baroda', 'remarks_additional' => 'Excluding Ahmedabad & Gandhinagar, Rajkot', 'points' => 46],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2450', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => 'Excluding Ahmedabad & Gandhinagar, Rajkot', 'points' => 50],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '2451 - 3500 GVW', 'policy_type' => 'Comprehensive - Old', 'location' => 'Rest of GJ', 'remarks_additional' => 'Excluding Ahmedabad & Gandhinagar, Rajkot,Vapi,Baroda, Surat', 'points' => 50],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '2451 - 3500 GVW', 'policy_type' => 'Comprehensive - New Only', 'location' => 'Ahmedabad & Gandhinagar, Baroda', 'remarks_additional' => '', 'points' => 46],
+           
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2300 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 42],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2300 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s >>>', 'remarks_additional' => 'GJ01,02,05,06,09,10,15,16,18,19,21,27,28,29,38 & DD01,02,03 & DN09', 'points' => 52],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2300 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 50],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '2301- 3500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 31],
+            
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Age Upto 25 Years Only', 'points' => 31],
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2800 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'For Comp Upto 15 Years & TP Upto 25 Years Allowed', 'points' => 53],
+            
+            ['insurer' => 'CHOLA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Makes Allowed :- TATA/ Maruti / Mahindra- Models Allowed :- Ace, Super Ace, Yodha, Xenon, Magic, Intra, Super Carry, Mahindra Jeeto ,Supro - Wihtout CPA - Less 1.5%', 'points' => 46],
+            ['insurer' => 'CHOLA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'All Other Makles & Models - Wihtout CPA - Less 1.5%', 'points' => 56],
+            ['insurer' => 'CHOLA', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 41],
+            
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only.', 'location' => 'All RTOs', 'remarks_additional' => 'EV Vehicle Decline', 'points' => 58],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only.', 'location' => 'All RTOs', 'remarks_additional' => 'Mahindra Supro Only', 'points' => 58],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '2001 - 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only.', 'location' => 'All RTOs', 'remarks_additional' => 'EV Vehicle Decline - TATA Makes Only', 'points' => 58],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '2001 - 2500 GVW', 'policy_type' => 'Comprehensive', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only.', 'location' => 'All RTOs', 'remarks_additional' => 'EV Vehicle Decline - Other Than TATA Makes Only', 'points' => 50],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '2001 - 2500 GVW', 'policy_type' => 'Third Party', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only.', 'location' => 'All RTOs', 'remarks_additional' => 'EV Vehicle Decline - Other Than TATA Makes Only', 'points' => 50],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '2501 - 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br/> Upto 3.5 T GCV Bolero & 2.5T-3.5T GCV Tata & Ashok - Declined RTO list :- GJ17/GJ12/GJ31/GJ12/GJ08/GJ02/GJ24/GJ09/GJ03.', 'location' => 'All RTOs', 'remarks_additional' => 'Mahindra , TATA & Ashok Leyland Makes Only', 'points' => 49],
+
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s>>>', 'remarks_additional' => 'GJ01,05,06,27,28,29', 'points' => 31],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s>>>', 'remarks_additional' => 'GJ03', 'points' => 26],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'ROGJ1', 'remarks_additional' => '', 'points' => 36],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad', 'remarks_additional' => '', 'points' => 38],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'Rajkot, Surat, Vadodara', 'remarks_additional' => '', 'points' => 27],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'ROGJ1', 'remarks_additional' => 'Above 1 Years', 'points' => 36],
+            
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Vapi, Rajkot,Surat, Baroda', 'remarks_additional' => '', 'points' => 36],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'ROGJ', 'remarks_additional' => 'Excluding Ahmedabad & Gandhinagar', 'points' => 31],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'Rajkot,Surat, Baroda', 'remarks_additional' => '', 'points' => 41],
+           
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Bharuch, Mehsana, Navsari, Surat, Valsad', 'remarks_additional' => '-', 'points' => 27],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Ahmedabad', 'remarks_additional' => '', 'points' => 23],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'DD, DN', 'remarks_additional' => '', 'points' => 33],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s>>>', 'remarks_additional' => 'GJ01,02,05,09,15,16,19,21,27,28,38', 'points' => 34],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'Vadodara, Gandhinagar', 'remarks_additional' => '', 'points' => 30],
+            
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => '3501- 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Upto 15 yrs- Without NCB', 'points' => 24],
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => '3501- 7500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => 'Upto 15 yrs- With NCB', 'points' => 33],
+            ['insurer' => 'FUTURE', 'segment' => 'GCW', 'segment_remarks' => '3501- 7500 GVW', 'policy_type' => 'Comprehensive ', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 53],
+            ['insurer' => 'FUTURE', 'segment' => 'GCW', 'segment_remarks' => '3501- 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 36],
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 28],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Age Upto 25 Years Only', 'points' => 27],
+
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '7501 - 15000 GVW', 'policy_type' => 'Third Party', 'location' => 'Rest of GJ, DD, DN', 'remarks_additional' => 'Decline RTO\'s :- GJ08,17,36', 'points' => 28],
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '7501 - 15000 GVW', 'policy_type' => 'Third Party', 'location' => 'GJ 03,05,13,21,32', 'remarks_additional' => 'Decline RTO\'s :- GJ08,17,36', 'points' => 38],
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '15001 - 20000 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 38],
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '20001 - 43000 GVW', 'policy_type' => 'Third Party', 'location' => 'GJ01,18', 'remarks_additional' => '', 'points' => 38],
+            ['insurer' => 'BAJAJ', 'segment' => 'GCW', 'segment_remarks' => '20001 - 43000 GVW', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => '', 'points' => 41],
+            
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of Gujarat. Decline Ahmedabad, Surat,Vadodara', 'remarks_additional' => 'Only Tata / AL/ Eicher Make - Above 5 Yrs', 'points' => 24],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => '40001- 50000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of Gujarat Decline Ahmedabad, Surat,Vadodara', 'remarks_additional' => 'Only Tata / AL/ Eicher Make', 'points' => 28],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => 'Above 50000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of Gujarat Decline Ahmedabad, Surat,Vadodara', 'remarks_additional' => 'Only Tata / AL/ Eicher Make', 'points' => 15],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => '40001- 50000 GVW', 'policy_type' => 'Third Party', 'location' => 'Rest of Gujarat Decline Ahmedabad, Surat,Vadodara', 'remarks_additional' => '', 'points' => 47],
+            ['insurer' => 'RELIANCE', 'segment' => 'GCW', 'segment_remarks' => 'Above 50000 GVW', 'policy_type' => 'Third Party', 'location' => 'Rest of Gujarat Decline Ahmedabad, Surat,Vadodara', 'remarks_additional' => '', 'points' => 38],
+           
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '7501- 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Rajkot', 'remarks_additional' => '', 'points' => 36],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '7501- 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Surat', 'remarks_additional' => '', 'points' => 31],
+            ['insurer' => 'ICICI', 'segment' => 'GCW', 'segment_remarks' => '12001 - 40000 GVW', 'policy_type' => 'Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => 'Above 5 Yrs - Only Tata & AL - Decline RTOs :- GJ01,15,18,05,03,06,27,28,29', 'points' => 50],
+            
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Bharuch, Surat, Valsad', 'remarks_additional' => '', 'points' => 21],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Gandhinagar, DD,DN', 'remarks_additional' => 'Allowed RTO\'s >> GJ- 18 , DD, DN', 'points' => 33],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Jamnagar, Ahmedabad, Navsari', 'remarks_additional' => 'Allowed RTO\'s >> GJ01,27,38,10,21', 'points' => 35],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Vadodara', 'remarks_additional' => 'Allowed RTO\'s >> GJ06,29', 'points' => 34],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Mehsana, Surat', 'remarks_additional' => 'Allowed RTO\'s >> GJ05,02,19,09,28', 'points' => 39],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Bharuch, Valsad', 'remarks_additional' => 'Allowed RTO\'s >> GJ16,15', 'points' => 43],
+           
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Gandhinagar, Ahmedabad, Rajkot', 'remarks_additional' => 'Upto 85% OD disc With nil dep. Other Than Tata & AL', 'points' => 24],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Alowed RTO\'s >> GJ02,05,06,09,10,15,16,19,21,28,29', 'remarks_additional' => 'Upto 85% OD disc With nil dep. Other Than Tata & AL', 'points' => 27],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Gandhinagar, Ahmedabad, Rajkot', 'remarks_additional' => 'Upto 85% OD disc Without nil dep Other Than Tata & AL', 'points' => 27],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Alowed RTO\'s >> GJ02,05,06,09,10,15,16,19,21,28,29', 'remarks_additional' => 'Upto 85% OD disc Without nil dep Other Than Tata & AL', 'points' => 29],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Vadodara, Surat', 'remarks_additional' => 'Upto 90% disc with Nil Dep. (TATA & AL Only)', 'points' => 30],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of All GJ', 'remarks_additional' => 'Upto 90% disc with Nil Dep. (TATA & AL Only)', 'points' => 24],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rajkot', 'remarks_additional' => 'Upto 90% disc without Nil Dep. (TATA & AL Only)', 'points' => 28],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Vadodara, Surat', 'remarks_additional' => 'Upto 90% disc without Nil Dep. (TATA & AL Only)', 'points' => 33],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of All GJ', 'remarks_additional' => 'Upto 90% disc without Nil Dep. (TATA & AL Only)', 'points' => 31],
+            
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Mehsana', 'remarks_additional' => 'Upto 85% OD disc With nil dep. Other Than Tata & AL', 'points' => 19],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Navsari, Bharuch, Surat, Vadodara', 'remarks_additional' => 'Upto 85% OD disc With nil dep. Other Than Tata & AL', 'points' => 23],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of All GJ - Except Rajkot, Mehsana', 'remarks_additional' => 'Upto 85% OD disc With nil dep. Other Than Tata & AL', 'points' => 21],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rajkot', 'remarks_additional' => 'Upto 85% OD disc Without nil dep. Other Than Tata & AL', 'points' => 19],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Mehsana', 'remarks_additional' => 'Upto 85% OD disc Without nil dep. Other Than Tata & AL', 'points' => 22],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Navsari, Bharuch, Surat', 'remarks_additional' => 'Upto 85% OD disc Without nil dep. Other Than Tata & AL', 'points' => 27],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of All GJ', 'remarks_additional' => 'Upto 85% OD disc Without nil dep. Other Than Tata & AL', 'points' => 24],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Mehsana', 'remarks_additional' => 'Upto 90% disc with Nil Dep. (TATA & AL Only)', 'points' => 19],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Valsad, Navsari, Bharuch, Surat, Vadodara', 'remarks_additional' => 'Upto 90% disc with Nil Dep. (TATA & AL Only)', 'points' => 21],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rajkot', 'remarks_additional' => 'Upto 90% disc with Nil Dep. (TATA & AL Only)', 'points' => 12],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of All GJ', 'remarks_additional' => 'Upto 90% disc with Nil Dep. (TATA & AL Only)', 'points' => 15],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rajkot', 'remarks_additional' => 'Upto 90% disc without Nil Dep. (TATA & AL Only)', 'points' => 21],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Surat, VADODARA', 'remarks_additional' => 'Upto 90% disc without Nil Dep. (TATA & AL Only)', 'points' => 30],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of All GJ', 'remarks_additional' => 'Upto 90% disc without Nil Dep. (TATA & AL Only)', 'points' => 28],
+            
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Third Party', 'location' => 'Surat', 'remarks_additional' => '', 'points' => 42],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Third Party', 'location' => 'DD, DN', 'remarks_additional' => '', 'points' => 36],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '12001- 20000 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s >>', 'remarks_additional' => 'GJ01,27,38,16,18,10,02,09,21,06,29,15', 'points' => 40],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Third Party', 'location' => 'DD, DN', 'remarks_additional' => '', 'points' => 31],
+            ['insurer' => 'ROYAL', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Third Party', 'location' => 'Allowed RTO\'s >>', 'remarks_additional' => 'GJ01,05,19,27,28,38,16,18,10,02,09,21,06,29,15', 'points' => 31],
+
+
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'Gujarat', 'remarks_additional' => 'Other than Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 13],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'DD, DN', 'remarks_additional' => 'Other than Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 12],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'Gujarat', 'remarks_additional' => 'Other than Tata & Ashok Leyland - 5- 15 Yrs', 'points' => 16],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'DD, DN', 'remarks_additional' => 'Other than Tata & Ashok Leyland - 5- 15 Yrs', 'points' => 15],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'Gujarat', 'remarks_additional' => 'Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 23],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'DD, DN', 'remarks_additional' => 'Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 19],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '12001 -20000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Tata & Ashok Leyland - Above 5 Yrs', 'points' => 29],
+            
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Other than Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 18],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Other than Tata & Ashok Leyland - Above 5 Yrs', 'points' => 21],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 26],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 27],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Tata & Ashok Leyland - Above 5 Yrs', 'points' => 29],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => 'Above 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Other than Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 11],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => 'Above 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Other than Tata & Ashok Leyland - Above 5 Yrs', 'points' => 14],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => 'Above 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Tata & Ashok Leyland - Upto 5 Yrs', 'points' => 13],
+            ['insurer' => 'SBI', 'insurer_remarks' => 'Comp - Upto 15 Yrs TP- Upto 25 Yrs', 'segment' => 'GCW', 'segment_remarks' => 'Above 40000 GVW', 'notice' => 'GJ03/GJ17 is declined for all GCV- Note-GJ03/GJ17 is doable in Upto 2.5 T only. <br />Above 12 T GCV - Declined for COMP Pan india- Eicher,Bharat Benz,Scania,Volvo,MAN,Hyundia,Mercedes.', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Tata & Ashok Leyland - Above 5 Yrs', 'points' => 15],
+            
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s >>', 'remarks_additional' => 'GJ01,05,06,27,28,29', 'points' => 31],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s >>', 'remarks_additional' => 'GJ03', 'points' => 26],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'ROGJ1', 'remarks_additional' => '', 'points' => 36],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad', 'remarks_additional' => '', 'points' => 38],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Vadodara, Surat, Rajkot', 'remarks_additional' => '', 'points' => 27],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Rest of GJ', 'remarks_additional' => 'Above 6 Yrs', 'points' => 38],
+            
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => 'Above 12000 GVW', 'policy_type' => 'Third Party', 'location' => 'Ahmedabad', 'remarks_additional' => '', 'points' => 38],
+            ['insurer' => 'TATA', 'segment' => 'GCW', 'segment_remarks' => '12001- 45000 GVW', 'policy_type' => 'Third Party', 'location' => 'ROGJ1', 'remarks_additional' => 'Above 6 Yrs', 'points' => 47],
+            
+            ['insurer' => 'CHOLA', 'segment' => 'GCW', 'segment_remarks' => '7501 - 20000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Without CPA Less 1.5%', 'points' => 18],
+            ['insurer' => 'CHOLA', 'segment' => 'GCW', 'segment_remarks' => '20001- 40000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'Without CPA Less 1.5%', 'points' => 30],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '7501-12000 GVW', 'policy_type' => 'Comprehensive', 'location' => 'All RTO\'s', 'remarks_additional' => '', 'points' => 24],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '12001-20000 GVW', 'policy_type' => 'Comprehensive - Upto 5 Yrs', 'location' => 'Allowed RTO\'s >>', 'remarks_additional' => 'GJ-01,02,05,06,07,08,09,15,16,17,18,19,20,21,22,23,24,26,27,28,29,30,31,32,34,35,38', 'points' => 16],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '12001-20000 GVW', 'policy_type' => 'Comprehensive - Above 5 Yrs', 'location' => 'All RTO\'s', 'remarks_additional' => 'Above 5 Years', 'points' => 28],
+            
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '20001-40000 GVW', 'policy_type' => 'Comprehensive - Upto 5 Yrs', 'location' => 'Cluster GJ1', 'remarks_additional' => 'GJ-02,07,08,09,16,17,20,22,23,24,26,30,31,32,34,35', 'points' => 28],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '20001-40000 GVW', 'policy_type' => 'Comprehensive - Upto 5 Yrs', 'location' => 'Cluster GJ2', 'remarks_additional' => 'GJ-01,05,06,15,18,19,21,27,28,29,38', 'points' => 25],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '20001-40000 GVW', 'policy_type' => 'Comprehensive - Upto 5 Yrs', 'location' => 'Cluster GJ3,4', 'remarks_additional' => 'GJ - 03,04,10,11,12,13,14,25,33,36,37,39', 'points' => 19],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '20001-40000 GVW', 'policy_type' => 'Comprehensive - Above 5 Yrs', 'location' => 'Cluster GJ1', 'remarks_additional' => 'GJ-02,07,08,09,16,17,20,22,23,24,26,30,31,32,34,35', 'points' => 28],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '20001-40000 GVW', 'policy_type' => 'Comprehensive - Above 5 Yrs', 'location' => 'Cluster GJ2', 'remarks_additional' => 'GJ-01,05,06,15,18,19,21,27,28,29,38', 'points' => 29],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => '20001-40000 GVW', 'policy_type' => 'Comprehensive - Above 5 Yrs', 'location' => 'Cluster GJ3,4', 'remarks_additional' => 'GJ - 03,04,10,11,12,13,14,25,33,36,37,39', 'points' => 27],
+            
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => 'Above 40001 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Cluster GJ1', 'remarks_additional' => 'GJ-02,07,08,09,16,17,20,22,23,24,26,30,31,32,34,35', 'points' => 12],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => 'Above 40001 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Rest of GJ', 'remarks_additional' => '', 'points' => 16],
+            ['insurer' => 'MAGMA', 'segment' => 'GCW', 'segment_remarks' => 'Above 40001 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Allowed RTO\'s →→ GJ-03', 'remarks_additional' => '', 'points' => 22],
+            
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => '7501 - 42500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTO\'s - Excluding Tanker', 'remarks_additional' => 'Comp Age upto 15 Years & Third Party Age 25 years Only', 'points' => 24],
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => '42501- 50000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTO\'s - Excluding Tanker', 'remarks_additional' => 'Comp Age upto 15 Years & Third Party Age 25 years Only', 'points' => 15],
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => 'Above 50000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTO\'s - Excluding Tanker', 'remarks_additional' => 'Comp Age upto 15 Years & Third Party Age 25 years Only', 'points' => 13],
+            ['insurer' => 'SHRIRAM', 'segment' => 'GCW', 'segment_remarks' => '7501 - 42500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs : Tanker Only', 'remarks_additional' => 'Comp Age upto 15 Years & Third Party Age 25 years Only', 'points' => 22],
+
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '7501- 20000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Age Upto 25 Years Only', 'points' => 27],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '20001- 45000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Age Upto 25 Years Only', 'points' => 28],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Above 45000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Age Upto 25 Years Only', 'points' => 25],
+
+            // ========================================
+            // Tractor
+            // ========================================
+
+            ['insurer' => 'ROYAL', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Comp - Without Trolleys / Trailers and - Non Nil Dept', 'points' => 48],
+            ['insurer' => 'DIGIT', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New', 'location' => 'All RTOs', 'remarks_additional' => 'Sonalika Decline', 'points' => 50],
+            ['insurer' => 'DIGIT', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Above 5 Years', 'points' => 41],
+            ['insurer' => 'SBI', 'segment' => 'Tractor', 'segment_remarks' => 'Tractor & Harvestor', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Gujarat', 'remarks_additional' => 'Upto 25 Yrs - (excluding Trailer)', 'points' => 55],
+            
+            ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'New', 'policy_type' => 'Comprehensive - New', 'location' => 'Ahmedabad & Gandhinagar', 'remarks_additional' => '', 'points' => 48],
+            ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'New', 'policy_type' => 'Comprehensive - New', 'location' => 'Vapi,Baroda,Surat', 'remarks_additional' => '', 'points' => 44],
+            ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'New', 'policy_type' => 'Comprehensive - New', 'location' => 'Rajkot', 'remarks_additional' => '', 'points' => 35],
+            ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'New', 'policy_type' => 'Comprehensive - New', 'location' => 'ROGJ', 'remarks_additional' => '', 'points' => 50],
+            ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'Old', 'policy_type' => 'Comprehensive - Old', 'location' => 'Vapi', 'remarks_additional' => '', 'points' => 44],
+            ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'Old', 'policy_type' => 'Comprehensive - Old', 'location' => 'Ahmedabad & Gandhinagar', 'remarks_additional' => '', 'points' => 46],
+
+            
+            
+            // ========================================
+            // MISD
+            // ========================================
+
+            ['insurer' => 'DIGIT', 'segment' => 'MISD', 'policy_type' => 'Comprehensive', 'location' => 'GJ01,03,04,05,06,11,14,15,16,19,21,22,25,26,27,28,29,30,32,33,34,35,36,37,38,02,07,08,10,12,18,24,39', 'remarks_additional' => 'Other Than JCB', 'points' => 26],
+            ['insurer' => 'DIGIT', 'segment' => 'MISD', 'policy_type' => 'Third Party', 'location' => 'GJ01,03,04,05,06,11,14,15,16,19,21,22,25,26,27,28,29,30,32,33,34,35,36,37,38,02,07,08,10,12,18,24,39', 'remarks_additional' => 'Other Than JCB', 'points' => 19],
+            
+            ['insurer' => 'DIGIT', 'segment' => 'MISD', 'segment_remarks' => 'JCB', 'policy_type' => 'Comprehensive', 'location' => 'GJ01,03,04,05,06,11,14,15,16,19,21,22,25,26,27,28,29,30,32,33,34,35,36,37,38', 'remarks_additional' => 'New', 'points' => 39],
+            ['insurer' => 'DIGIT', 'segment' => 'MISD', 'segment_remarks' => 'JCB', 'policy_type' => 'Comprehensive', 'location' => 'GJ01,03,04,05,06,11,14,15,16,19,21,22,25,26,27,28,29,30,32,33,34,35,36,37,38', 'remarks_additional' => 'Old', 'points' => 37],
+            ['insurer' => 'DIGIT', 'segment' => 'MISD', 'segment_remarks' => 'JCB', 'policy_type' => 'Comprehensive', 'location' => 'GJ02,07,08,10,12,18,24,39', 'remarks_additional' => '-', 'points' => 30],
+            
+            ['insurer' => 'TATA', 'segment' => 'MISD', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Except Ambulance', 'points' => 35],
+            ['insurer' => 'SHRIRAM', 'segment' => 'MISD', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Upto 15 Years Excluding Crane, Tractor and Ambulance', 'points' => 30],
+            ['insurer' => 'ICICI', 'segment' => 'MISD', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Excluding -Cranes & Decline RTO\'s :- GJ01,03,05,06,15,18,27,28,29', 'points' => 26],
+            ['insurer' => 'CHOLA', 'segment' => 'MISD', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOS', 'remarks_additional' => 'Loader, Excavators/Earth Movers, Crane, Bulldozers/Bullgraders, Road Rollers, Fork Lift Trucks - Without CPA Less 1.5%', 'points' => 26],
+            ['insurer' => 'CHOLA', 'segment' => 'MISD', 'segment_remarks' => 'Harvestor', 'policy_type' => 'Comprehensive', 'location' => 'All RTOS', 'remarks_additional' => 'Harvestor - Without CPA Less 1.5%', 'points' => 35],
+            ['insurer' => 'RELIANCE', 'segment' => 'MISD', 'policy_type' => 'Comprehensive', 'location' => 'All RTOs', 'remarks_additional' => 'CPM - Only JCB, L&T, Caterpillar Allowed', 'points' => 37],
+        ];
+
+        // Insert policies with default null values for unspecified columns
+        foreach ($policies as $policy) {
+            DB::table('insurance_grid_raws')->insert(array_merge([
+                'location' => null,
+                'location_remarks' => null,
+                'insurer_remarks' => null,
+                'segment_remarks' => null,
+                'policy_type_remarks' => null,
+                'remarks_additional' => null,
+                'region' => 3,
+                'period' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ], $policy));
+        }
+
+        $this->command->info('Seeded ' . count($policies) . ' insurance policies from October 2025 grid.');
+    }
+}
