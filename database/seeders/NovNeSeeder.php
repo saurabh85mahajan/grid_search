@@ -123,12 +123,12 @@ class NovNeSeeder extends Seeder
             // TWO WHEELER COMPREHENSIVE & SAOD
             // ========================================
 
-            ['insurer' => 'Bajaj - Scooter - Old', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => '5% Less for Bajaj, vespa & Royal Enfield', 'location' => 'North East', 'remarks_additional' => 'Allowed RTOs : AS 04,05,06,07,09,16,18,21,23,27 @ ML 05 @ MZ 01 @ SK 01 @ TR 03,04', 'points' => 34],
+            ['insurer' => 'Bajaj', 'insurer_remarks' => 'Scooter- Old', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => '5% Less for Bajaj, vespa & Royal Enfield', 'location' => 'North East', 'remarks_additional' => 'Allowed RTOs : AS 04,05,06,07,09,16,18,21,23,27 @ ML 05 @ MZ 01 @ SK 01 @ TR 03,04', 'points' => 34],
 
-            ['insurer' => 'TATA Bike', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => 'All CC', 'location' => 'RONE 1 & RONE 2', 'remarks_additional' => 'ROE 1 & ROE 2 & ROE 3 DECLINED', 'points' => 22],
-            ['insurer' => 'TATA Bike', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => 'All CC', 'location' => 'SK-05,SK-01,SK-02,SK-03,SK-04,SK-06,SK-07,SK-08', 'remarks_additional' => 'ROE 1 & ROE 2 & ROE 3 DECLINED', 'points' => 31],
-            ['insurer' => 'TATA Bike', 'segment' => '2W', 'policy_type' => 'SAOD', 'segment_remarks' => 'All CC', 'location' => 'RONE 1, RONE 2, ROE 1, ROE 2, ROE 3', 'remarks_additional' => '', 'points' => 27],
-            ['insurer' => 'TATA Bike', 'segment' => '2W', 'policy_type' => 'SAOD', 'segment_remarks' => 'All CC', 'location' => 'SK-05,SK-01,SK-02,SK-03,SK-04,SK-06,SK-07,SK-08', 'remarks_additional' => '', 'points' => 18],
+            ['insurer' => 'TATA', 'insurer_remarks' => 'Bike', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => 'All CC', 'location' => 'RONE 1 & RONE 2', 'remarks_additional' => 'ROE 1 & ROE 2 & ROE 3 DECLINED', 'points' => 22],
+            ['insurer' => 'TATA', 'insurer_remarks' => 'Bike', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => 'All CC', 'location' => 'SK-05,SK-01,SK-02,SK-03,SK-04,SK-06,SK-07,SK-08', 'remarks_additional' => 'ROE 1 & ROE 2 & ROE 3 DECLINED', 'points' => 31],
+            ['insurer' => 'TATA', 'insurer_remarks' => 'Bike', 'segment' => '2W', 'policy_type' => 'SAOD', 'segment_remarks' => 'All CC', 'location' => 'RONE 1, RONE 2, ROE 1, ROE 2, ROE 3', 'remarks_additional' => '', 'points' => 27],
+            ['insurer' => 'TATA', 'insurer_remarks' => 'Bike', 'segment' => '2W', 'policy_type' => 'SAOD', 'segment_remarks' => 'All CC', 'location' => 'SK-05,SK-01,SK-02,SK-03,SK-04,SK-06,SK-07,SK-08', 'remarks_additional' => '', 'points' => 18],
 
             ['insurer' => 'Tata', 'insurer_remarks' => 'Scooter- 1+1', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => 'All CC', 'location' => 'RONE 1 & RONE 2', 'remarks_additional' => '', 'points' => 28],
             ['insurer' => 'Tata', 'insurer_remarks' => 'Scooter- 1+1', 'segment' => '2W', 'policy_type' => 'Comprehensive', 'segment_remarks' => 'All CC', 'location' => 'SK-05,SK-01,SK-02,SK-03,SK-04,SK-06,SK-07,SK-08', 'remarks_additional' => '', 'points' => 39],
