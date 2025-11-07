@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('notice')->after('points')->nullable();
             $table->text('remarks_positive')->after('remarks_additional')->nullable();
             $table->text('policy_type_remarks_negative')->after('policy_type_remarks')->nullable();
-            $table->integer('points')->change();
+            $table->decimal('points')->change();
         });
     }
 

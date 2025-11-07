@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Database\Seeders\Traits\OrientalPoliciesTrait;
 
-class OctOrientSeeder extends Seeder
+class NovOrientSeeder extends Seeder
 {
     use OrientalPoliciesTrait;
 
@@ -14,6 +14,6 @@ class OctOrientSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->seedOrientalPolicies(1);
+        $this->seedOrientalPolicies(2);
     }
 }

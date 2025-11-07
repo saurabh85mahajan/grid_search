@@ -532,7 +532,7 @@ class NovDlSeeder extends Seeder
             ['insurer' => 'ROYAL', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi', 'policy_type' => 'Third Party', 'location' => 'HR', 'remarks_additional' => '4-18 Seater - Maruti Makes Decline', 'points' => 18],
             ['insurer' => 'ROYAL', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi', 'policy_type' => 'Third Party', 'location' => 'All RTOs', 'remarks_additional' => 'Electric Only', 'points' => 43],
             
-            ['insurer' => 'FUTURE', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi', 'policy_type' => 'Comprehensive', 'location' => 'DL, UP', 'remarks_additional' => '-', 'points' => '17 + 27'],
+            ['insurer' => 'FUTURE', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi', 'policy_type' => 'Comprehensive', 'location' => 'DL, UP', 'remarks_additional' => '-', 'points' => 44],
             ['insurer' => 'FUTURE', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi', 'policy_type' => 'Third Party', 'location' => 'DL, UP', 'remarks_additional' => '-', 'points' => 27],
             
             ['insurer' => 'TATA', 'segment' => 'Taxi', 'segment_remarks' => 'Taxi', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'Allowed RTOs - Dl & HR-26,29,38,51,55,72,87,98 & UP-14,16', 'remarks_additional' => 'HR Decline', 'points' => 24],
@@ -598,9 +598,9 @@ class NovDlSeeder extends Seeder
             
             ['insurer' => 'ZUNO', 'segment' => '3W PCV', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP', 'remarks_additional' => '-', 'points' => 47],
 
-            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'UK', 'remarks_additional' => '-', 'points' => '17 + 52'],
-            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'DL', 'remarks_additional' => '-', 'points' => '17 + 46'],
-            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'UP', 'remarks_additional' => '-', 'points' => '17 + 38'],
+            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'UK', 'remarks_additional' => '-', 'points' => 69],
+            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'DL', 'remarks_additional' => '-', 'points' => 63],
+            ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Comprehensive', 'location' => 'UP', 'remarks_additional' => '-', 'points' => 55],
             ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'UK', 'remarks_additional' => '-', 'points' => 52],
             ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'DL', 'remarks_additional' => '-', 'points' => 46],
             ['insurer' => 'FUTURE', 'segment' => '3W PCV', 'segment_remarks' => 'Autorikshaw', 'policy_type' => 'Third Party', 'location' => 'UP', 'remarks_additional' => '-', 'points' => 38],
@@ -710,17 +710,17 @@ class NovDlSeeder extends Seeder
             ['insurer' => 'ZUNO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP & UK (UK-01,02,16,18 RTOs Decline)', 'remarks_additional' => 'TATA , Maruti & Mahindra Makes Only - Bolero Camper Model Decline', 'points' => 50],
             ['insurer' => 'ZUNO', 'segment' => 'GCW', 'segment_remarks' => '2501 - 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP & UK (UK-01,02,16,18 RTOs Decline)', 'remarks_additional' => 'TATA , Maruti & Mahindra Makes Only - Bolero Camper Model Decline', 'points' => 42],
             
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP- 1,3 & UK', 'remarks_additional' => '-', 'points' => 30],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 27],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-2', 'remarks_additional' => '-', 'points' => 24],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UK', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 20],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 17],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-1,2,3', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 14],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => '7501 - 20000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 14],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 17],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => '7501 - 40000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-1, UP-3', 'remarks_additional' => '', 'points' => 14],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Above 7501 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UK', 'remarks_additional' => '', 'points' => 20],
-            ['insurer' => 'UNIVERSAL SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Above 40001 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-1, UP-3,', 'remarks_additional' => '', 'points' => 12],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP- 1,3 & UK', 'remarks_additional' => '-', 'points' => 30],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 27],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Upto 3500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-2', 'remarks_additional' => '-', 'points' => 24],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UK', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 20],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 17],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '3501 - 7500 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-1,2,3', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 14],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '7501 - 20000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 14],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '20001 - 40000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'DL-NCR', 'remarks_additional' => 'NCR RTO Code - UP-14,16, HR-38,51,55,72,76,98', 'points' => 17],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => '7501 - 40000 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-1, UP-3', 'remarks_additional' => '', 'points' => 14],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Above 7501 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UK', 'remarks_additional' => '', 'points' => 20],
+            ['insurer' => 'SOMPO', 'segment' => 'GCW', 'segment_remarks' => 'Above 40001 GVW', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'UP-1, UP-3,', 'remarks_additional' => '', 'points' => 12],
             
             ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Comprehensive', 'location' => 'Delhi, UK Only', 'remarks_additional' => 'All Makes', 'points' => 46],
             ['insurer' => 'HDFC', 'segment' => 'GCW', 'segment_remarks' => 'Upto 2500 GVW', 'policy_type' => 'Third Party', 'location' => 'Delhi', 'remarks_additional' => 'All Makes', 'points' => 55],
@@ -1041,7 +1041,7 @@ class NovDlSeeder extends Seeder
             // ========================================
             // SCHOOL BUS / STAFF BUS
             // ========================================
-            ['insurer' => 'FUTURE', 'segment' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'ALL RTOs', 'remarks_additional' => '-', 'points' => '17 + 61'],
+            ['insurer' => 'FUTURE', 'segment' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'ALL RTOs', 'remarks_additional' => '-', 'points' => 78],
             
             ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs - ( HR - 63 Decline)', 'remarks_additional' => '8 & Above Seater Only - On School Name', 'points' => 73],
             ['insurer' => 'DIGIT', 'segment' => 'School Bus', 'policy_type' => 'Comprehensive + Third Party', 'location' => 'All RTOs - ( HR - 63 Decline)', 'remarks_additional' => '8 & Above Seater Only - On Transporter Name, On Individual Name', 'points' => 60],
@@ -1103,16 +1103,16 @@ class NovDlSeeder extends Seeder
             ['insurer' => 'SHRIRAM', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive', 'location' => 'UP', 'remarks_additional' => 'Upto 15 Years Only - ( UP- 75,82,83, 84,93 RTOs Decline)', 'points' => 17],
             ['insurer' => 'SHRIRAM', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'UP', 'remarks_additional' => 'Upto 15 Years Only - ( UP- 75,82,83, 84,93 RTOs Decline)', 'points' => 6],
             
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New Only', 'location' => 'UP-1, UP-3, DL-NCR, UK', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 29],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New Only', 'location' => 'UP-2', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 27],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New Only', 'location' => 'HR', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 22],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'UP-1, UP-3', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 28],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'DL-NCR, UP-2', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 25],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'HR', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 15],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'UK', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 20],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'UK', 'remarks_additional' => '-', 'points' => 14],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'DL-NCR', 'remarks_additional' => '-', 'points' => 25],
-            ['insurer' => 'UNIVERSAl SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'UP-1, UP-2, UP-3', 'remarks_additional' => '-', 'points' => 16],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New Only', 'location' => 'UP-1, UP-3, DL-NCR, UK', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 29],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New Only', 'location' => 'UP-2', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 27],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - New Only', 'location' => 'HR', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 22],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'UP-1, UP-3', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 28],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'DL-NCR, UP-2', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 25],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'HR', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 15],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Comprehensive - Old', 'location' => 'UK', 'remarks_additional' => 'Delhi NCR RTOs - DL, UP14,16,HR-38,51,55,72,76,98 In UP-2 RTOs - UP-12,20,38,71,75,79,84,85,90,95,96 In Haryana HR-27,74 Decline', 'points' => 20],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'UK', 'remarks_additional' => '-', 'points' => 14],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'DL-NCR', 'remarks_additional' => '-', 'points' => 25],
+            ['insurer' => 'SOMPO', 'segment' => 'Tractor', 'policy_type' => 'Third Party', 'location' => 'UP-1, UP-2, UP-3', 'remarks_additional' => '-', 'points' => 16],
             
             ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'Without Trailer', 'policy_type' => 'Comprehensive - New', 'location' => 'Lucknow', 'remarks_additional' => 'HR, UP-West, UK, Allahabad, Kanpur, DL-NCR RTO Codes Decline', 'points' => 44],
             ['insurer' => 'ICICI', 'segment' => 'Tractor', 'segment_remarks' => 'Without Trailer', 'policy_type' => 'Comprehensive - New', 'location' => 'Deharadun', 'remarks_additional' => 'HR, UP-West, UK, Allahabad, Kanpur, DL-NCR RTO Codes Decline', 'points' => 13],

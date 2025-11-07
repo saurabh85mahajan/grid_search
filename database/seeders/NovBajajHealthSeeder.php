@@ -2,18 +2,18 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\Traits\BajajPoliciesTrait;
 use Illuminate\Database\Seeder;
-use Database\Seeders\Traits\OrientalPoliciesTrait;
 
-class OctOrientSeeder extends Seeder
+class NovBajajHealthSeeder extends Seeder
 {
-    use OrientalPoliciesTrait;
+    use BajajPoliciesTrait;
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $this->seedOrientalPolicies(1);
+        $this->seedPolicies(2);
     }
 }

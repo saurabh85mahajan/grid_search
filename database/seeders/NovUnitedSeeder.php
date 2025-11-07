@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Database\Seeders\Traits\OrientalPoliciesTrait;
+use Database\Seeders\Traits\UnitedPoliciesTrait;
 
-class OctOrientSeeder extends Seeder
+class NovUnitedSeeder extends Seeder
 {
-    use OrientalPoliciesTrait;
+    use UnitedPoliciesTrait;
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $this->seedOrientalPolicies(1);
+        $this->seedPolicies(2);
     }
 }
