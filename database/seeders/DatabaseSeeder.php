@@ -29,8 +29,8 @@ class DatabaseSeeder extends Seeder
            NovUnitedSeeder::class,
            NovBajajHealthSeeder::class,
            NovNeSeeder::class,
-        //    NovPbSeeder::class,
-        //    NovApSeeder::class,
+           NovPbSeeder::class,
+           NovApSeeder::class,
         ]);
     }
 }
