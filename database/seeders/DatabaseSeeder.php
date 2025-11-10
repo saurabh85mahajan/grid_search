@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
            NovDlSeeder::class,
            NovGujaratSeeder::class,
-        //    NovMhSeeder::class,
+           NovMhSeeder::class,
         //    NovBrSeeder::class,
            NovOrientSeeder::class,
            NovUnitedSeeder::class,
