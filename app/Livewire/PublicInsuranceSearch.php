@@ -37,6 +37,7 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
     public function mount($userType = 'agent')
     {
         $this->userType = $userType;
+        logger('New User Detected - IP: ' . request()->ip() . ' - Type: ' . $userType);
     }
 
     // These methods trigger table refresh when filters change
@@ -89,11 +90,13 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
 
                 return $query;
             })
+
             ->columns([
                 TextColumn::make('insurer')
                     ->label('Insurance')
                     ->formatStateUsing(function ($state, $record): string { 
                         $points = $this->userType === 'employee' ? $record->points : ($record->points - 5);
+                        $points =  floatval($points);
                         
                         // Build notice HTML if notice exists
                         $noticeHtml = '';
@@ -185,7 +188,10 @@ class PublicInsuranceSearch extends Component implements HasForms, HasTable
                     ->visibleFrom('md'),
                 TextColumn::make('points')
                     ->label('Points')
-                    ->formatStateUsing(fn ($state) => $this->userType === 'employee' ? $state : $state - 5)
+                    ->formatStateUsing(function ($state) {
+                        $adjustedPoints = $this->userType === 'employee' ? $state : $state - 5;
+                        return floatval($adjustedPoints);
+                    })
                     ->color('success')
                     ->size('lg')
                     ->weight('bold')
