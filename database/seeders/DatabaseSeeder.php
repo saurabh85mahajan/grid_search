@@ -31,6 +31,9 @@ class DatabaseSeeder extends Seeder
            NovNeSeeder::class,
            NovPbSeeder::class,
            NovApSeeder::class,
+
+           //Should always call it.
+           IciciSeeder::class,
         ]);
     }
 }

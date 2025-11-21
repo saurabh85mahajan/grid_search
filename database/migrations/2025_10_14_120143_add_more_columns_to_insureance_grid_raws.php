@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::table('insurance_grid_raws', function (Blueprint $table) {
             $table->text('notice')->after('points')->nullable();
-            $table->text('remarks_positive')->after('remarks_additional')->nullable();
-            $table->text('policy_type_remarks_negative')->after('policy_type_remarks')->nullable();
+            $table->text('diff')->after('points')->nullable();
             $table->decimal('points')->change();
         });
     }
