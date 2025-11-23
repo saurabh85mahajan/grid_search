@@ -19,20 +19,18 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
     use InteractsWithTable;
 
     #[Url]
-    public ?string $rto_category = '';
-
-    #[Url]
     public ?string $rto_zone = '';
 
     #[Url]
     public ?string $rto_state = '';
 
     #[Url]
-    public ?string $rto_location = '';
+    public $period = 1;
 
     protected $updatesQueryString = [
         'rto_zone',
         'rto_state',
+        'period',
         'page',
     ];
 
@@ -45,37 +43,18 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
     {
         $this->resetPage();
     }
+    public function updatedPeriod()
+    {
+        $this->resetPage();
+    }
 
     public function clearFilters(): void
     {
         $this->rto_zone = '';
         $this->rto_state = '';
+        $this->period = 1;
 
         $this->resetPage();
-    }
-
-    public function render()
-    {
-        $zones = IciciGridCar::query()
-            ->select('rto_zone')
-            ->distinct()
-            ->orderBy('rto_zone')
-            ->pluck('rto_zone')
-            ->filter()
-            ->values();
-
-        $states = IciciGridCar::query()
-            ->select('rto_state')
-            ->distinct()
-            ->orderBy('rto_state')
-            ->pluck('rto_state')
-            ->filter()
-            ->values();
-
-        return view('livewire.icici-car-search', [
-            'zones'      => $zones,
-            'states'     => $states,
-        ])->layout('components.layouts.app');
     }
 
     public function table(Table $table): Table
@@ -92,13 +71,17 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
                     $query->where('rto_state', $this->rto_state);
                 }
 
+                if (!empty($this->period)) {
+                    $query->where('period', $this->period);
+                }
+
                 return $query;
             })
 
             ->columns([
                 // MOBILE CARD LAYOUT
                 TextColumn::make('rto_category') // base field, but we use the whole record
-                    ->label('RTO')
+                    ->label('Result')
                     ->formatStateUsing(function ($state, $record): string {
                         // small helper to format percentages nicely
                         $format = function ($value): string {
@@ -295,5 +278,30 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
             ->paginated(50)
             ->paginationPageOptions([25, 50, 100])
             ->striped();
+    }
+
+
+    public function render()
+    {
+        $zones = IciciGridCar::query()
+            ->select('rto_zone')
+            ->distinct()
+            ->orderBy('rto_zone')
+            ->pluck('rto_zone')
+            ->filter()
+            ->values();
+
+        $states = IciciGridCar::query()
+            ->select('rto_state')
+            ->distinct()
+            ->orderBy('rto_state')
+            ->pluck('rto_state')
+            ->filter()
+            ->values();
+
+        return view('livewire.icici-car-search', [
+            'zones'      => $zones,
+            'states'     => $states,
+        ])->layout('components.layouts.app');
     }
 }

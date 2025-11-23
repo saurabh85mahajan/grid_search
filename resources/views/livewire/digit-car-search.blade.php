@@ -3,7 +3,7 @@
     <div class="bg-white dark:bg-gray-900 shadow border-b border-gray-200 dark:border-gray-800">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-                Grid for ICICI - Private Cars
+                Grid for Digit - Private Cars
             </h1>
         </div>
     </div>
@@ -15,25 +15,6 @@
             <x-filament::section>
                 <form wire:submit.prevent="$refresh">
                     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-
-                        <!-- Zone -->
-                        <div>
-                            <label for="rto_zone" class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
-                                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
-                                    Zone
-                                </span>
-                            </label>
-                            <select
-                                wire:model.live="rto_zone"
-                                id="rto_zone"
-                                class="fi-select-input block w-full border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                            >
-                                <option value="">All</option>
-                                @foreach ($zones as $zone)
-                                    <option value="{{ $zone }}">{{ $zone }}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
                         <!-- State -->
                         <div>

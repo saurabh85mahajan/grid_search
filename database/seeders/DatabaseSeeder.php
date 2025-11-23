@@ -33,7 +33,8 @@ class DatabaseSeeder extends Seeder
            NovApSeeder::class,
 
            //Should always call it.
-           NovIciciCarSeeder::class
+           NovIciciCarSeeder::class,
+           NovDigitCarSeeder::class,
         ]);
     }
 }

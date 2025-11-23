@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\DigitGridCarSearch;
 use App\Livewire\IciciGridCarSearch;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\PublicInsuranceSearch;
@@ -10,3 +11,4 @@ Route::get('/employee/insurance-grid-search', PublicInsuranceSearch::class)
 
 
 Route::get('/icici', IciciGridCarSearch::class);    
+Route::get('/digit', DigitGridCarSearch::class);    
