@@ -73,11 +73,6 @@ class IciciGridSearch extends Component implements HasForms, HasTable
 
     public function render()
     {
-        $rates = IciciGrid::query()
-            ->orderBy('rto_state')
-            ->orderBy('rto_location')
-            ->paginate(100);
-
         // dropdown data
         $categories = IciciGrid::query()
             ->select('rto_category')
@@ -104,7 +99,6 @@ class IciciGridSearch extends Component implements HasForms, HasTable
             ->values();
 
         return view('livewire.public-icici-search', [
-            'rates'      => $rates,
             'categories' => $categories,
             'zones'      => $zones,
             'states'     => $states,

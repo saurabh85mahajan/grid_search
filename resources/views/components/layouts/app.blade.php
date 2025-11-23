@@ -6,7 +6,7 @@
     <title>{{ $title ?? 'Insurance Policy Search' }}</title>
     
     @filamentStyles
-    <link href="{{ asset('css/filament/filament/app.css') }}" rel="stylesheet" />
+    @vite('resources/css/filament/admin/theme.css')
 </head>
 <body class="antialiased fi-body min-h-full bg-gray-50 dark:bg-gray-950">
     {{ $slot }}
