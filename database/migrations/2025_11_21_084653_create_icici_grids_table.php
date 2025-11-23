@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('icici_grids', function (Blueprint $table) {
+        Schema::create('icici_grid_cars', function (Blueprint $table) {
             $table->id();
             $table->string('rto_category', 50)->index(); // Geo / Vertical
             $table->string('rto_zone', 50)->index();     // North / South / East / West
@@ -25,6 +25,8 @@ return new class extends Migration
             $table->decimal('saod_ncb', 5, 2)->nullable();
             $table->decimal('pvt_car_0_ncb_non_ncb', 5, 2)->nullable();
             $table->decimal('pvt_car_used_car', 5, 2)->nullable();
+            $table->integer('period');
+            $table->boolean('is_highlight')->default(false);
             $table->timestamps();
         });
     }
@@ -34,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('icici_grids');
+        Schema::dropIfExists('icici_grid_cars');
     }
 };

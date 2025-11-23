@@ -2,21 +2,21 @@
 
 namespace Database\Seeders;
 
-use App\Models\IciciGrid;
+use App\Models\IciciGridCar;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
-class IciciSeeder extends Seeder
+class NovIciciCarSeeder extends Seeder
 {
     public function run(): void
     {
         // Keep headings exactly as in Excel (no slugifying)
         HeadingRowFormatter::default('none');
 
-        $path = database_path('seeders/data/icici.xlsx');
+        $path = database_path('seeders/data/icici_nov.xlsx');
 
         // Read all sheets as collections (heading row used as keys)
         $sheets = Excel::toCollection(
@@ -56,7 +56,7 @@ class IciciSeeder extends Seeder
                 continue;
             }
 
-            IciciGrid::create([
+            IciciGridCar::create([
                 'rto_category'  => $row['0'] ?? null,
                 'rto_zone'      => $row['1'] ?? null,
                 'rto_state'     => $row['2'] ?? null,
@@ -68,6 +68,8 @@ class IciciSeeder extends Seeder
                 'saod_ncb'                   => $parsePercent($row['7'] ?? null),
                 'pvt_car_0_ncb_non_ncb'      => $parsePercent($row['8'] ?? null),
                 'pvt_car_used_car'           => $parsePercent($row['9'] ?? null),
+                'period' => 1,
+                'is_highlight' =>  ($row['3'] == 'Assam') ? true : false,
             ]);
         }
     }

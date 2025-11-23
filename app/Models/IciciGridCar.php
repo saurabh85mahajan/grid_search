@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class IciciGrid extends Model
+class IciciGridCar extends Model
 {
     //
     protected $guarded = [];
