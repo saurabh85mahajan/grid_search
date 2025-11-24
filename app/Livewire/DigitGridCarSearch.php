@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\DigitGridCar;
+use App\Traits\WithDefaults;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
@@ -18,18 +19,26 @@ class DigitGridCarSearch extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
+    use WithDefaults;
+
+    public $heading = 'Grid for Digit - Private Cars';
 
     #[Url]
     public ?string $rto_state = '';
 
     #[Url]
-    public $period = 1;
+    public ?int $period = null;
 
     protected $updatesQueryString = [
         'rto_state',
         'period',
         'page',
     ];
+
+    public function mount()
+    {
+        $this->period = $this->period ?? $this->getDefaultPeriod();
+    }
 
     // Reset pagination when filters change
     public function updatedRtoZone()
@@ -48,7 +57,7 @@ class DigitGridCarSearch extends Component implements HasForms, HasTable
     public function clearFilters(): void
     {
         $this->rto_state = '';
-        $this->period = 1;
+        $this->period = $this->getDefaultPeriod();
 
         $this->resetPage();
     }
@@ -175,8 +184,8 @@ class DigitGridCarSearch extends Component implements HasForms, HasTable
             ->emptyStateHeading('No Results Found')
             ->emptyStateDescription('Try adjusting your search criteria')
             ->defaultSort('rto_state')
-            ->paginated(50)
-            ->paginationPageOptions([25, 50, 100])
+            ->paginated(100)
+            ->paginationPageOptions([100])
             ->striped();
     }
 
@@ -205,6 +214,6 @@ class DigitGridCarSearch extends Component implements HasForms, HasTable
 
         return view('livewire.digit-car-search', [
             'states'     => $states,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.main', ['heading' => $this->heading]);
     }
 }

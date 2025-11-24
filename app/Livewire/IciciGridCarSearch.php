@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\IciciGridCar;
+use App\Traits\WithDefaults;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
@@ -17,6 +18,9 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
+    use WithDefaults;
+
+    public $heading = 'Grid for ICICI - Private Cars';
 
     #[Url]
     public ?string $rto_zone = '';
@@ -25,7 +29,7 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
     public ?string $rto_state = '';
 
     #[Url]
-    public $period = 1;
+    public ?int $period = null;
 
     protected $updatesQueryString = [
         'rto_zone',
@@ -33,6 +37,11 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
         'period',
         'page',
     ];
+
+    public function mount()
+    {
+        $this->period = $this->period ?? $this->getDefaultPeriod();
+    }
 
     // Reset pagination when filters change
     public function updatedRtoZone()
@@ -52,7 +61,7 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
     {
         $this->rto_zone = '';
         $this->rto_state = '';
-        $this->period = 1;
+        $this->period = $this->getDefaultPeriod();
 
         $this->resetPage();
     }
@@ -272,11 +281,12 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
                     ])
                     ->visibleFrom('md'),
             ])
+            ->recordClasses(fn ($record) => $record->is_highlight ? 'bg-primary-500' : null)
             ->emptyStateHeading('No Results Found')
             ->emptyStateDescription('Try adjusting your search criteria')
             ->defaultSort('rto_state')
-            ->paginated(50)
-            ->paginationPageOptions([25, 50, 100])
+            ->paginated(100)
+            ->paginationPageOptions([100])
             ->striped();
     }
 
@@ -302,6 +312,6 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
         return view('livewire.icici-car-search', [
             'zones'      => $zones,
             'states'     => $states,
-        ])->layout('components.layouts.app');
+        ])->layout('components.layouts.main', ['heading' => $this->heading]);
     }
 }
