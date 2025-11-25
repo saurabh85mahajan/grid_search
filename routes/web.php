@@ -3,6 +3,7 @@
 use App\Livewire\CarInsurance;
 use App\Livewire\CvInsurance;
 use App\Livewire\DigitGridCarSearch;
+use App\Livewire\HdfcGridCarSearch;
 use App\Livewire\IciciGridCarSearch;
 use App\Livewire\IciciGridCvSearch;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::get('/employee/insurance-grid-search', PublicInsuranceSearch::class)
 Route::get('/car', CarInsurance::class)->name('car-insurance');
 Route::get('/car/icici', IciciGridCarSearch::class)->name('icici-grid-car');
 Route::get('/car/digit', DigitGridCarSearch::class)->name('digit-grid-car');
+Route::get('/car/hdfc', HdfcGridCarSearch::class)->name('hdfc-grid-car');
 
 Route::get('/cv', CvInsurance::class)->name('cv-insurance');
 Route::get('/cv/icici', IciciGridCvSearch::class)->name('icici-grid-cv');

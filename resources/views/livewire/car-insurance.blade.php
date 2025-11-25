@@ -15,6 +15,18 @@
                         <p class="font-normal text-gray-700">View Digit car insurance grid and rates</p>
                     </a>
 
+                    <!-- HDFC Card -->
+                    <a href="{{ route('hdfc-grid-car') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">HDFC Insurance</h5>
+                        <p class="font-normal text-gray-700">View HDFC car insurance grid and rates</p>
+                    </a>
+
+                    <!-- Future Card -->
+                    <a href="#" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Future Insurance</h5>
+                        <p class="font-normal text-gray-700">Future PAN India Commission is 17%</p>
+                    </a>
+
                     <!-- Add more insurance providers as needed -->
                 </div>
             </x-filament::section>
