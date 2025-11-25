@@ -14,7 +14,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Plan Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fuel Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">NCB Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Commission (%)</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Grid (%)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -83,7 +83,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Plan Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fuel Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">NCB Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Commission (%)</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Grid (%)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">

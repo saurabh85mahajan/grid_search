@@ -24,7 +24,7 @@
                     <!-- Future Card -->
                     <a href="#" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Future Insurance</h5>
-                        <p class="font-normal text-gray-700">Future PAN India Commission is 17%</p>
+                        <p class="font-normal text-gray-700">Future PAN India Grid is 17%</p>
                     </a>
 
                     <!-- Add more insurance providers as needed -->
