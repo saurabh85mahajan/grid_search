@@ -10,6 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
@@ -293,21 +294,25 @@ class IciciGridCarSearch extends Component implements HasForms, HasTable
 
     public function render()
     {
-        $zones = IciciGridCar::query()
-            ->select('rto_zone')
-            ->distinct()
-            ->orderBy('rto_zone')
-            ->pluck('rto_zone')
-            ->filter()
-            ->values();
+        $zones = Cache::remember('icici_car_zones', now()->addDay(), function () {
+            return IciciGridCar::query()
+                ->select('rto_zone')
+                ->distinct()
+                ->orderBy('rto_zone')
+                ->pluck('rto_zone')
+                ->filter()
+                ->values();
+        });
 
-        $states = IciciGridCar::query()
-            ->select('rto_state')
-            ->distinct()
-            ->orderBy('rto_state')
-            ->pluck('rto_state')
-            ->filter()
-            ->values();
+        $states = Cache::remember('icici_car_states', now()->addDay(), function () {
+            return IciciGridCar::query()
+                ->select('rto_state')
+                ->distinct()
+                ->orderBy('rto_state')
+                ->pluck('rto_state')
+                ->filter()
+                ->values();
+        });
 
         return view('livewire.icici-car-search', [
             'zones'      => $zones,

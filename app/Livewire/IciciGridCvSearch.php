@@ -10,9 +10,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-
 
 class IciciGridCvSearch extends Component implements HasForms, HasTable
 {
@@ -114,21 +114,25 @@ class IciciGridCvSearch extends Component implements HasForms, HasTable
 
     public function render()
     {
-        $clusters = IciciGridCv::query()
-            ->select('rto_cluster')
-            ->distinct()
-            ->orderBy('rto_cluster')
-            ->pluck('rto_cluster')
-            ->filter()
-            ->values();
+        $clusters = Cache::remember('icici_cv_clusters', now()->addDay(), function () {
+            return IciciGridCv::query()
+                ->select('rto_cluster')
+                ->distinct()
+                ->orderBy('rto_cluster')
+                ->pluck('rto_cluster')
+                ->filter()
+                ->values();
+        });
 
-        $categories = IciciGridCv::query()
-            ->select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category')
-            ->filter()
-            ->values();
+        $categories = Cache::remember('icici_cv_categories', now()->addDay(), function () {
+            return IciciGridCv::query()
+                ->select('category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category')
+                ->filter()
+                ->values();
+        });
 
         return view('livewire.icici-cv-search', [
             'clusters'      => $clusters,

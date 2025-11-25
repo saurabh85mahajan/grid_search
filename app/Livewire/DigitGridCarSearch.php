@@ -10,6 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -204,13 +205,15 @@ class DigitGridCarSearch extends Component implements HasForms, HasTable
 
     public function render()
     {
-        $states = DigitGridCar::query()
-            ->select('rto_state')
-            ->distinct()
-            ->orderBy('rto_state')
-            ->pluck('rto_state')
-            ->filter()
-            ->values();
+        $states = Cache::remember('digit_car_states', now()->addDay(), function () {
+            return DigitGridCar::query()
+                ->select('rto_state')
+                ->distinct()
+                ->orderBy('rto_state')
+                ->pluck('rto_state')
+                ->filter()
+                ->values();
+        });
 
         return view('livewire.digit-car-search', [
             'states'     => $states,
