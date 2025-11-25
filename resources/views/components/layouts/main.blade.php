@@ -39,6 +39,9 @@
                     <a href="{{ route('car-insurance') }}" class="nav-link">
                         Car
                     </a>
+                    <a href="{{ route('cv-insurance') }}" class="nav-link">
+                        CV
+                    </a>
                     <a href="{{ route('two-wheeler-insurance') }}" class="nav-link">
                         2 Wheeler
                     </a>
@@ -62,6 +65,9 @@
                 <div class="space-y-1">
                     <a href="{{ route('car-insurance') }}" class="nav-link block">
                         Car
+                    </a>
+                    <a href="{{ route('cv-insurance') }}" class="nav-link block">
+                        CV
                     </a>
                     <a href="{{ route('two-wheeler-insurance') }}" class="nav-link block">
                         2 Wheeler

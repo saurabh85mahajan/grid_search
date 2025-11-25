@@ -97,7 +97,7 @@ class IciciGridCvSearch extends Component implements HasForms, HasTable
                 TextColumn::make('category')
                     ->label('Category')
                     ->wrap(),
-                TextColumn::make('value')
+                TextColumn::make('formatted_value')
                     ->label('Value')
                     ->wrap(),
 
