@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Nov;
 
 use App\Models\DigitGridCar;
 use Illuminate\Database\Seeder;
@@ -9,14 +9,14 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
-class NovDigitCarSeeder extends Seeder
+class DigitCarSeeder extends Seeder
 {
     public function run(): void
     {
         // Keep headings exactly as in Excel (no slugifying)
         HeadingRowFormatter::default('none');
 
-        $path = database_path('seeders/data/digit_nov.xlsx');
+        $path = database_path('seeders/data/nov/digit_car.xlsx');
 
         // Read all sheets as collections (heading row used as keys)
         $sheets = Excel::toCollection(
