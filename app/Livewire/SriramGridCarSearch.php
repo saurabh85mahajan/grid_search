@@ -20,7 +20,7 @@ class SriramGridCarSearch extends Component implements HasForms, HasTable
     use InteractsWithTable;
     use WithDefaults;
 
-    public $heading = 'Grid for Sriram - All';
+    public $heading = 'Grid for Shri Ram - All';
 
     #[Url]
     public ?string $category = '';
