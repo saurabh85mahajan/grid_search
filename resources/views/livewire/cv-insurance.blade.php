@@ -9,6 +9,11 @@
                         <p class="font-normal text-gray-700">View ICICI CV insurance grid and rates</p>
                     </a>
 
+                  <a href="{{ route('sriram-grid-car') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Sriram Insurance</h5>
+                        <p class="font-normal text-gray-700">View Sriram insurance grid and rates</p>
+                    </a>
+
                     <!-- Add more insurance providers as needed -->
                 </div>
             </x-filament::section>

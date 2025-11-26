@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Database\Seeders\Nov\DigitCarSeeder;
 use Database\Seeders\Nov\IciciCarSeeder;
 use Database\Seeders\Nov\IciciCvSeeder;
+use Database\Seeders\Nov\SriramAllSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -39,6 +40,7 @@ class DatabaseSeeder extends Seeder
            IciciCarSeeder::class,
            DigitCarSeeder::class,
            IciciCvSeeder::class,
+           SriramAllSeeder::class,
         ]);
     }
 }
