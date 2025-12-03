@@ -33,6 +33,12 @@
                         <p class="font-normal text-gray-700">View Shri Ram insurance grid and rates</p>
                     </a>
 
+                    <!-- Tata Card -->
+                    <a href="{{ route('tata-grid-car') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Tata Insurance</h5>
+                        <p class="font-normal text-gray-700">View Tata insurance grid and rates</p>
+                    </a>
+
                     <!-- Add more insurance providers as needed -->
                 </div>
             </x-filament::section>
